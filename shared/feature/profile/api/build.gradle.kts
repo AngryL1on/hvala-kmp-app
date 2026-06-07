@@ -28,7 +28,7 @@ kotlin {
 }
 
 android {
-    namespace = "tech.appard.hvala.shared.core.contracts"
+    namespace = "tech.appard.hvala.shared.feature.profile.api"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {

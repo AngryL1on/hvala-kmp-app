@@ -1,4 +1,4 @@
-package tech.appard.hvala.shared.core.contracts.model
+package tech.appard.hvala.shared.feature.auth.api.model
 
 data class AuthCredentials(
     val login: String,

@@ -17,7 +17,6 @@ import tech.appard.hvala.shared.core.ui.SharedScreenScaffold
 fun ProfileScreen(
     stateHolder: ProfileStateHolder,
     modifier: Modifier = Modifier,
-    onLogout: () -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
     LaunchedEffect(Unit) {
@@ -28,7 +27,7 @@ fun ProfileScreen(
         ProfileContent(
             modifier = modifier,
             state = state,
-            onLogout = onLogout,
+            onLogout = stateHolder::logout,
         )
     }
 }

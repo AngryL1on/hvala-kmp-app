@@ -1,9 +1,10 @@
 package tech.appard.hvala
 
 import androidx.compose.ui.window.ComposeUIViewController
+import platform.UIKit.UIViewController
 import tech.appard.hvala.di.initKoin
 
-fun MainViewController() = ComposeUIViewController {
+fun MainViewController(): UIViewController {
     initKoin()
-    App()
+    return ComposeUIViewController { App() }
 }

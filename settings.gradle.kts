@@ -21,9 +21,10 @@ include(":composeApp")
 
 // Shared core modules
 include(":shared:core:ui")
-include(":shared:core:contracts")
 include(":shared:core:data-network")
 
 // Feature modules inside shared
+include(":shared:feature:auth:api")
+include(":shared:feature:profile:api")
 include(":shared:feature:ui-auth")
 include(":shared:feature:ui-profile")

@@ -18,7 +18,6 @@ import tech.appard.hvala.shared.core.ui.SharedScreenScaffold
 fun AuthScreen(
     stateHolder: AuthStateHolder,
     modifier: Modifier = Modifier,
-    onAuthenticated: () -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
     SharedScreenScaffold(title = "Auth") {
@@ -27,7 +26,7 @@ fun AuthScreen(
             state = state,
             onLoginChange = stateHolder::onLoginChange,
             onPasswordChange = stateHolder::onPasswordChange,
-            onSignIn = { stateHolder.signIn(onAuthenticated) },
+            onSignIn = stateHolder::signIn,
         )
     }
 }

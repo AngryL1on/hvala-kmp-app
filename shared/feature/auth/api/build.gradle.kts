@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.jetbrains.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 kotlin {
@@ -20,18 +19,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.json)
-            implementation(projects.shared.feature.auth.api)
-            implementation(projects.shared.feature.profile.api)
-        }
-        androidMain.dependencies {
-            implementation(libs.ktor.client.android)
-        }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+            implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -40,7 +28,7 @@ kotlin {
 }
 
 android {
-    namespace = "tech.appard.hvala.shared.core.data.network"
+    namespace = "tech.appard.hvala.shared.feature.auth.api"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {

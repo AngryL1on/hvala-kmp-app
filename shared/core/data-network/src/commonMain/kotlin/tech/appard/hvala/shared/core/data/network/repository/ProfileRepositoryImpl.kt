@@ -1,7 +1,7 @@
 package tech.appard.hvala.shared.core.data.network.repository
 
-import tech.appard.hvala.shared.core.contracts.model.UserProfile
-import tech.appard.hvala.shared.core.contracts.repository.ProfileRepository
+import tech.appard.hvala.shared.feature.profile.api.model.UserProfile
+import tech.appard.hvala.shared.feature.profile.api.repository.ProfileRepository
 import tech.appard.hvala.shared.core.data.network.NetworkClient
 
 class ProfileRepositoryImpl(

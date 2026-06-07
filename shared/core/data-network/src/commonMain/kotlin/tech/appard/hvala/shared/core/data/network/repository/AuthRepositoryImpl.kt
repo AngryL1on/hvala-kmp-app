@@ -1,7 +1,7 @@
 package tech.appard.hvala.shared.core.data.network.repository
 
-import tech.appard.hvala.shared.core.contracts.model.AuthCredentials
-import tech.appard.hvala.shared.core.contracts.repository.AuthRepository
+import tech.appard.hvala.shared.feature.auth.api.model.AuthCredentials
+import tech.appard.hvala.shared.feature.auth.api.repository.AuthRepository
 import tech.appard.hvala.shared.core.data.network.NetworkClient
 
 class AuthRepositoryImpl(

@@ -24,5 +24,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 @Preview
 fun AppAndroidPreview() {
+    initKoin()
     App()
 }

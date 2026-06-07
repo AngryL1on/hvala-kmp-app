@@ -3,13 +3,16 @@ package tech.appard.hvala.shared.feature.auth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import tech.appard.hvala.shared.core.contracts.model.AuthCredentials
-import tech.appard.hvala.shared.core.contracts.repository.AuthRepository
+import tech.appard.hvala.shared.feature.auth.api.model.AuthCredentials
+import tech.appard.hvala.shared.feature.auth.api.repository.AuthRepository
 
 data class AuthUiState(
     val login: String = "",
@@ -26,6 +29,9 @@ class AuthStateHolder(
     private val _state = MutableStateFlow(AuthUiState())
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
 
+    private val _events = MutableSharedFlow<AuthUiEvent>(extraBufferCapacity = 1)
+    val events: SharedFlow<AuthUiEvent> = _events.asSharedFlow()
+
     fun onLoginChange(value: String) {
         _state.update { it.copy(login = value) }
     }
@@ -38,7 +44,7 @@ class AuthStateHolder(
         _state.value = AuthUiState()
     }
 
-    fun signIn(onSuccess: () -> Unit) {
+    fun signIn() {
         val snapshot = _state.value
         if (snapshot.isLoading) return
 
@@ -52,7 +58,7 @@ class AuthStateHolder(
             )
             if (success) {
                 _state.update { it.copy(isLoading = false, error = null) }
-                onSuccess()
+                _events.emit(AuthUiEvent.Authenticated)
             } else {
                 _state.update { it.copy(isLoading = false, error = "Invalid credentials") }
             }

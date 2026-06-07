@@ -28,7 +28,7 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.io.insert.koin.core)
             implementation(projects.shared.core.ui)
-            implementation(projects.shared.core.contracts)
+            implementation(projects.shared.feature.auth.api)
             implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {

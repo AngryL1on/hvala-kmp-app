@@ -1,6 +1,6 @@
-package tech.appard.hvala.shared.core.contracts.repository
+package tech.appard.hvala.shared.feature.auth.api.repository
 
-import tech.appard.hvala.shared.core.contracts.model.AuthCredentials
+import tech.appard.hvala.shared.feature.auth.api.model.AuthCredentials
 
 interface AuthRepository {
     fun isAuthenticated(): Boolean
