@@ -28,6 +28,10 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(compose.materialIconsExtended)
             implementation(libs.compose.uiToolingPreview)
+            implementation(projects.shared.core.contracts)
+        }
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

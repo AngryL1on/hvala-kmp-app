@@ -26,6 +26,9 @@ class AuthStateHolder(
     private val _state = MutableStateFlow(AuthUiState())
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
 
+    private val _isAuthenticated = MutableStateFlow(authRepository.isAuthenticated())
+    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated.asStateFlow()
+
     fun onLoginChange(value: String) {
         _state.update { it.copy(login = value, error = null) }
     }
@@ -36,6 +39,14 @@ class AuthStateHolder(
 
     fun reset() {
         _state.value = AuthUiState()
+    }
+
+    fun signOut() {
+        scope.launch {
+            authRepository.signOut()
+            _isAuthenticated.value = false
+            reset()
+        }
     }
 
     fun signIn(onSuccess: () -> Unit) {
@@ -51,6 +62,7 @@ class AuthStateHolder(
                 ),
             )
             if (success) {
+                _isAuthenticated.value = true
                 _state.update { it.copy(isLoading = false, error = null) }
                 onSuccess()
             } else {

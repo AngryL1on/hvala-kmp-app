@@ -16,7 +16,7 @@ fun App() {
     initKoin()
 
     HvalaTheme {
-        val navController = rememberNavController(initialRoute = Route.Auth)
+        val navController = rememberNavController(initialRoute = Route.Listings)
 
         AppNavHost(
             navController = navController,
