@@ -81,6 +81,13 @@ val FieldCaption = hvalaTextStyle(
     lineHeight = 16.sp,
 )
 
+/** Profile name, listing price — 16/24 Bold */
+val TitleMedium = hvalaTextStyle(
+    fontWeight = FontWeight.Bold,
+    fontSize = 16.sp,
+    lineHeight = 24.sp,
+)
+
 val Typography = Typography(
     titleLarge = TitleLarge,
     titleMedium = FieldTitle,

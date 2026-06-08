@@ -14,7 +14,19 @@ import tech.appard.hvala.shared.core.contracts.repository.ProfileRepository
 data class ProfileUiState(
     val profile: UserProfile? = null,
     val isLoading: Boolean = false,
-)
+    val activeListingsCount: Int = 0,
+    val rating: Float = 0f,
+    val memberSince: String = "",
+    val selectedTab: ProfileListingsTab = ProfileListingsTab.Active,
+    val activeListings: List<ProfileListing> = emptyList(),
+    val archiveListings: List<ProfileListing> = emptyList(),
+) {
+    val listings: List<ProfileListing>
+        get() = when (selectedTab) {
+            ProfileListingsTab.Active -> activeListings
+            ProfileListingsTab.Archive -> archiveListings
+        }
+}
 
 class ProfileStateHolder(
     private val profileRepository: ProfileRepository,
@@ -33,7 +45,45 @@ class ProfileStateHolder(
         scope.launch {
             _state.update { it.copy(isLoading = true) }
             val profile = profileRepository.getCurrentProfile()
-            _state.update { it.copy(profile = profile, isLoading = false) }
+            _state.update {
+                it.copy(
+                    profile = profile,
+                    isLoading = false,
+                    activeListingsCount = 22,
+                    rating = 4.0f,
+                    memberSince = "На Hvala с июня 2024",
+                    activeListings = mockActiveListings(),
+                    archiveListings = emptyList(),
+                )
+            }
         }
+    }
+
+    fun onTabSelected(tab: ProfileListingsTab) {
+        _state.update { it.copy(selectedTab = tab) }
+    }
+
+    fun onListingFavoriteToggle(listingId: String) {
+        _state.update { current ->
+            current.copy(
+                activeListings = current.activeListings.map { listing ->
+                    if (listing.id == listingId) {
+                        listing.copy(isFavorite = !listing.isFavorite)
+                    } else {
+                        listing
+                    }
+                },
+            )
+        }
+    }
+
+    private fun mockActiveListings(): List<ProfileListing> = List(8) { index ->
+        ProfileListing(
+            id = "listing-$index",
+            title = "Худи Number Nine",
+            priceUsd = 150,
+            priceRub = 12_570,
+            location = "Химки, МО",
+        )
     }
 }
