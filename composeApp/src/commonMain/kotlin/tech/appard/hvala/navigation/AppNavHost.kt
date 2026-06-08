@@ -35,8 +35,11 @@ import tech.appard.hvala.shared.core.ui.utils.HvalaStatusBarEffect
 import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
 import tech.appard.hvala.shared.feature.auth.RegistrationScreen
+import tech.appard.hvala.shared.feature.auth.RegistrationScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesStateHolder
+import tech.appard.hvala.shared.feature.listings.CreateListingScreen
+import tech.appard.hvala.shared.feature.listings.CreateListingStateHolder
 import tech.appard.hvala.shared.feature.listings.ListingsScreen
 import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
 import tech.appard.hvala.shared.feature.messages.ChatScreen
@@ -53,6 +56,7 @@ fun AppNavHost(
 ) {
     val authStateHolder = koinInject<AuthStateHolder>()
     val listingsStateHolder = koinInject<ListingsStateHolder>()
+    val createListingStateHolder = koinInject<CreateListingStateHolder>()
     val messagesStateHolder = koinInject<MessagesStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
@@ -99,7 +103,7 @@ fun AppNavHost(
             Route.Registration -> "Регистрация в Hvala"
             Route.Profile -> "Профиль"
             Route.Settings -> "Настройки"
-            Route.CreateListing -> "Новое объявление"
+            Route.CreateListing -> "Add Listing"
             Route.Write -> "Сообщения"
             Route.Favorites -> "Избранное"
             is Route.Chat -> chatState.thread?.participantName ?: "Чат"
@@ -107,6 +111,7 @@ fun AppNavHost(
         },
         showBackButton = when (currentRoute) {
             Route.Auth,
+            Route.Registration,
             Route.Registration,
             Route.Settings,
             Route.CreateListing,
@@ -256,7 +261,10 @@ fun AppNavHost(
                         onDeleteAccountClick = onSessionEnd,
                         onLogoutClick = onSessionEnd,
                     )
-                    Route.CreateListing -> MainPlaceholderScreen(title = "Создание объявления")
+                    Route.CreateListing -> CreateListingScreen(
+                        stateHolder = createListingStateHolder,
+                        onSubmitted = { navController.back() },
+                    )
                 }
             }
         }

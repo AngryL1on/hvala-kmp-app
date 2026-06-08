@@ -5,4 +5,5 @@ import org.koin.dsl.module
 
 val listingsFeatureModule = module {
     singleOf(::ListingsStateHolder)
+    singleOf(::CreateListingStateHolder)
 }

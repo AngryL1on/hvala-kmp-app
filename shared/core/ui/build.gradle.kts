@@ -29,6 +29,7 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(libs.compose.uiToolingPreview)
             implementation(projects.shared.core.contracts)
+            implementation(libs.kotlinx.coroutines.core)
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
