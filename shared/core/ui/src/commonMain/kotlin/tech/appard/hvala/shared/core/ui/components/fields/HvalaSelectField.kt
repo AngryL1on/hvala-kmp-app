@@ -65,10 +65,12 @@ fun HvalaSelectField(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensions.verticalXXSmall),
     ) {
-        Text(
-            text = label,
-            style = FieldTitle.copy(color = GrayText),
-        )
+        if (label.isNotBlank()) {
+            Text(
+                text = label,
+                style = FieldTitle.copy(color = GrayText),
+            )
+        }
 
         Box {
             Row(
