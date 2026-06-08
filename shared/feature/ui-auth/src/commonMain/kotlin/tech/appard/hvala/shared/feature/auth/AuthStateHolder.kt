@@ -27,11 +27,11 @@ class AuthStateHolder(
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
 
     fun onLoginChange(value: String) {
-        _state.update { it.copy(login = value) }
+        _state.update { it.copy(login = value, error = null) }
     }
 
     fun onPasswordChange(value: String) {
-        _state.update { it.copy(password = value) }
+        _state.update { it.copy(password = value, error = null) }
     }
 
     fun reset() {

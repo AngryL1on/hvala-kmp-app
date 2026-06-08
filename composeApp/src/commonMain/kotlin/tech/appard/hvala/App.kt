@@ -1,7 +1,8 @@
 package tech.appard.hvala
 
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.di.initKoin
 import tech.appard.hvala.navigation.AppNavHost
@@ -15,10 +16,11 @@ fun App() {
     initKoin()
 
     HvalaTheme {
-        Surface {
-            val navController = rememberNavController(initialRoute = Route.Auth)
+        val navController = rememberNavController(initialRoute = Route.Auth)
 
-            AppNavHost(navController = navController)
-        }
+        AppNavHost(
+            navController = navController,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
