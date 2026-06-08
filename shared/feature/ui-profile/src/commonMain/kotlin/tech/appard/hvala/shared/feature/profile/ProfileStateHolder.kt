@@ -61,7 +61,10 @@ class ProfileStateHolder(
     }
 
     fun onTabSelected(tab: ProfileListingsTab) {
-        _state.update { it.copy(selectedTab = tab) }
+        _state.update { current ->
+            if (current.selectedTab == tab) return@update current
+            current.copy(selectedTab = tab)
+        }
     }
 
     fun onListingFavoriteToggle(listingId: String) {

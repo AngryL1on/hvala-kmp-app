@@ -11,23 +11,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import tech.appard.hvala.shared.core.contracts.model.Listing
+import tech.appard.hvala.shared.core.ui.components.listings.ListingCard
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
 import tech.appard.hvala.shared.core.ui.theme.GrayText
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
-import tech.appard.hvala.shared.core.contracts.model.Listing
-import tech.appard.hvala.shared.core.ui.components.listings.ListingCard
 import tech.appard.hvala.shared.feature.profile.components.ProfileHeaderCard
 import tech.appard.hvala.shared.feature.profile.components.ProfileSegmentedTabs
 
@@ -35,6 +40,7 @@ import tech.appard.hvala.shared.feature.profile.components.ProfileSegmentedTabs
 fun ProfileScreen(
     stateHolder: ProfileStateHolder,
     modifier: Modifier = Modifier,
+    onListingClick: (String) -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
 
@@ -47,6 +53,7 @@ fun ProfileScreen(
         state = state,
         onTabSelected = stateHolder::onTabSelected,
         onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
+        onListingClick = onListingClick,
     )
 }
 
@@ -55,9 +62,29 @@ private fun ProfileContent(
     state: ProfileUiState,
     onTabSelected: (ProfileListingsTab) -> Unit,
     onListingFavoriteToggle: (String) -> Unit,
+    onListingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val pagerState = rememberPagerState(initialPage = state.selectedTab.pageIndex) {
+        ProfileListingsTab.entries.size
+    }
+
+    LaunchedEffect(state.selectedTab) {
+        val targetPage = state.selectedTab.pageIndex
+        if (pagerState.currentPage != targetPage) {
+            pagerState.animateScrollToPage(targetPage)
+        }
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage to pagerState.isScrollInProgress }
+            .filter { !it.second }
+            .distinctUntilChanged()
+            .collect { (page, _) ->
+                onTabSelected(profileListingsTab(page))
+            }
+    }
 
     Box(
         modifier = modifier
@@ -91,45 +118,70 @@ private fun ProfileContent(
                         onTabSelected = onTabSelected,
                     )
 
-                    if (state.listings.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = if (state.selectedTab == ProfileListingsTab.Archive) {
-                                    "Архив пуст"
-                                } else {
-                                    "Нет объявлений"
-                                },
-                                style = BodyMedium.copy(color = GrayText),
-                            )
+                    HorizontalPager(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        state = pagerState,
+                        beyondViewportPageCount = 1,
+                    ) { page ->
+                        val tab = profileListingsTab(page)
+                        val listings = when (tab) {
+                            ProfileListingsTab.Active -> state.activeListings
+                            ProfileListingsTab.Archive -> state.archiveListings
                         }
-                    } else {
-                        LazyVerticalGrid(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(bottom = dimensions.verticalLarge),
-                            horizontalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
-                            verticalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
-                        ) {
-                            items(
-                                items = state.listings,
-                                key = { it.id },
-                            ) { listing ->
-                                ListingCard(
-                                    listing = listing,
-                                    onFavoriteClick = { onListingFavoriteToggle(listing.id) },
-                                    dimmed = state.selectedTab == ProfileListingsTab.Archive,
-                                )
-                            }
-                        }
+
+                        ProfileListingsPage(
+                            listings = listings,
+                            isArchive = tab == ProfileListingsTab.Archive,
+                            onListingFavoriteToggle = onListingFavoriteToggle,
+                            onListingClick = onListingClick,
+                        )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileListingsPage(
+    listings: List<Listing>,
+    isArchive: Boolean,
+    onListingFavoriteToggle: (String) -> Unit,
+    onListingClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val dimensions = LocalDimensions.current
+
+    if (listings.isEmpty()) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = if (isArchive) "Архив пуст" else "Нет объявлений",
+                style = BodyMedium.copy(color = GrayText),
+            )
+        }
+    } else {
+        LazyVerticalGrid(
+            modifier = modifier.fillMaxSize(),
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(bottom = dimensions.verticalLarge),
+            horizontalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
+            verticalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
+        ) {
+            items(
+                items = listings,
+                key = { it.id },
+            ) { listing ->
+                ListingCard(
+                    listing = listing,
+                    onFavoriteClick = { onListingFavoriteToggle(listing.id) },
+                    onClick = { onListingClick(listing.id) },
+                    dimmed = isArchive,
+                )
             }
         }
     }
@@ -167,6 +219,7 @@ private fun ProfileScreenPreview() {
             ),
             onTabSelected = {},
             onListingFavoriteToggle = {},
+            onListingClick = {},
         )
     }
 }

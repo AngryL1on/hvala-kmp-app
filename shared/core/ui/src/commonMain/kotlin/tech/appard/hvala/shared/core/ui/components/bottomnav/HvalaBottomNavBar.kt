@@ -64,8 +64,8 @@ fun HvalaBottomNavBar(
 ) {
     val dimensions = LocalDimensions.current
     val barShape = RoundedCornerShape(
-        topStart = dimensions.bottomNavCornerRadius,
-        topEnd = dimensions.bottomNavCornerRadius,
+        topStart = dimensions.defaultCornerRadius,
+        topEnd = dimensions.defaultCornerRadius,
     )
 
     Column(

@@ -176,7 +176,7 @@ private fun ListingCardImage(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(dimensions.horizontalXSmall)
-                .clip(RoundedCornerShape(dimensions.horizontalXXSmall))
+                .clip(RoundedCornerShape(dimensions.defaultCornerRadius))
                 .background(OverlayDark)
                 .padding(
                     horizontal = dimensions.horizontalXSmall,

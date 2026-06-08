@@ -71,7 +71,7 @@ private fun ProfileSegmentedTab(
 
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(dimensions.defaultCornerRadius - dimensions.horizontalXXSmall))
+            .clip(RoundedCornerShape(dimensions.defaultCornerRadius))
             .background(backgroundColor)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -93,7 +93,7 @@ private fun ProfileSegmentedTab(
                 modifier = Modifier
                     .width(dimensions.tabIndicatorWidth)
                     .height(dimensions.tabIndicatorHeight)
-                    .clip(RoundedCornerShape(dimensions.tabIndicatorHeight / 2))
+                    .clip(RoundedCornerShape(dimensions.defaultCornerRadius))
                     .background(SecondaryMain),
             )
         } else {
