@@ -20,6 +20,13 @@ class NavController(
         )
     }
 
+    fun navigateToRoot(route: Route) {
+        state.value = NavState(
+            current = route,
+            backStack = emptyList(),
+        )
+    }
+
     fun back(): Boolean {
         val backStack = state.value.backStack
         if (backStack.isEmpty()) return false

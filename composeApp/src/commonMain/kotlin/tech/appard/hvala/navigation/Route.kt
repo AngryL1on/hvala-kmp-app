@@ -6,4 +6,5 @@ package tech.appard.hvala.navigation
 sealed interface Route {
     data object Auth : Route
     data object Profile : Route
+    data object Settings : Route
 }

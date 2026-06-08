@@ -43,6 +43,7 @@ kotlin {
             implementation(projects.shared.core.dataNetwork)
             implementation(projects.shared.feature.uiAuth)
             implementation(projects.shared.feature.uiProfile)
+            implementation(projects.shared.feature.uiSettings)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
