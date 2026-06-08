@@ -1,5 +1,7 @@
 package tech.appard.hvala.shared.core.ui.components.appbars
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +49,7 @@ fun HvalaAppBar(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit = {},
+    onTitleClick: (() -> Unit)? = null,
 ) {
     val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = White,
@@ -82,6 +85,15 @@ fun HvalaAppBar(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXSmall),
+                    modifier = if (onTitleClick != null) {
+                        Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = onTitleClick,
+                        )
+                    } else {
+                        Modifier
+                    },
                 ) {
                     Box(
                         modifier = Modifier

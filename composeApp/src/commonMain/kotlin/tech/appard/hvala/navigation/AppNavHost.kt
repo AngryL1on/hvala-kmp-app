@@ -35,23 +35,22 @@ import tech.appard.hvala.shared.core.ui.utils.HvalaStatusBarEffect
 import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
 import tech.appard.hvala.shared.feature.auth.RegistrationScreen
-import tech.appard.hvala.shared.feature.auth.RegistrationScreen
-import tech.appard.hvala.shared.feature.auth.RegistrationScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesStateHolder
 import tech.appard.hvala.shared.feature.listings.CreateListingScreen
 import tech.appard.hvala.shared.feature.listings.CreateListingStateHolder
-import tech.appard.hvala.shared.feature.listings.CreateListingScreen
-import tech.appard.hvala.shared.feature.listings.CreateListingStateHolder
-import tech.appard.hvala.shared.feature.listings.ListingsScreen
 import tech.appard.hvala.shared.feature.listings.ListingDetailScreen
 import tech.appard.hvala.shared.feature.listings.ListingDetailStateHolder
+import tech.appard.hvala.shared.feature.listings.ListingsScreen
 import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
 import tech.appard.hvala.shared.feature.messages.ChatScreen
 import tech.appard.hvala.shared.feature.messages.MessagesScreen
 import tech.appard.hvala.shared.feature.messages.MessagesStateHolder
+import tech.appard.hvala.shared.core.contracts.model.resolvedSellerId
 import tech.appard.hvala.shared.feature.profile.ProfileScreen
 import tech.appard.hvala.shared.feature.profile.ProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.SellerProfileScreen
+import tech.appard.hvala.shared.feature.profile.SellerProfileStateHolder
 import tech.appard.hvala.shared.feature.settings.SettingsScreen
 
 @Composable
@@ -63,12 +62,12 @@ fun AppNavHost(
     val listingsStateHolder = koinInject<ListingsStateHolder>()
     val createListingStateHolder = koinInject<CreateListingStateHolder>()
     val listingDetailStateHolder = koinInject<ListingDetailStateHolder>()
-    val createListingStateHolder = koinInject<CreateListingStateHolder>()
-    val listingDetailStateHolder = koinInject<ListingDetailStateHolder>()
     val messagesStateHolder = koinInject<MessagesStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
+    val sellerProfileStateHolder = koinInject<SellerProfileStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
     val profileState by profileStateHolder.state.collectAsState()
+    val sellerProfileState by sellerProfileStateHolder.state.collectAsState()
     val listingsState by listingsStateHolder.state.collectAsState()
     val listingDetailState by listingDetailStateHolder.state.collectAsState()
     val chatState by messagesStateHolder.chatState.collectAsState()
@@ -79,8 +78,18 @@ fun AppNavHost(
     val showsBottomNav = currentRoute.showsBottomNav(isAuthenticated)
     val selectedBottomNavItem = currentRoute.toBottomNavItem() ?: BottomNavItem.Listings
 
+    LaunchedEffect(isAuthenticated, currentRoute) {
+        if (!isAuthenticated && currentRoute.requiresAuthentication()) {
+            navController.navigateToRoot(Route.Listings)
+        }
+    }
+
     val onListingClick: (String) -> Unit = { listingId ->
         navController.navigateTo(Route.ListingDetail(listingId))
+    }
+
+    val onSellerClick: (String) -> Unit = { sellerId ->
+        navController.navigateTo(Route.SellerProfile(sellerId))
     }
 
     val onListingFavoriteToggle: (String) -> Unit = { listingId ->
@@ -93,13 +102,8 @@ fun AppNavHost(
         listingsStateHolder.onListingFavoriteToggle(listingId)
         favoritesStateHolder.onListingFavoriteToggle(listingId)
         profileStateHolder.onListingFavoriteToggle(listingId)
+        sellerProfileStateHolder.onListingFavoriteToggle(listingId)
         listingDetailStateHolder.syncFavorite(!currentFavorite)
-    }
-
-    LaunchedEffect(isAuthenticated, currentRoute) {
-        if (!isAuthenticated && currentRoute.requiresAuthentication()) {
-            navController.navigateToRoot(Route.Listings)
-        }
     }
 
     val onSessionEnd: () -> Unit = {
@@ -108,6 +112,7 @@ fun AppNavHost(
             profileStateHolder.reset()
             favoritesStateHolder.reset()
             listingDetailStateHolder.reset()
+            sellerProfileStateHolder.reset()
             navController.navigateToRoot(Route.Listings)
         }
     }
@@ -116,6 +121,7 @@ fun AppNavHost(
         Route.Auth,
         Route.Registration,
         is Route.ListingDetail,
+        is Route.SellerProfile,
         -> true
         Route.Profile,
         Route.Settings,
@@ -134,6 +140,7 @@ fun AppNavHost(
             Route.Settings -> "Настройки"
             Route.CreateListing -> "Add Listing"
             is Route.ListingDetail -> listingDetailState.listing?.title ?: "Listing"
+            is Route.SellerProfile -> sellerProfileState.seller?.name ?: "Seller"
             Route.Write -> "Сообщения"
             Route.Favorites -> "Избранное"
             is Route.Chat -> chatState.thread?.participantName ?: "Чат"
@@ -142,11 +149,10 @@ fun AppNavHost(
         showBackButton = when (currentRoute) {
             Route.Auth,
             Route.Registration,
-            Route.Registration,
-            Route.Registration,
             Route.Settings,
             Route.CreateListing,
             is Route.ListingDetail,
+            is Route.SellerProfile,
             is Route.Chat,
             -> true
             else -> false
@@ -156,6 +162,7 @@ fun AppNavHost(
             currentRoute == Route.Settings ||
             currentRoute == Route.CreateListing ||
             currentRoute is Route.ListingDetail ||
+            currentRoute is Route.SellerProfile ||
             currentRoute == Route.Write ||
             currentRoute == Route.Favorites,
         showSettingsButton = currentRoute == Route.Profile,
@@ -165,11 +172,19 @@ fun AppNavHost(
         },
     )
 
+    val chatTitleClick = when (currentRoute) {
+        is Route.Chat -> chatState.thread?.resolvedSellerId()?.let { sellerId ->
+            { onSellerClick(sellerId) }
+        }
+        else -> null
+    }
+
     val usesScreenBackground = when (currentRoute) {
         Route.Profile,
         Route.Settings,
         Route.CreateListing,
         is Route.ListingDetail,
+        is Route.SellerProfile,
         Route.Listings,
         Route.Write,
         Route.Favorites,
@@ -203,6 +218,7 @@ fun AppNavHost(
                 HvalaAppBar(
                     state = appBarState,
                     onBackClick = { navController.back() },
+                    onTitleClick = chatTitleClick,
                     onSettingsClick = {
                         if (currentRoute == Route.Profile) {
                             navController.navigateTo(Route.Settings)
@@ -250,6 +266,7 @@ fun AppNavHost(
                     when (val route = screen.route) {
                         is Route.Chat -> route.threadId
                         is Route.ListingDetail -> route.listingId
+                        is Route.SellerProfile -> route.sellerId
                         else -> route::class
                     }
                 },
@@ -284,6 +301,7 @@ fun AppNavHost(
                     is Route.Chat -> ChatScreen(
                         threadId = route.threadId,
                         stateHolder = messagesStateHolder,
+                        onListingClick = onListingClick,
                     )
                     Route.Favorites -> FavoritesScreen(
                         stateHolder = favoritesStateHolder,
@@ -310,6 +328,21 @@ fun AppNavHost(
                             .find { it.id == route.listingId }
                             ?.isFavorite,
                         onFavoriteToggle = onListingFavoriteToggle,
+                        onContactClick = {
+                            if (!isAuthenticated) {
+                                navController.navigateTo(Route.Auth)
+                            } else {
+                                messagesStateHolder.openChatForListing(route.listingId)?.let { threadId ->
+                                    navController.navigateTo(Route.Chat(threadId))
+                                }
+                            }
+                        },
+                        onSellerClick = onSellerClick,
+                    )
+                    is Route.SellerProfile -> SellerProfileScreen(
+                        sellerId = route.sellerId,
+                        stateHolder = sellerProfileStateHolder,
+                        onListingClick = onListingClick,
                     )
                 }
             }

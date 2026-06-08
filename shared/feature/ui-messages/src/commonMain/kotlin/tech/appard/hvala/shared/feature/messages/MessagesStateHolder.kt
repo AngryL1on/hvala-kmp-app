@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import tech.appard.hvala.shared.core.contracts.model.ChatMessage
 import tech.appard.hvala.shared.core.contracts.model.ChatThread
+import tech.appard.hvala.shared.core.contracts.model.PickedMedia
+import tech.appard.hvala.shared.core.contracts.model.ListingMockCatalog
+import tech.appard.hvala.shared.core.contracts.model.SellerMockCatalog
 
 data class MessagesUiState(
     val searchQuery: String = "",
@@ -21,6 +24,7 @@ data class ChatUiState(
     val thread: ChatThread? = null,
     val messages: List<ChatMessage> = emptyList(),
     val inputText: String = "",
+    val pendingAttachments: List<PickedMedia> = emptyList(),
     val isLoading: Boolean = false,
 )
 
@@ -72,6 +76,7 @@ class MessagesStateHolder {
                     thread = conversation?.thread?.withPreview(conversation.messages),
                     messages = conversation?.messages?.toList().orEmpty(),
                     inputText = "",
+                    pendingAttachments = emptyList(),
                 )
             }
         }
@@ -81,16 +86,72 @@ class MessagesStateHolder {
         _chatState.update { it.copy(inputText = text) }
     }
 
+    fun openChatForListing(listingId: String): String? {
+        val listing = ListingMockCatalog.listingById(listingId) ?: return null
+        val threadId = listingChatThreadId(listingId)
+
+        if (conversations[threadId] == null) {
+            conversations[threadId] = Conversation(
+                thread = ChatThread(
+                    id = threadId,
+                    participantName = listing.sellerName,
+                    lastMessagePreview = "",
+                    avatarColorArgb = SellerMockCatalog.sellerById(listing.sellerId)?.avatarColorArgb
+                        ?: avatarColorFor(listing.sellerName),
+                    listingId = listing.id,
+                    sellerId = listing.sellerId,
+                    listingTitle = listing.title,
+                    listingPriceUsd = listing.priceUsd,
+                    listingPriceRub = listing.priceRub,
+                ),
+                messages = mutableListOf(
+                    divider(threadId, "Today"),
+                    message(
+                        threadId = threadId,
+                        index = 0,
+                        text = "Hello! I'm interested in \"${listing.title}\".",
+                        outgoing = true,
+                    ),
+                ),
+            )
+            refreshThreads()
+        }
+
+        return threadId
+    }
+
+    fun onAttachmentsPicked(attachments: List<PickedMedia>) {
+        if (attachments.isEmpty()) return
+        _chatState.update { current ->
+            current.copy(
+                pendingAttachments = current.pendingAttachments + attachments,
+            )
+        }
+    }
+
     fun sendMessage() {
         val snapshot = _chatState.value
         val threadId = snapshot.thread?.id ?: return
         val text = snapshot.inputText.trim()
-        if (text.isEmpty()) return
+        val attachments = snapshot.pendingAttachments
+        if (text.isEmpty() && attachments.isEmpty()) return
+
+        val messageText = buildString {
+            if (text.isNotEmpty()) append(text)
+            if (attachments.isNotEmpty()) {
+                if (isNotEmpty()) append('\n')
+                append(
+                    attachments.joinToString(separator = "\n") { attachment ->
+                        "📎 ${attachment.name}"
+                    },
+                )
+            }
+        }
 
         val conversation = conversations[threadId] ?: return
         val newMessage = ChatMessage(
             id = "${threadId}-msg-${conversation.messages.size}",
-            text = text,
+            text = messageText,
             isOutgoing = true,
         )
         conversation.messages.add(newMessage)
@@ -101,10 +162,15 @@ class MessagesStateHolder {
         _chatState.update { current ->
             current.copy(
                 inputText = "",
+                pendingAttachments = emptyList(),
                 thread = updatedThread,
                 messages = conversation.messages.toList(),
             )
         }
+        refreshThreads()
+    }
+
+    private fun refreshThreads() {
         _messagesState.update { current ->
             current.copy(
                 threads = conversations.values.map { item ->
@@ -112,6 +178,22 @@ class MessagesStateHolder {
                 },
             )
         }
+        threadsLoaded = true
+    }
+
+    private fun listingChatThreadId(listingId: String): String = "listing-$listingId"
+
+    private fun avatarColorFor(key: String): Long {
+        val colors = listOf(
+            0xFFFFB74DL,
+            0xFF03989FL,
+            0xFF5C9FD6L,
+            0xFFFFBF34L,
+            0xFFFF8A65L,
+            0xFFE57373L,
+        )
+        val index = key.hashCode().mod(colors.size).let { if (it < 0) it + colors.size else it }
+        return colors[index]
     }
 
     private fun ChatThread.withPreview(messages: List<ChatMessage>): ChatThread =
@@ -124,7 +206,8 @@ class MessagesStateHolder {
                 participantName = "Нико Б.",
                 lastMessagePreview = "",
                 avatarColorArgb = 0xFFFFB74D,
-                listingTitle = "Худи Number Nine",
+                listingId = "favorite-0",
+                listingTitle = "Number Nine Hoodie",
                 listingPriceUsd = 150,
                 listingPriceRub = 12_570,
             ),
@@ -145,9 +228,10 @@ class MessagesStateHolder {
                 participantName = "Авраам Линкольн",
                 lastMessagePreview = "",
                 avatarColorArgb = 0xFF03989F,
-                listingTitle = "Пальто зимнее",
-                listingPriceUsd = 220,
-                listingPriceRub = 18_400,
+                listingId = "favorite-2",
+                listingTitle = "Burberry Coat",
+                listingPriceUsd = 280,
+                listingPriceRub = 23_450,
             ),
             messages = mutableListOf(
                 divider("lincoln", "Вчера, 14:05"),
@@ -162,7 +246,8 @@ class MessagesStateHolder {
                 participantName = "Борис Ельцин",
                 lastMessagePreview = "",
                 avatarColorArgb = 0xFF5C9FD6,
-                listingTitle = "Кроссовки Nike Air",
+                listingId = "favorite-1",
+                listingTitle = "Nike Air Max Sneakers",
                 listingPriceUsd = 90,
                 listingPriceRub = 7_540,
             ),
@@ -180,9 +265,10 @@ class MessagesStateHolder {
                 participantName = "Александр Пушкин",
                 lastMessagePreview = "",
                 avatarColorArgb = 0xFFFFBF34,
-                listingTitle = "Книжная полка",
-                listingPriceUsd = 45,
-                listingPriceRub = 3_770,
+                listingId = "favorite-9",
+                listingTitle = "Corner Sofa",
+                listingPriceUsd = 175,
+                listingPriceRub = 14_650,
             ),
             messages = mutableListOf(
                 divider("pushkin", "Суббота, 16:40"),
@@ -196,9 +282,10 @@ class MessagesStateHolder {
                 participantName = "Юрий Гагарин",
                 lastMessagePreview = "",
                 avatarColorArgb = 0xFFFF8A65,
-                listingTitle = "Фотоаппарат Canon",
-                listingPriceUsd = 310,
-                listingPriceRub = 25_940,
+                listingId = "favorite-6",
+                listingTitle = "AirPods Pro",
+                listingPriceUsd = 180,
+                listingPriceRub = 15_080,
             ),
             messages = mutableListOf(
                 divider("gagarin", "Сегодня, 10:15"),
@@ -213,9 +300,10 @@ class MessagesStateHolder {
                 participantName = "Валентина Терешкова",
                 lastMessagePreview = "",
                 avatarColorArgb = 0xFFE57373,
-                listingTitle = "Детская коляска",
-                listingPriceUsd = 180,
-                listingPriceRub = 15_080,
+                listingId = "favorite-7",
+                listingTitle = "Tiffany Ring",
+                listingPriceUsd = 1_200,
+                listingPriceRub = 100_500,
             ),
             messages = mutableListOf(
                 divider("tereshkova", "Сегодня, 9:02"),

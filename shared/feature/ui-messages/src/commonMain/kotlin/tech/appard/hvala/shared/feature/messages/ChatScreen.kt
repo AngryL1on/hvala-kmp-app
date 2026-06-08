@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.shared.core.contracts.model.ChatMessage
 import tech.appard.hvala.shared.core.contracts.model.ChatThread
+import tech.appard.hvala.shared.core.contracts.model.resolvedListingId
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
@@ -34,6 +35,7 @@ fun ChatScreen(
     threadId: String,
     stateHolder: MessagesStateHolder,
     modifier: Modifier = Modifier,
+    onListingClick: (String) -> Unit = {},
 ) {
     val state by stateHolder.chatState.collectAsState()
 
@@ -46,6 +48,7 @@ fun ChatScreen(
         state = state,
         onInputChange = stateHolder::onChatInputChange,
         onSendClick = stateHolder::sendMessage,
+        onListingClick = onListingClick,
     )
 }
 
@@ -54,6 +57,7 @@ private fun ChatContent(
     state: ChatUiState,
     onInputChange: (String) -> Unit,
     onSendClick: () -> Unit,
+    onListingClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -85,6 +89,7 @@ private fun ChatContent(
                 val listingTitle = thread.listingTitle
                 val listingPriceUsd = thread.listingPriceUsd
                 val listingPriceRub = thread.listingPriceRub
+                val listingId = thread.resolvedListingId()
                 if (
                     listingTitle != null &&
                     listingPriceUsd != null &&
@@ -96,6 +101,7 @@ private fun ChatContent(
                             priceUsd = listingPriceUsd,
                             priceRub = listingPriceRub,
                             modifier = Modifier.padding(horizontal = dimensions.horizontalMedium),
+                            onClick = listingId?.let { id -> { onListingClick(id) } },
                         )
                     }
                 }

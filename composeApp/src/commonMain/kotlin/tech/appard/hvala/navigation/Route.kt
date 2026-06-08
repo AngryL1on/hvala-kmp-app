@@ -15,6 +15,7 @@ sealed interface Route {
     data object Settings : Route
     data object CreateListing : Route
     data class ListingDetail(val listingId: String) : Route
+    data class SellerProfile(val sellerId: String) : Route
     data class Chat(val threadId: String) : Route
 }
 

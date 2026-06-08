@@ -5,4 +5,5 @@ import org.koin.dsl.module
 
 val profileFeatureModule = module {
     singleOf(::ProfileStateHolder)
+    singleOf(::SellerProfileStateHolder)
 }
