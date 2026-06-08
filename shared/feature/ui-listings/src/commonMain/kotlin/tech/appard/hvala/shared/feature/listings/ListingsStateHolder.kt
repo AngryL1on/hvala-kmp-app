@@ -12,6 +12,7 @@ import tech.appard.hvala.shared.core.contracts.model.Listing
 import tech.appard.hvala.shared.core.contracts.model.ListingCategory
 import tech.appard.hvala.shared.core.contracts.model.ListingCurrency
 import tech.appard.hvala.shared.core.contracts.model.ListingsFilters
+import tech.appard.hvala.shared.core.contracts.model.ListingMockCatalog
 import tech.appard.hvala.shared.core.contracts.model.LocationOption
 
 data class ListingsUiState(
@@ -41,7 +42,7 @@ class ListingsStateHolder {
         if (_state.value.allListings.isNotEmpty() || _state.value.isLoading) return
         scope.launch {
             _state.update { it.copy(isLoading = true) }
-            val allListings = mockListings()
+            val allListings = ListingMockCatalog.allListings()
             _state.update {
                 it.copy(
                     isLoading = false,
@@ -205,23 +206,4 @@ class ListingsStateHolder {
             LocationOption(id = "sumadija", title = "Šumadija and Western Serbia"),
         ),
     )
-
-    private fun mockListings(): List<Listing> {
-        val categories = listOf("clothes", "auto", "realty", "electronics")
-        val countries = listOf("ru", "rs")
-        val regions = listOf("moscow", "belgrade")
-        return List(24) { index ->
-            Listing(
-                id = "listing-$index",
-                title = "Худи Number Nine",
-                priceUsd = 150 + index * 10,
-                priceRub = 12_570 + index * 800,
-                location = "Химки, МО",
-                categoryId = categories[index % categories.size],
-                countryId = countries[index % countries.size],
-                regionId = regions[index % regions.size],
-            )
-        }
-    }
-
 }

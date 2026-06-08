@@ -13,6 +13,13 @@ data class Listing(
     val totalImages: Int = 4,
     val currentImage: Int = 1,
     val isFavorite: Boolean = false,
+    val phone: String = "",
+    val description: String = "",
+    val availability: String = "Available",
+    val autoDetails: ListingAutoDetails? = null,
+    val sellerId: String = "",
+    val sellerName: String = "",
+    val postedAt: String = "",
 )
 
 data class ListingCategory(

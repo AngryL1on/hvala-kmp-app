@@ -36,11 +36,16 @@ import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
 import tech.appard.hvala.shared.feature.auth.RegistrationScreen
 import tech.appard.hvala.shared.feature.auth.RegistrationScreen
+import tech.appard.hvala.shared.feature.auth.RegistrationScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesStateHolder
 import tech.appard.hvala.shared.feature.listings.CreateListingScreen
 import tech.appard.hvala.shared.feature.listings.CreateListingStateHolder
+import tech.appard.hvala.shared.feature.listings.CreateListingScreen
+import tech.appard.hvala.shared.feature.listings.CreateListingStateHolder
 import tech.appard.hvala.shared.feature.listings.ListingsScreen
+import tech.appard.hvala.shared.feature.listings.ListingDetailScreen
+import tech.appard.hvala.shared.feature.listings.ListingDetailStateHolder
 import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
 import tech.appard.hvala.shared.feature.messages.ChatScreen
 import tech.appard.hvala.shared.feature.messages.MessagesScreen
@@ -57,10 +62,15 @@ fun AppNavHost(
     val authStateHolder = koinInject<AuthStateHolder>()
     val listingsStateHolder = koinInject<ListingsStateHolder>()
     val createListingStateHolder = koinInject<CreateListingStateHolder>()
+    val listingDetailStateHolder = koinInject<ListingDetailStateHolder>()
+    val createListingStateHolder = koinInject<CreateListingStateHolder>()
+    val listingDetailStateHolder = koinInject<ListingDetailStateHolder>()
     val messagesStateHolder = koinInject<MessagesStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
     val profileState by profileStateHolder.state.collectAsState()
+    val listingsState by listingsStateHolder.state.collectAsState()
+    val listingDetailState by listingDetailStateHolder.state.collectAsState()
     val chatState by messagesStateHolder.chatState.collectAsState()
     val isAuthenticated by authStateHolder.isAuthenticated.collectAsState()
     val scope = rememberCoroutineScope()
@@ -68,6 +78,23 @@ fun AppNavHost(
     val currentScreen = navController.currentScreen
     val showsBottomNav = currentRoute.showsBottomNav(isAuthenticated)
     val selectedBottomNavItem = currentRoute.toBottomNavItem() ?: BottomNavItem.Listings
+
+    val onListingClick: (String) -> Unit = { listingId ->
+        navController.navigateTo(Route.ListingDetail(listingId))
+    }
+
+    val onListingFavoriteToggle: (String) -> Unit = { listingId ->
+        val currentFavorite = listingDetailState.listing
+            ?.takeIf { it.id == listingId }
+            ?.isFavorite
+            ?: listingsState.allListings.find { it.id == listingId }?.isFavorite
+            ?: false
+
+        listingsStateHolder.onListingFavoriteToggle(listingId)
+        favoritesStateHolder.onListingFavoriteToggle(listingId)
+        profileStateHolder.onListingFavoriteToggle(listingId)
+        listingDetailStateHolder.syncFavorite(!currentFavorite)
+    }
 
     LaunchedEffect(isAuthenticated, currentRoute) {
         if (!isAuthenticated && currentRoute.requiresAuthentication()) {
@@ -80,6 +107,7 @@ fun AppNavHost(
             authStateHolder.signOut()
             profileStateHolder.reset()
             favoritesStateHolder.reset()
+            listingDetailStateHolder.reset()
             navController.navigateToRoot(Route.Listings)
         }
     }
@@ -87,6 +115,7 @@ fun AppNavHost(
     val showAppBar = when (currentRoute) {
         Route.Auth,
         Route.Registration,
+        is Route.ListingDetail,
         -> true
         Route.Profile,
         Route.Settings,
@@ -104,6 +133,7 @@ fun AppNavHost(
             Route.Profile -> "Профиль"
             Route.Settings -> "Настройки"
             Route.CreateListing -> "Add Listing"
+            is Route.ListingDetail -> listingDetailState.listing?.title ?: "Listing"
             Route.Write -> "Сообщения"
             Route.Favorites -> "Избранное"
             is Route.Chat -> chatState.thread?.participantName ?: "Чат"
@@ -113,8 +143,10 @@ fun AppNavHost(
             Route.Auth,
             Route.Registration,
             Route.Registration,
+            Route.Registration,
             Route.Settings,
             Route.CreateListing,
+            is Route.ListingDetail,
             is Route.Chat,
             -> true
             else -> false
@@ -123,6 +155,7 @@ fun AppNavHost(
             currentRoute == Route.Profile ||
             currentRoute == Route.Settings ||
             currentRoute == Route.CreateListing ||
+            currentRoute is Route.ListingDetail ||
             currentRoute == Route.Write ||
             currentRoute == Route.Favorites,
         showSettingsButton = currentRoute == Route.Profile,
@@ -136,6 +169,7 @@ fun AppNavHost(
         Route.Profile,
         Route.Settings,
         Route.CreateListing,
+        is Route.ListingDetail,
         Route.Listings,
         Route.Write,
         Route.Favorites,
@@ -215,6 +249,7 @@ fun AppNavHost(
                 contentKey = { screen ->
                     when (val route = screen.route) {
                         is Route.Chat -> route.threadId
+                        is Route.ListingDetail -> route.listingId
                         else -> route::class
                     }
                 },
@@ -238,6 +273,7 @@ fun AppNavHost(
                         stateHolder = listingsStateHolder,
                         showGuestLoginButton = !isAuthenticated,
                         onLoginClick = { navController.navigateTo(Route.Auth) },
+                        onListingClick = onListingClick,
                     )
                     Route.Write -> MessagesScreen(
                         stateHolder = messagesStateHolder,
@@ -251,9 +287,11 @@ fun AppNavHost(
                     )
                     Route.Favorites -> FavoritesScreen(
                         stateHolder = favoritesStateHolder,
+                        onListingClick = onListingClick,
                     )
                     Route.Profile -> ProfileScreen(
                         stateHolder = profileStateHolder,
+                        onListingClick = onListingClick,
                     )
                     Route.Settings -> SettingsScreen(
                         fullName = profileState.profile?.fullName ?: "",
@@ -264,6 +302,14 @@ fun AppNavHost(
                     Route.CreateListing -> CreateListingScreen(
                         stateHolder = createListingStateHolder,
                         onSubmitted = { navController.back() },
+                    )
+                    is Route.ListingDetail -> ListingDetailScreen(
+                        listingId = route.listingId,
+                        stateHolder = listingDetailStateHolder,
+                        isFavoriteOverride = listingsState.allListings
+                            .find { it.id == route.listingId }
+                            ?.isFavorite,
+                        onFavoriteToggle = onListingFavoriteToggle,
                     )
                 }
             }
