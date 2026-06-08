@@ -7,6 +7,7 @@ import tech.appard.hvala.shared.core.ui.components.bottomnav.BottomNavItem
  */
 sealed interface Route {
     data object Auth : Route
+    data object Registration : Route
     data object Listings : Route
     data object Write : Route
     data object Favorites : Route

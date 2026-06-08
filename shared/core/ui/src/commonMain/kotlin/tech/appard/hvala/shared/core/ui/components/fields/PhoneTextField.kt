@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import tech.appard.hvala.shared.core.ui.utils.PhoneVisualTransformation
 
 @Composable
@@ -22,6 +23,7 @@ fun PhoneTextField(
     isError: Boolean = false,
     maxQuantityOfChar: Int = 11,
     isMaxQuantityOfCharVisible: Boolean = false,
+    fieldMinHeight: Dp? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Phone,
         imeAction = ImeAction.Done,
@@ -40,6 +42,7 @@ fun PhoneTextField(
         isOnlyNumbers = true,
         maxQuantityOfChar = maxQuantityOfChar,
         isMaxQuantityOfCharVisible = isMaxQuantityOfCharVisible,
+        fieldMinHeight = fieldMinHeight,
         visualTransformation = PhoneVisualTransformation,
         keyboardOptions = keyboardOptions,
         onTextChange = onTextChange,

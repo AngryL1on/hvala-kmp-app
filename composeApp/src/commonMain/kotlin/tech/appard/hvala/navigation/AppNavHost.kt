@@ -34,6 +34,7 @@ import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.HvalaStatusBarEffect
 import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
+import tech.appard.hvala.shared.feature.auth.RegistrationScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesScreen
 import tech.appard.hvala.shared.feature.favorites.FavoritesStateHolder
 import tech.appard.hvala.shared.feature.listings.ListingsScreen
@@ -80,7 +81,9 @@ fun AppNavHost(
     }
 
     val showAppBar = when (currentRoute) {
-        Route.Auth -> true
+        Route.Auth,
+        Route.Registration,
+        -> true
         Route.Profile,
         Route.Settings,
         Route.CreateListing,
@@ -93,6 +96,7 @@ fun AppNavHost(
 
     val appBarState = rememberHvalaAppBarState(
         title = when (currentRoute) {
+            Route.Registration -> "Регистрация в Hvala"
             Route.Profile -> "Профиль"
             Route.Settings -> "Настройки"
             Route.CreateListing -> "Новое объявление"
@@ -103,13 +107,15 @@ fun AppNavHost(
         },
         showBackButton = when (currentRoute) {
             Route.Auth,
+            Route.Registration,
             Route.Settings,
             Route.CreateListing,
             is Route.Chat,
             -> true
             else -> false
         },
-        centerTitle = currentRoute == Route.Profile ||
+        centerTitle = currentRoute == Route.Registration ||
+            currentRoute == Route.Profile ||
             currentRoute == Route.Settings ||
             currentRoute == Route.CreateListing ||
             currentRoute == Route.Write ||
@@ -213,6 +219,15 @@ fun AppNavHost(
                     Route.Auth -> AuthScreen(
                         stateHolder = authStateHolder,
                         onAuthenticated = { navController.navigateToRoot(Route.Listings) },
+                        onSignUpClick = { navController.navigateTo(Route.Registration) },
+                    )
+                    Route.Registration -> RegistrationScreen(
+                        stateHolder = authStateHolder,
+                        onRegistered = {
+                            authStateHolder.resetRegistration()
+                            profileStateHolder.reset()
+                            navController.navigateToRoot(Route.Listings)
+                        },
                     )
                     Route.Listings -> ListingsScreen(
                         stateHolder = listingsStateHolder,

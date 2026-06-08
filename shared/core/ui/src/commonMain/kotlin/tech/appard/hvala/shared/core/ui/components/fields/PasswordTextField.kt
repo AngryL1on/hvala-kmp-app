@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import tech.appard.hvala.shared.core.ui.icons.PasswordVisibilityIcon
 import tech.appard.hvala.shared.core.ui.theme.GrayPlaceholder
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
@@ -29,6 +30,7 @@ fun PasswordTextField(
     errorText: String? = null,
     isEnabled: Boolean = true,
     isError: Boolean = false,
+    fieldMinHeight: Dp? = null,
     passwordVisible: Boolean = false,
     onPasswordVisibilityToggle: () -> Unit = {},
     keyboardOptions: KeyboardOptions = KeyboardOptions(
@@ -48,6 +50,7 @@ fun PasswordTextField(
         errorText = errorText,
         isEnabled = isEnabled,
         isError = isError,
+        fieldMinHeight = fieldMinHeight,
         isMaxQuantityOfCharVisible = false,
         visualTransformation = if (passwordVisible) {
             VisualTransformation.None
@@ -82,6 +85,7 @@ fun PasswordTextField(
     errorText: String? = null,
     isEnabled: Boolean = true,
     isError: Boolean = false,
+    fieldMinHeight: Dp? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Password,
         imeAction = ImeAction.Done,
@@ -99,6 +103,7 @@ fun PasswordTextField(
         errorText = errorText,
         isEnabled = isEnabled,
         isError = isError,
+        fieldMinHeight = fieldMinHeight,
         passwordVisible = passwordVisible,
         onPasswordVisibilityToggle = { passwordVisible = !passwordVisible },
         keyboardOptions = keyboardOptions,

@@ -1,28 +1,52 @@
 package tech.appard.hvala.shared.core.data.network.repository
 
 import tech.appard.hvala.shared.core.contracts.model.AuthCredentials
+import tech.appard.hvala.shared.core.contracts.model.RegistrationData
+import tech.appard.hvala.shared.core.contracts.model.UserProfile
 import tech.appard.hvala.shared.core.contracts.repository.AuthRepository
 import tech.appard.hvala.shared.core.data.network.NetworkClient
+import tech.appard.hvala.shared.core.data.network.session.AppSession
 
 class AuthRepositoryImpl(
     private val networkClient: NetworkClient,
 ) : AuthRepository {
-    private var authenticated = false
-
-    override fun isAuthenticated(): Boolean = authenticated
+    override fun isAuthenticated(): Boolean = AppSession.isAuthenticated
 
     override suspend fun signIn(credentials: AuthCredentials): Boolean {
         networkClient.httpClient
-        // Placeholder for real API call. Keeping it deterministic for now.
         val success = credentials.login.isNotBlank() && credentials.password.length >= 4
         if (success) {
-            authenticated = true
+            AppSession.register(
+                UserProfile(
+                    id = "1",
+                    fullName = credentials.login.substringBefore("@").replaceFirstChar { it.uppercaseChar() },
+                    email = credentials.login.trim(),
+                ),
+            )
+        }
+        return success
+    }
+
+    override suspend fun signUp(data: RegistrationData): Boolean {
+        networkClient.httpClient
+        val success = data.fullName.isNotBlank() &&
+            data.email.contains("@") &&
+            data.phone.filter(Char::isDigit).length >= 10 &&
+            data.password.length >= 4
+        if (success) {
+            AppSession.register(
+                UserProfile(
+                    id = "1",
+                    fullName = data.fullName.trim(),
+                    email = data.email.trim(),
+                ),
+            )
         }
         return success
     }
 
     override suspend fun signOut() {
         networkClient.httpClient
-        authenticated = false
+        AppSession.clear()
     }
 }
