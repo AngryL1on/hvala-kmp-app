@@ -12,6 +12,7 @@ import org.koin.compose.koinInject
 import tech.appard.hvala.shared.core.contracts.repository.AuthRepository
 import tech.appard.hvala.shared.core.ui.components.appbars.HvalaAppBar
 import tech.appard.hvala.shared.core.ui.components.appbars.rememberHvalaAppBarState
+import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
@@ -29,18 +30,32 @@ fun AppNavHost(
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentRoute
 
+    val isProfileRoute = currentRoute == Route.Profile
+
+    val onProfileSettingsClick: () -> Unit = {
+        scope.launch {
+            authRepository.signOut()
+            profileStateHolder.reset()
+            authStateHolder.reset()
+            navController.navigateTo(Route.Auth)
+        }
+    }
+
     val appBarState = rememberHvalaAppBarState(
-        title = if (currentRoute == Route.Profile) "Profile" else null,
+        title = if (isProfileRoute) "Профиль" else null,
         showBackButton = currentRoute == Route.Auth,
+        centerTitle = isProfileRoute,
+        showSettingsButton = isProfileRoute,
     )
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = White,
+        containerColor = if (isProfileRoute) ScreenBackground else White,
         topBar = {
             HvalaAppBar(
                 state = appBarState,
                 onBackClick = {},
+                onSettingsClick = if (isProfileRoute) onProfileSettingsClick else ({ }),
             )
         },
     ) { innerPadding ->
@@ -56,14 +71,6 @@ fun AppNavHost(
                 )
                 Route.Profile -> ProfileScreen(
                     stateHolder = profileStateHolder,
-                    onLogout = {
-                        scope.launch {
-                            authRepository.signOut()
-                            profileStateHolder.reset()
-                            authStateHolder.reset()
-                            navController.navigateTo(Route.Auth)
-                        }
-                    },
                 )
             }
         }

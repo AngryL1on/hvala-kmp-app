@@ -47,10 +47,14 @@ data class Dimensions(
      * Other dimensions
      */
     val circularStrokeWith: Dp = 3.5.dp,
+    val tabIndicatorHeight: Dp = 3.dp,
+    val avatarBorderWidth: Dp = 3.dp,
     val linearProgressIndicatorHeight: Dp = 4.dp,
+    val listingGridSpacing: Dp = 8.dp,
     val defaultCornerRadius: Dp = 12.dp,
     val defaultPadding: Dp = 16.dp,
     val iconDefaultSize: Dp = 24.dp,
+    val tabIndicatorWidth: Dp = 32.dp,
     val iconButtonDefaultSize: Dp = 40.dp,
     val fieldsDefaultHeight: Dp = 50.dp,
     val avatarSize: Dp = 80.dp,
