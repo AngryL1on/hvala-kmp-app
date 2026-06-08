@@ -26,6 +26,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
+            implementation(libs.compose.uiToolingPreview)
             implementation(libs.io.insert.koin.core)
             implementation(projects.shared.core.ui)
             implementation(projects.shared.core.contracts)
