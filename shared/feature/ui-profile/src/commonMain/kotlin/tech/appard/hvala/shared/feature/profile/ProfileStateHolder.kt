@@ -54,7 +54,7 @@ class ProfileStateHolder(
                     rating = 4.0f,
                     memberSince = "На Hvala с июня 2024",
                     activeListings = mockActiveListings(),
-                    archiveListings = emptyList(),
+                    archiveListings = mockArchiveListings(),
                 )
             }
         }
@@ -67,24 +67,79 @@ class ProfileStateHolder(
     fun onListingFavoriteToggle(listingId: String) {
         _state.update { current ->
             current.copy(
-                activeListings = current.activeListings.map { listing ->
-                    if (listing.id == listingId) {
-                        listing.copy(isFavorite = !listing.isFavorite)
-                    } else {
-                        listing
-                    }
-                },
+                activeListings = toggleFavorite(current.activeListings, listingId),
+                archiveListings = toggleFavorite(current.archiveListings, listingId),
             )
+        }
+    }
+
+    private fun toggleFavorite(
+        listings: List<Listing>,
+        listingId: String,
+    ): List<Listing> = listings.map { listing ->
+        if (listing.id == listingId) {
+            listing.copy(isFavorite = !listing.isFavorite)
+        } else {
+            listing
         }
     }
 
     private fun mockActiveListings(): List<Listing> = List(8) { index ->
         Listing(
-            id = "listing-$index",
+            id = "active-$index",
             title = "Худи Number Nine",
             priceUsd = 150,
             priceRub = 12_570,
             location = "Химки, МО",
+            isFavorite = index == 1,
         )
     }
+
+    private fun mockArchiveListings(): List<Listing> = listOf(
+        Listing(
+            id = "archive-0",
+            title = "Кроссовки Nike Air Max",
+            priceUsd = 90,
+            priceRub = 7_540,
+            location = "Москва",
+            isFavorite = true,
+        ),
+        Listing(
+            id = "archive-1",
+            title = "iPhone 13 Pro 256GB",
+            priceUsd = 620,
+            priceRub = 51_900,
+            location = "Санкт-Петербург",
+        ),
+        Listing(
+            id = "archive-2",
+            title = "Пальто Burberry",
+            priceUsd = 280,
+            priceRub = 23_450,
+            location = "Химки, МО",
+            isFavorite = true,
+        ),
+        Listing(
+            id = "archive-3",
+            title = "Велосипед Trek",
+            priceUsd = 410,
+            priceRub = 34_300,
+            location = "Красногорск, МО",
+        ),
+        Listing(
+            id = "archive-4",
+            title = "Диван угловой",
+            priceUsd = 175,
+            priceRub = 14_650,
+            location = "Мытищи, МО",
+        ),
+        Listing(
+            id = "archive-5",
+            title = "MacBook Air M2",
+            priceUsd = 890,
+            priceRub = 74_500,
+            location = "Москва",
+            isFavorite = true,
+        ),
+    )
 }

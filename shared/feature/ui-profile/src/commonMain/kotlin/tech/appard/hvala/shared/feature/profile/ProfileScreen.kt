@@ -124,6 +124,7 @@ private fun ProfileContent(
                                 ListingCard(
                                     listing = listing,
                                     onFavoriteClick = { onListingFavoriteToggle(listing.id) },
+                                    dimmed = state.selectedTab == ProfileListingsTab.Archive,
                                 )
                             }
                         }
