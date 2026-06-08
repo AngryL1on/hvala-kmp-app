@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import tech.appard.hvala.shared.core.contracts.model.PickedMedia
+import tech.appard.hvala.shared.core.ui.model.PickedMedia
 import tech.appard.hvala.shared.core.ui.theme.GrayPlaceholder
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 

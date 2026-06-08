@@ -1,7 +1,7 @@
 package tech.appard.hvala.shared.core.data.network.repository
 
-import tech.appard.hvala.shared.core.contracts.model.UserProfile
-import tech.appard.hvala.shared.core.contracts.repository.ProfileRepository
+import tech.appard.hvala.shared.feature.auth.domain.model.UserProfile
+import tech.appard.hvala.shared.feature.auth.domain.repository.ProfileRepository
 import tech.appard.hvala.shared.core.data.network.NetworkClient
 import tech.appard.hvala.shared.core.data.network.session.AppSession
 

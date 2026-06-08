@@ -1,0 +1,60 @@
+{
+  "sellers": [
+    {
+      "id": "alex",
+      "name": "Alex M.",
+      "activeListingsCount": 12,
+      "rating": 4.6,
+      "memberSince": "On Hvala since June 2024",
+      "avatarColorArgb": 4284260310
+    },
+    {
+      "id": "niko",
+      "name": "Niko B.",
+      "activeListingsCount": 8,
+      "rating": 4.8,
+      "memberSince": "On Hvala since March 2024",
+      "avatarColorArgb": 4294948685
+    },
+    {
+      "id": "lincoln",
+      "name": "Abraham Lincoln",
+      "activeListingsCount": 5,
+      "rating": 4.3,
+      "memberSince": "On Hvala since January 2024",
+      "avatarColorArgb": 4278425759
+    },
+    {
+      "id": "yeltsin",
+      "name": "Boris Yeltsin",
+      "activeListingsCount": 6,
+      "rating": 4.1,
+      "memberSince": "On Hvala since August 2023",
+      "avatarColorArgb": 4284260310
+    },
+    {
+      "id": "pushkin",
+      "name": "Alexander Pushkin",
+      "activeListingsCount": 3,
+      "rating": 4.9,
+      "memberSince": "On Hvala since May 2024",
+      "avatarColorArgb": 4294950708
+    },
+    {
+      "id": "gagarin",
+      "name": "Yuri Gagarin",
+      "activeListingsCount": 4,
+      "rating": 4.7,
+      "memberSince": "On Hvala since February 2024",
+      "avatarColorArgb": 4294937189
+    },
+    {
+      "id": "tereshkova",
+      "name": "Valentina Tereshkova",
+      "activeListingsCount": 7,
+      "rating": 4.5,
+      "memberSince": "On Hvala since September 2023",
+      "avatarColorArgb": 4293227379
+    }
+  ]
+}

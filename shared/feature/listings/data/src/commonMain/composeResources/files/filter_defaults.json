@@ -1,0 +1,80 @@
+{
+  "categories": [
+    {
+      "id": "clothes",
+      "title": "Одежда"
+    },
+    {
+      "id": "auto",
+      "title": "Авто"
+    },
+    {
+      "id": "realty",
+      "title": "Недвижимость"
+    },
+    {
+      "id": "electronics",
+      "title": "Электроника"
+    },
+    {
+      "id": "furniture",
+      "title": "Мебель"
+    },
+    {
+      "id": "jobs",
+      "title": "Работа"
+    },
+    {
+      "id": "services",
+      "title": "Услуги"
+    },
+    {
+      "id": "hobby",
+      "title": "Хобби"
+    },
+    {
+      "id": "kids",
+      "title": "Детям"
+    },
+    {
+      "id": "pets",
+      "title": "Животные"
+    }
+  ],
+  "countries": [
+    {
+      "id": "ru",
+      "title": "Россия"
+    },
+    {
+      "id": "rs",
+      "title": "Сербия"
+    }
+  ],
+  "regionsByCountry": {
+    "ru": [
+      {
+        "id": "moscow",
+        "title": "Москва"
+      },
+      {
+        "id": "moscow_region",
+        "title": "Московская область"
+      },
+      {
+        "id": "spb",
+        "title": "Санкт-Петербург"
+      }
+    ],
+    "rs": [
+      {
+        "id": "belgrade",
+        "title": "Belgrade"
+      },
+      {
+        "id": "sumadija",
+        "title": "Šumadija and Western Serbia"
+      }
+    ]
+  }
+}

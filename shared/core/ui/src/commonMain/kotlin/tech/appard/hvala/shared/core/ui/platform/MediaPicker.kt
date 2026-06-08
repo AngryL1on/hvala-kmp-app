@@ -1,8 +1,8 @@
 package tech.appard.hvala.shared.core.ui.platform
 
 import androidx.compose.runtime.Composable
-import tech.appard.hvala.shared.core.contracts.model.MediaPickerMode
-import tech.appard.hvala.shared.core.contracts.model.PickedMedia
+import tech.appard.hvala.shared.core.ui.model.MediaPickerMode
+import tech.appard.hvala.shared.core.ui.model.PickedMedia
 
 class MediaPickerLauncher(
     private val launchPicker: (maxItems: Int) -> Unit,

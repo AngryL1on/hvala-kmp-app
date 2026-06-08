@@ -1,9 +1,9 @@
 package tech.appard.hvala.shared.core.data.network.repository
 
-import tech.appard.hvala.shared.core.contracts.model.AuthCredentials
-import tech.appard.hvala.shared.core.contracts.model.RegistrationData
-import tech.appard.hvala.shared.core.contracts.model.UserProfile
-import tech.appard.hvala.shared.core.contracts.repository.AuthRepository
+import tech.appard.hvala.shared.feature.auth.domain.model.AuthCredentials
+import tech.appard.hvala.shared.feature.auth.domain.model.RegistrationData
+import tech.appard.hvala.shared.feature.auth.domain.model.UserProfile
+import tech.appard.hvala.shared.feature.auth.domain.repository.AuthRepository
 import tech.appard.hvala.shared.core.data.network.NetworkClient
 import tech.appard.hvala.shared.core.data.network.session.AppSession
 

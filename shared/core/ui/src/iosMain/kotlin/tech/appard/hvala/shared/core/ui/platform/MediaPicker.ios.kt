@@ -5,8 +5,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.uikit.LocalUIViewController
 import platform.UIKit.UIViewController
-import tech.appard.hvala.shared.core.contracts.model.MediaPickerMode
-import tech.appard.hvala.shared.core.contracts.model.PickedMedia
+import tech.appard.hvala.shared.core.ui.model.MediaPickerMode
+import tech.appard.hvala.shared.core.ui.model.PickedMedia
 
 @Composable
 actual fun rememberMediaPickerLauncher(

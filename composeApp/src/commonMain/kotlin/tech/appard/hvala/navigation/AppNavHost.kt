@@ -46,11 +46,12 @@ import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
 import tech.appard.hvala.shared.feature.messages.ChatScreen
 import tech.appard.hvala.shared.feature.messages.MessagesScreen
 import tech.appard.hvala.shared.feature.messages.MessagesStateHolder
-import tech.appard.hvala.shared.core.contracts.model.resolvedSellerId
+import tech.appard.hvala.shared.feature.messages.ui.mapper.resolvedSellerId
 import tech.appard.hvala.shared.feature.profile.ProfileScreen
 import tech.appard.hvala.shared.feature.profile.ProfileStateHolder
 import tech.appard.hvala.shared.feature.profile.SellerProfileScreen
 import tech.appard.hvala.shared.feature.profile.SellerProfileStateHolder
+import tech.appard.hvala.shared.feature.listings.domain.ToggleListingFavoriteUseCase
 import tech.appard.hvala.shared.feature.settings.SettingsScreen
 
 @Composable
@@ -66,6 +67,7 @@ fun AppNavHost(
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val sellerProfileStateHolder = koinInject<SellerProfileStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
+    val toggleListingFavoriteUseCase = koinInject<ToggleListingFavoriteUseCase>()
     val profileState by profileStateHolder.state.collectAsState()
     val sellerProfileState by sellerProfileStateHolder.state.collectAsState()
     val listingsState by listingsStateHolder.state.collectAsState()
@@ -99,11 +101,10 @@ fun AppNavHost(
             ?: listingsState.allListings.find { it.id == listingId }?.isFavorite
             ?: false
 
-        listingsStateHolder.onListingFavoriteToggle(listingId)
-        favoritesStateHolder.onListingFavoriteToggle(listingId)
-        profileStateHolder.onListingFavoriteToggle(listingId)
-        sellerProfileStateHolder.onListingFavoriteToggle(listingId)
-        listingDetailStateHolder.syncFavorite(!currentFavorite)
+        scope.launch {
+            toggleListingFavoriteUseCase(listingId)
+            listingDetailStateHolder.syncFavorite(!currentFavorite)
+        }
     }
 
     val onSessionEnd: () -> Unit = {
@@ -332,8 +333,10 @@ fun AppNavHost(
                             if (!isAuthenticated) {
                                 navController.navigateTo(Route.Auth)
                             } else {
-                                messagesStateHolder.openChatForListing(route.listingId)?.let { threadId ->
-                                    navController.navigateTo(Route.Chat(threadId))
+                                scope.launch {
+                                    messagesStateHolder.openChatForListing(route.listingId)?.let { threadId ->
+                                        navController.navigateTo(Route.Chat(threadId))
+                                    }
                                 }
                             }
                         },

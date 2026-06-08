@@ -20,7 +20,7 @@ import platform.darwin.dispatch_group_create
 import platform.darwin.dispatch_group_enter
 import platform.darwin.dispatch_group_leave
 import platform.darwin.dispatch_group_notify
-import tech.appard.hvala.shared.core.contracts.model.PickedMedia
+import tech.appard.hvala.shared.core.ui.model.PickedMedia
 
 @OptIn(ExperimentalForeignApi::class)
 internal class IosPhotoPickerDelegate(

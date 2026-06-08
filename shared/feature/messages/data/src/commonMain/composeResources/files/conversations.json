@@ -1,0 +1,262 @@
+{
+  "conversations": [
+    {
+      "thread": {
+        "id": "niko",
+        "participantName": "Нико Б.",
+        "lastMessagePreview": "",
+        "avatarColorArgb": 4294948685,
+        "listingId": "favorite-0",
+        "listingTitle": "Худи Number Nine",
+        "listingPriceUsd": 150,
+        "listingPriceRub": 12570,
+        "sellerId": "niko"
+      },
+      "messages": [
+        {
+          "id": "niko-div-1",
+          "text": "Вчера, 19:12",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "niko-msg-0",
+          "text": "Здравствуйте! Худи Number Nine ещё в продаже?",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "niko-msg-1",
+          "text": "Привет! Да, размер L, состояние отличное.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        },
+        {
+          "id": "niko-msg-2",
+          "text": "Можно посмотреть сегодня вечером в Химках?",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "niko-msg-3",
+          "text": "Да, после 18:00 у метро. Напишите за час.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        },
+        {
+          "id": "niko-div-2",
+          "text": "Сегодня, 8:43",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "niko-msg-4",
+          "text": "Буду к 18:30. С собой наличные подойдут?",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "niko-msg-5",
+          "text": "Да, без проблем. Если что — напишите.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        }
+      ]
+    },
+    {
+      "thread": {
+        "id": "lincoln",
+        "participantName": "Авраам Линкольн",
+        "lastMessagePreview": "",
+        "avatarColorArgb": 4278425759,
+        "listingId": "favorite-2",
+        "listingTitle": "Пальто Burberry",
+        "listingPriceUsd": 280,
+        "listingPriceRub": 23450,
+        "sellerId": "lincoln"
+      },
+      "messages": [
+        {
+          "id": "lincoln-div-1",
+          "text": "Вчера, 14:05",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "lincoln-msg-0",
+          "text": "Добрый день! Пальто ещё актуально?",
+          "isOutgoing": false,
+          "isDateDivider": false
+        },
+        {
+          "id": "lincoln-msg-1",
+          "text": "Здравствуйте! Да, актуально.",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "lincoln-msg-2",
+          "text": "Можем встретиться завтра у ТЦ, удобно?",
+          "isOutgoing": false,
+          "isDateDivider": false
+        }
+      ]
+    },
+    {
+      "thread": {
+        "id": "yeltsin",
+        "participantName": "Борис Ельцин",
+        "lastMessagePreview": "",
+        "avatarColorArgb": 4284260310,
+        "listingId": "favorite-1",
+        "listingTitle": "Кроссовки Nike Air Max",
+        "listingPriceUsd": 90,
+        "listingPriceRub": 7540,
+        "sellerId": "yeltsin"
+      },
+      "messages": [
+        {
+          "id": "yeltsin-div-1",
+          "text": "Понедельник, 11:20",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "yeltsin-msg-0",
+          "text": "За 8 000 отдадите?",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "yeltsin-msg-1",
+          "text": "Минимум 8 500, они почти новые.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        },
+        {
+          "id": "yeltsin-msg-2",
+          "text": "Ладно, договорились. Где забрать?",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "yeltsin-msg-3",
+          "text": "Москва, м. Сокол. Напишу точный адрес.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        }
+      ]
+    },
+    {
+      "thread": {
+        "id": "pushkin",
+        "participantName": "Александр Пушкин",
+        "lastMessagePreview": "",
+        "avatarColorArgb": 4294950708,
+        "listingId": "favorite-9",
+        "listingTitle": "Диван угловой",
+        "listingPriceUsd": 175,
+        "listingPriceRub": 14650,
+        "sellerId": "pushkin"
+      },
+      "messages": [
+        {
+          "id": "pushkin-div-1",
+          "text": "Суббота, 16:40",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "pushkin-msg-0",
+          "text": "Забрал сегодня, всё супер!",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "pushkin-msg-1",
+          "text": "Спасибо! Рад, что понравилось.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        }
+      ]
+    },
+    {
+      "thread": {
+        "id": "gagarin",
+        "participantName": "Юрий Гагарин",
+        "lastMessagePreview": "",
+        "avatarColorArgb": 4294937189,
+        "listingId": "favorite-6",
+        "listingTitle": "Наушники AirPods Pro",
+        "listingPriceUsd": 180,
+        "listingPriceRub": 15080,
+        "sellerId": "gagarin"
+      },
+      "messages": [
+        {
+          "id": "gagarin-div-1",
+          "text": "Сегодня, 10:15",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "gagarin-msg-0",
+          "text": "Скинул фото кейса и самих наушников.",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "gagarin-msg-1",
+          "text": "Вижу, спасибо! Наушники без царапин, кейс родной?",
+          "isOutgoing": false,
+          "isDateDivider": false
+        },
+        {
+          "id": "gagarin-msg-2",
+          "text": "Да, всё чисто. Могу прислать видео.",
+          "isOutgoing": true,
+          "isDateDivider": false
+        }
+      ]
+    },
+    {
+      "thread": {
+        "id": "tereshkova",
+        "participantName": "Валентина Терешкова",
+        "lastMessagePreview": "",
+        "avatarColorArgb": 4293227379,
+        "listingId": "favorite-7",
+        "listingTitle": "Кольцо Tiffany",
+        "listingPriceUsd": 1200,
+        "listingPriceRub": 100500,
+        "sellerId": "tereshkova"
+      },
+      "messages": [
+        {
+          "id": "tereshkova-div-1",
+          "text": "Сегодня, 9:02",
+          "isOutgoing": false,
+          "isDateDivider": true
+        },
+        {
+          "id": "tereshkova-msg-0",
+          "text": "Когда сможете отправить СДЭКом?",
+          "isOutgoing": false,
+          "isDateDivider": false
+        },
+        {
+          "id": "tereshkova-msg-1",
+          "text": "Сегодня до 17:00 оформлю отправку.",
+          "isOutgoing": true,
+          "isDateDivider": false
+        },
+        {
+          "id": "tereshkova-msg-2",
+          "text": "Отлично, жду трек-номер.",
+          "isOutgoing": false,
+          "isDateDivider": false
+        }
+      ]
+    }
+  ]
+}

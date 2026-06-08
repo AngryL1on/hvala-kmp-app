@@ -1,6 +1,6 @@
 package tech.appard.hvala.shared.core.data.network.session
 
-import tech.appard.hvala.shared.core.contracts.model.UserProfile
+import tech.appard.hvala.shared.feature.auth.domain.model.UserProfile
 
 internal object AppSession {
     var isAuthenticated: Boolean = false

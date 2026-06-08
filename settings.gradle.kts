@@ -21,13 +21,25 @@ include(":composeApp")
 
 // Shared core modules
 include(":shared:core:ui")
-include(":shared:core:contracts")
+include(":shared:core:mvi")
 include(":shared:core:data-network")
 
-// Feature modules inside shared
-include(":shared:feature:ui-auth")
-include(":shared:feature:ui-profile")
-include(":shared:feature:ui-settings")
-include(":shared:feature:ui-listings")
-include(":shared:feature:ui-messages")
-include(":shared:feature:ui-favorites")
+// Feature modules
+include(":shared:feature:auth:domain")
+include(":shared:feature:auth:data")
+include(":shared:feature:auth:ui")
+include(":shared:feature:settings:ui")
+
+include(":shared:feature:listings:domain")
+include(":shared:feature:listings:data")
+include(":shared:feature:listings:ui")
+
+include(":shared:feature:profile:domain")
+include(":shared:feature:profile:data")
+include(":shared:feature:profile:ui")
+
+include(":shared:feature:messages:domain")
+include(":shared:feature:messages:data")
+include(":shared:feature:messages:ui")
+
+include(":shared:feature:favorites:ui")
