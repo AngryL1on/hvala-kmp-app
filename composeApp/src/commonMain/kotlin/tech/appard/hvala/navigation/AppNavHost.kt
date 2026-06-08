@@ -34,6 +34,8 @@ import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.HvalaStatusBarEffect
 import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
+import tech.appard.hvala.shared.feature.favorites.FavoritesScreen
+import tech.appard.hvala.shared.feature.favorites.FavoritesStateHolder
 import tech.appard.hvala.shared.feature.listings.ListingsScreen
 import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
 import tech.appard.hvala.shared.feature.messages.ChatScreen
@@ -52,6 +54,7 @@ fun AppNavHost(
     val listingsStateHolder = koinInject<ListingsStateHolder>()
     val messagesStateHolder = koinInject<MessagesStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
+    val favoritesStateHolder = koinInject<FavoritesStateHolder>()
     val profileState by profileStateHolder.state.collectAsState()
     val chatState by messagesStateHolder.chatState.collectAsState()
     val isAuthenticated by authStateHolder.isAuthenticated.collectAsState()
@@ -71,6 +74,7 @@ fun AppNavHost(
         scope.launch {
             authStateHolder.signOut()
             profileStateHolder.reset()
+            favoritesStateHolder.reset()
             navController.navigateToRoot(Route.Listings)
         }
     }
@@ -225,7 +229,9 @@ fun AppNavHost(
                         threadId = route.threadId,
                         stateHolder = messagesStateHolder,
                     )
-                    Route.Favorites -> MainPlaceholderScreen(title = "Избранное")
+                    Route.Favorites -> FavoritesScreen(
+                        stateHolder = favoritesStateHolder,
+                    )
                     Route.Profile -> ProfileScreen(
                         stateHolder = profileStateHolder,
                     )
