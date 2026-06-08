@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,9 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import tech.appard.hvala.shared.core.contracts.model.ChatMessage
 import tech.appard.hvala.shared.core.contracts.model.ChatThread
-import tech.appard.hvala.shared.core.contracts.model.resolvedListingId
 import tech.appard.hvala.shared.core.contracts.model.resolvedListingId
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
@@ -85,36 +86,50 @@ private fun ChatContent(
                 CircularProgressIndicator(color = SecondaryMain)
             }
         } else {
+            val listingTitle = thread.listingTitle
+            val listingPriceUsd = thread.listingPriceUsd
+            val listingPriceRub = thread.listingPriceRub
+            val hasListingCard = listingTitle != null &&
+                listingPriceUsd != null &&
+                listingPriceRub != null
+            val listingId = thread.resolvedListingId()
+            val listState = rememberLazyListState()
+
+            LaunchedEffect(thread.id, state.messages.size, state.messages.lastOrNull()?.id) {
+                val lastIndex = state.messages.lastIndex
+                if (lastIndex >= 0) {
+                    listState.animateScrollToItem(lastIndex)
+                }
+            }
+
+            if (hasListingCard) {
+                ChatListingCard(
+                    title = listingTitle,
+                    priceUsd = listingPriceUsd,
+                    priceRub = listingPriceRub,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = dimensions.horizontalMedium,
+                            end = dimensions.horizontalMedium,
+                            top = dimensions.verticalMedium,
+                            bottom = dimensions.verticalSmall,
+                        ),
+                    onClick = listingId?.let { id -> { onListingClick(id) } },
+                )
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
+                state = listState,
                 contentPadding = PaddingValues(
-                    top = dimensions.verticalMedium,
+                    top = if (hasListingCard) 0.dp else dimensions.verticalMedium,
                     bottom = dimensions.verticalSmall,
                 ),
                 verticalArrangement = Arrangement.spacedBy(dimensions.verticalXXSmall),
             ) {
-                val listingTitle = thread.listingTitle
-                val listingPriceUsd = thread.listingPriceUsd
-                val listingPriceRub = thread.listingPriceRub
-                val listingId = thread.resolvedListingId()
-                if (
-                    listingTitle != null &&
-                    listingPriceUsd != null &&
-                    listingPriceRub != null
-                ) {
-                    item(key = "listing-card") {
-                        ChatListingCard(
-                            title = listingTitle,
-                            priceUsd = listingPriceUsd,
-                            priceRub = listingPriceRub,
-                            modifier = Modifier.padding(horizontal = dimensions.horizontalMedium),
-                            onClick = listingId?.let { id -> { onListingClick(id) } },
-                        )
-                    }
-                }
-
                 items(
                     items = state.messages,
                     key = { it.id },
@@ -176,6 +191,8 @@ private fun ChatScreenPreview() {
             ),
             onInputChange = {},
             onSendClick = {},
+            onListingClick = {},
+            onAttachClick = {},
         )
     }
 }
