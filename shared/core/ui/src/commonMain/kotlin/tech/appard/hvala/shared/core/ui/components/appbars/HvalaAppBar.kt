@@ -1,5 +1,13 @@
 package tech.appard.hvala.shared.core.ui.components.appbars
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
@@ -13,7 +21,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.TitleLarge
@@ -25,6 +37,7 @@ data class HvalaAppBarState(
     val showBackButton: Boolean = false,
     val centerTitle: Boolean = false,
     val showSettingsButton: Boolean = false,
+    val leadingAvatarColorArgb: Long? = null,
 )
 
 @Composable
@@ -35,7 +48,10 @@ fun HvalaAppBar(
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit = {},
 ) {
-    val colors = TopAppBarDefaults.topAppBarColors(containerColor = White)
+    val colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = White,
+        scrolledContainerColor = White,
+    )
     val actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {
         if (state.showSettingsButton) {
             IconButton(onClick = onSettingsClick) {
@@ -58,31 +74,57 @@ fun HvalaAppBar(
             }
         }
     }
+    val dimensions = LocalDimensions.current
     val title: @Composable () -> Unit = {
         state.title?.let { title ->
-            Text(
-                text = title,
-                style = TitleLarge.copy(color = SecondaryMain),
-            )
+            val avatarColor = state.leadingAvatarColorArgb
+            if (avatarColor != null && !state.centerTitle) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXSmall),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(dimensions.chatHeaderAvatarSize)
+                            .clip(CircleShape)
+                            .background(Color(avatarColor)),
+                    )
+                    Text(
+                        text = title,
+                        style = TitleLarge.copy(color = SecondaryMain),
+                    )
+                }
+            } else {
+                Text(
+                    text = title,
+                    style = TitleLarge.copy(color = SecondaryMain),
+                )
+            }
         }
     }
 
-    if (state.centerTitle) {
-        CenterAlignedTopAppBar(
-            modifier = modifier,
-            title = title,
-            navigationIcon = navigationIcon,
-            actions = actions,
-            colors = colors,
-        )
-    } else {
-        TopAppBar(
-            modifier = modifier,
-            title = title,
-            navigationIcon = navigationIcon,
-            actions = actions,
-            colors = colors,
-        )
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(White),
+    ) {
+        if (state.centerTitle) {
+            CenterAlignedTopAppBar(
+                modifier = Modifier.statusBarsPadding(),
+                title = title,
+                navigationIcon = navigationIcon,
+                actions = actions,
+                colors = colors,
+            )
+        } else {
+            TopAppBar(
+                modifier = Modifier.statusBarsPadding(),
+                title = title,
+                navigationIcon = navigationIcon,
+                actions = actions,
+                colors = colors,
+            )
+        }
     }
 }
 
@@ -92,11 +134,19 @@ fun rememberHvalaAppBarState(
     showBackButton: Boolean = false,
     centerTitle: Boolean = false,
     showSettingsButton: Boolean = false,
-): HvalaAppBarState = remember(title, showBackButton, centerTitle, showSettingsButton) {
+    leadingAvatarColorArgb: Long? = null,
+): HvalaAppBarState = remember(
+    title,
+    showBackButton,
+    centerTitle,
+    showSettingsButton,
+    leadingAvatarColorArgb,
+) {
     HvalaAppBarState(
         title = title,
         showBackButton = showBackButton,
         centerTitle = centerTitle,
         showSettingsButton = showSettingsButton,
+        leadingAvatarColorArgb = leadingAvatarColorArgb,
     )
 }

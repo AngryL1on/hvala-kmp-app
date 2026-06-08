@@ -36,6 +36,9 @@ import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
 import tech.appard.hvala.shared.feature.listings.ListingsScreen
 import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
+import tech.appard.hvala.shared.feature.messages.ChatScreen
+import tech.appard.hvala.shared.feature.messages.MessagesScreen
+import tech.appard.hvala.shared.feature.messages.MessagesStateHolder
 import tech.appard.hvala.shared.feature.profile.ProfileScreen
 import tech.appard.hvala.shared.feature.profile.ProfileStateHolder
 import tech.appard.hvala.shared.feature.settings.SettingsScreen
@@ -47,8 +50,10 @@ fun AppNavHost(
 ) {
     val authStateHolder = koinInject<AuthStateHolder>()
     val listingsStateHolder = koinInject<ListingsStateHolder>()
+    val messagesStateHolder = koinInject<MessagesStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val profileState by profileStateHolder.state.collectAsState()
+    val chatState by messagesStateHolder.chatState.collectAsState()
     val isAuthenticated by authStateHolder.isAuthenticated.collectAsState()
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentRoute
@@ -89,7 +94,7 @@ fun AppNavHost(
             Route.CreateListing -> "Новое объявление"
             Route.Write -> "Сообщения"
             Route.Favorites -> "Избранное"
-            is Route.Chat -> "Чат"
+            is Route.Chat -> chatState.thread?.participantName ?: "Чат"
             else -> null
         },
         showBackButton = when (currentRoute) {
@@ -106,6 +111,10 @@ fun AppNavHost(
             currentRoute == Route.Write ||
             currentRoute == Route.Favorites,
         showSettingsButton = currentRoute == Route.Profile,
+        leadingAvatarColorArgb = when (currentRoute) {
+            is Route.Chat -> chatState.thread?.avatarColorArgb
+            else -> null
+        },
     )
 
     val usesScreenBackground = when (currentRoute) {
@@ -206,9 +215,17 @@ fun AppNavHost(
                         showGuestLoginButton = !isAuthenticated,
                         onLoginClick = { navController.navigateTo(Route.Auth) },
                     )
-                    Route.Write -> MainPlaceholderScreen(title = "Сообщения")
+                    Route.Write -> MessagesScreen(
+                        stateHolder = messagesStateHolder,
+                        onChatClick = { threadId ->
+                            navController.navigateTo(Route.Chat(threadId))
+                        },
+                    )
+                    is Route.Chat -> ChatScreen(
+                        threadId = route.threadId,
+                        stateHolder = messagesStateHolder,
+                    )
                     Route.Favorites -> MainPlaceholderScreen(title = "Избранное")
-                    is Route.Chat -> MainPlaceholderScreen(title = "Чат")
                     Route.Profile -> ProfileScreen(
                         stateHolder = profileStateHolder,
                     )
