@@ -9,11 +9,12 @@ import tech.appard.hvala.shared.core.data.network.NetworkClient
 import tech.appard.hvala.shared.core.data.network.repository.AuthRepositoryImpl
 import tech.appard.hvala.shared.core.data.network.repository.ProfileRepositoryImpl
 import tech.appard.hvala.shared.feature.auth.authFeatureModule
+import tech.appard.hvala.shared.feature.listings.listingsFeatureModule
 import tech.appard.hvala.shared.feature.profile.profileFeatureModule
 
 val appModule = module {
     singleOf(::NetworkClient)
     singleOf(::AuthRepositoryImpl) { bind<AuthRepository>() }
     singleOf(::ProfileRepositoryImpl) { bind<ProfileRepository>() }
-    includes(authFeatureModule, profileFeatureModule)
+    includes(authFeatureModule, profileFeatureModule, listingsFeatureModule)
 }

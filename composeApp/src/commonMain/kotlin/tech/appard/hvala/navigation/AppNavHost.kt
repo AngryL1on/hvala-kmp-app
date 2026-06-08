@@ -34,6 +34,8 @@ import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.HvalaStatusBarEffect
 import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
+import tech.appard.hvala.shared.feature.listings.ListingsScreen
+import tech.appard.hvala.shared.feature.listings.ListingsStateHolder
 import tech.appard.hvala.shared.feature.profile.ProfileScreen
 import tech.appard.hvala.shared.feature.profile.ProfileStateHolder
 import tech.appard.hvala.shared.feature.settings.SettingsScreen
@@ -44,6 +46,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
 ) {
     val authStateHolder = koinInject<AuthStateHolder>()
+    val listingsStateHolder = koinInject<ListingsStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val profileState by profileStateHolder.state.collectAsState()
     val isAuthenticated by authStateHolder.isAuthenticated.collectAsState()
@@ -198,7 +201,11 @@ fun AppNavHost(
                         stateHolder = authStateHolder,
                         onAuthenticated = { navController.navigateToRoot(Route.Listings) },
                     )
-                    Route.Listings -> MainPlaceholderScreen(title = "Объявления")
+                    Route.Listings -> ListingsScreen(
+                        stateHolder = listingsStateHolder,
+                        showGuestLoginButton = !isAuthenticated,
+                        onLoginClick = { navController.navigateTo(Route.Auth) },
+                    )
                     Route.Write -> MainPlaceholderScreen(title = "Сообщения")
                     Route.Favorites -> MainPlaceholderScreen(title = "Избранное")
                     is Route.Chat -> MainPlaceholderScreen(title = "Чат")

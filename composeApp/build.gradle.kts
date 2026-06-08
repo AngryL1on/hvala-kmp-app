@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
@@ -44,6 +45,9 @@ kotlin {
             implementation(projects.shared.feature.uiAuth)
             implementation(projects.shared.feature.uiProfile)
             implementation(projects.shared.feature.uiSettings)
+            implementation(projects.shared.feature.uiListings)
+            implementation(projects.shared.feature.uiMessages)
+            implementation(projects.shared.feature.uiFavorites)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

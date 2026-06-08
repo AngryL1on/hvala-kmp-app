@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import tech.appard.hvala.shared.core.ui.theme.Error
 import tech.appard.hvala.shared.core.ui.theme.FieldCaption
@@ -62,11 +64,20 @@ fun PrimaryTextField(
     isOnlyNumbers: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
+    cornerRadius: Dp? = null,
+    fieldMinHeight: Dp? = null,
+    contentPadding: PaddingValues? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     val dimensions = LocalDimensions.current
     val fillMaxWidthModifier = Modifier.fillMaxWidth()
+    val shape = RoundedCornerShape(cornerRadius ?: dimensions.defaultCornerRadius)
+    val fieldPadding = contentPadding ?: PaddingValues(
+        vertical = dimensions.verticalMedium,
+        horizontal = dimensions.horizontalMedium,
+    )
     val finalKeyboardOptions = if (isOnlyNumbers) {
         keyboardOptions.copy(keyboardType = KeyboardType.Number)
     } else {
@@ -117,20 +128,19 @@ fun PrimaryTextField(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(dimensions.defaultCornerRadius))
+                        .clip(shape)
                         .border(
                             width = 1.dp,
                             color = borderColor,
-                            shape = RoundedCornerShape(dimensions.defaultCornerRadius),
+                            shape = shape,
                         )
                         .background(InputBackground)
-                        .padding(
-                            vertical = dimensions.verticalMedium,
-                            horizontal = dimensions.horizontalMedium,
-                        )
-                        .requiredHeightIn(min = dimensions.verticalHuge),
+                        .padding(fieldPadding)
+                        .requiredHeightIn(min = fieldMinHeight ?: dimensions.verticalHuge),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    leadingContent?.invoke()
+
                     prefix?.let { prefixText ->
                         Text(
                             text = "$prefixText ",
