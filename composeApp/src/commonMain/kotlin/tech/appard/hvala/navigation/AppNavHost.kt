@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
@@ -18,6 +20,7 @@ import tech.appard.hvala.shared.feature.auth.AuthScreen
 import tech.appard.hvala.shared.feature.auth.AuthStateHolder
 import tech.appard.hvala.shared.feature.profile.ProfileScreen
 import tech.appard.hvala.shared.feature.profile.ProfileStateHolder
+import tech.appard.hvala.shared.feature.settings.SettingsScreen
 
 @Composable
 fun AppNavHost(
@@ -27,35 +30,44 @@ fun AppNavHost(
     val authRepository = koinInject<AuthRepository>()
     val authStateHolder = koinInject<AuthStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
+    val profileState by profileStateHolder.state.collectAsState()
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentRoute
 
-    val isProfileRoute = currentRoute == Route.Profile
-
-    val onProfileSettingsClick: () -> Unit = {
+    val onSessionEnd: () -> Unit = {
         scope.launch {
             authRepository.signOut()
             profileStateHolder.reset()
             authStateHolder.reset()
-            navController.navigateTo(Route.Auth)
+            navController.navigateToRoot(Route.Auth)
         }
     }
 
     val appBarState = rememberHvalaAppBarState(
-        title = if (isProfileRoute) "Профиль" else null,
-        showBackButton = currentRoute == Route.Auth,
-        centerTitle = isProfileRoute,
-        showSettingsButton = isProfileRoute,
+        title = when (currentRoute) {
+            Route.Profile -> "Профиль"
+            Route.Settings -> "Настройки"
+            else -> null
+        },
+        showBackButton = currentRoute == Route.Settings,
+        centerTitle = currentRoute == Route.Profile || currentRoute == Route.Settings,
+        showSettingsButton = currentRoute == Route.Profile,
     )
+
+    val usesScreenBackground = currentRoute == Route.Profile || currentRoute == Route.Settings
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = if (isProfileRoute) ScreenBackground else White,
+        containerColor = if (usesScreenBackground) ScreenBackground else White,
         topBar = {
             HvalaAppBar(
                 state = appBarState,
-                onBackClick = {},
-                onSettingsClick = if (isProfileRoute) onProfileSettingsClick else ({ }),
+                onBackClick = { navController.back() },
+                onSettingsClick = {
+                    if (currentRoute == Route.Profile) {
+                        navController.navigateTo(Route.Settings)
+                    }
+                },
             )
         },
     ) { innerPadding ->
@@ -71,6 +83,12 @@ fun AppNavHost(
                 )
                 Route.Profile -> ProfileScreen(
                     stateHolder = profileStateHolder,
+                )
+                Route.Settings -> SettingsScreen(
+                    fullName = profileState.profile?.fullName ?: "",
+                    email = profileState.profile?.email ?: "",
+                    onDeleteAccountClick = onSessionEnd,
+                    onLogoutClick = onSessionEnd,
                 )
             }
         }

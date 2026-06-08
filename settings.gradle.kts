@@ -27,3 +27,4 @@ include(":shared:core:data-network")
 // Feature modules inside shared
 include(":shared:feature:ui-auth")
 include(":shared:feature:ui-profile")
+include(":shared:feature:ui-settings")

@@ -55,9 +55,11 @@ data class Dimensions(
     val defaultPadding: Dp = 16.dp,
     val iconDefaultSize: Dp = 24.dp,
     val tabIndicatorWidth: Dp = 32.dp,
+    val settingsEditBadgeSize: Dp = 36.dp,
     val iconButtonDefaultSize: Dp = 40.dp,
     val fieldsDefaultHeight: Dp = 50.dp,
     val avatarSize: Dp = 80.dp,
+    val settingsAvatarSize: Dp = 120.dp,
     val logoSize: Dp = 160.dp,
 )
 
