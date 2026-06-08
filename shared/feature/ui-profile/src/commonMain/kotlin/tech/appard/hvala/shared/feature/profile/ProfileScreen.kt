@@ -26,8 +26,9 @@ import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
+import tech.appard.hvala.shared.core.contracts.model.Listing
+import tech.appard.hvala.shared.core.ui.components.listings.ListingCard
 import tech.appard.hvala.shared.feature.profile.components.ProfileHeaderCard
-import tech.appard.hvala.shared.feature.profile.components.ProfileListingCard
 import tech.appard.hvala.shared.feature.profile.components.ProfileSegmentedTabs
 
 @Composable
@@ -120,7 +121,7 @@ private fun ProfileContent(
                                 items = state.listings,
                                 key = { it.id },
                             ) { listing ->
-                                ProfileListingCard(
+                                ListingCard(
                                     listing = listing,
                                     onFavoriteClick = { onListingFavoriteToggle(listing.id) },
                                 )
@@ -154,7 +155,7 @@ private fun ProfileScreenPreview() {
                 rating = 4.0f,
                 memberSince = "На Hvala с июня 2024",
                 activeListings = List(4) { index ->
-                    ProfileListing(
+                    Listing(
                         id = "listing-$index",
                         title = "Худи Number Nine",
                         priceUsd = 150,

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import tech.appard.hvala.shared.core.contracts.model.Listing
 import tech.appard.hvala.shared.core.contracts.model.UserProfile
 import tech.appard.hvala.shared.core.contracts.repository.ProfileRepository
 
@@ -18,10 +19,10 @@ data class ProfileUiState(
     val rating: Float = 0f,
     val memberSince: String = "",
     val selectedTab: ProfileListingsTab = ProfileListingsTab.Active,
-    val activeListings: List<ProfileListing> = emptyList(),
-    val archiveListings: List<ProfileListing> = emptyList(),
+    val activeListings: List<Listing> = emptyList(),
+    val archiveListings: List<Listing> = emptyList(),
 ) {
-    val listings: List<ProfileListing>
+    val listings: List<Listing>
         get() = when (selectedTab) {
             ProfileListingsTab.Active -> activeListings
             ProfileListingsTab.Archive -> archiveListings
@@ -77,8 +78,8 @@ class ProfileStateHolder(
         }
     }
 
-    private fun mockActiveListings(): List<ProfileListing> = List(8) { index ->
-        ProfileListing(
+    private fun mockActiveListings(): List<Listing> = List(8) { index ->
+        Listing(
             id = "listing-$index",
             title = "Худи Number Nine",
             priceUsd = 150,

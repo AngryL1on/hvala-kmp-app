@@ -1,4 +1,4 @@
-package tech.appard.hvala.shared.feature.profile.components
+package tech.appard.hvala.shared.core.ui.components.listings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,23 +9,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import tech.appard.hvala.shared.core.contracts.model.Listing
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconPlaceholder
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconVariant
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
@@ -35,16 +38,18 @@ import tech.appard.hvala.shared.core.ui.theme.GrayText
 import tech.appard.hvala.shared.core.ui.theme.InputText
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.OverlayDark
+import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
+import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.TitleMedium
 import tech.appard.hvala.shared.core.ui.theme.White
-import tech.appard.hvala.shared.feature.profile.ProfileListing
 
 @Composable
-fun ProfileListingCard(
-    listing: ProfileListing,
+fun ListingCard(
+    listing: Listing,
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    dimmed: Boolean = false,
 ) {
     val dimensions = LocalDimensions.current
 
@@ -57,15 +62,23 @@ fun ProfileListingCard(
                 color = CardBorder,
                 shape = RoundedCornerShape(dimensions.defaultCornerRadius),
             )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick,
+            .then(if (dimmed) Modifier.alpha(0.4f) else Modifier)
+            .then(
+                if (!dimmed) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier
+                },
             ),
     ) {
-        ProfileListingImage(
+        ListingCardImage(
             listing = listing,
             onFavoriteClick = onFavoriteClick,
+            interactive = !dimmed,
         )
 
         Column(
@@ -87,7 +100,7 @@ fun ProfileListingCard(
                     style = TitleMedium.copy(color = InputText),
                 )
                 Text(
-                    text = "≈ ${formatRubPrice(listing.priceRub)} ₽",
+                    text = "= ${formatPriceRub(listing.priceRub)} ₽",
                     style = FieldCaption.copy(color = GrayText),
                 )
             }
@@ -102,12 +115,20 @@ fun ProfileListingCard(
 }
 
 @Composable
-private fun ProfileListingImage(
-    listing: ProfileListing,
+private fun ListingCardImage(
+    listing: Listing,
     onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    interactive: Boolean = true,
 ) {
     val dimensions = LocalDimensions.current
+    val favoriteBackground = if (listing.isFavorite) {
+        SecondaryMain
+    } else {
+        GrayText.copy(alpha = 0.6f)
+    }
+    val favoriteIcon = if (listing.isFavorite) Icons.Filled.Star else Icons.Outlined.StarBorder
+    val favoriteIconTint = if (listing.isFavorite) PrimaryMain else GrayText
 
     Box(
         modifier = modifier
@@ -129,18 +150,24 @@ private fun ProfileListingImage(
                 .padding(dimensions.horizontalXSmall)
                 .size(dimensions.iconButtonDefaultSize - 4.dp)
                 .clip(CircleShape)
-                .background(GrayText.copy(alpha = 0.6f))
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onFavoriteClick,
+                .background(favoriteBackground)
+                .then(
+                    if (interactive) {
+                        Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = onFavoriteClick,
+                        )
+                    } else {
+                        Modifier
+                    },
                 ),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Outlined.StarBorder,
-                contentDescription = "Favorite",
-                tint = White,
+                imageVector = favoriteIcon,
+                contentDescription = if (listing.isFavorite) "Убрать из избранного" else "Добавить в избранное",
+                tint = favoriteIconTint,
                 modifier = Modifier.size(dimensions.iconDefaultSize - 4.dp),
             )
         }
@@ -164,4 +191,5 @@ private fun ProfileListingImage(
     }
 }
 
-private fun formatRubPrice(price: Int): String = price.toString()
+private fun formatPriceRub(priceRub: Int): String =
+    priceRub.toString().reversed().chunked(3).joinToString(" ").reversed()
