@@ -35,7 +35,6 @@ fun ChatInputBar(
         value = value,
         onTextChange = onValueChange,
         placeholder = "Сообщение",
-        cornerRadius = dimensions.searchBarCornerRadius,
         fieldMinHeight = dimensions.chatInputHeight,
         contentPadding = PaddingValues(
             horizontal = dimensions.horizontalXSmall,

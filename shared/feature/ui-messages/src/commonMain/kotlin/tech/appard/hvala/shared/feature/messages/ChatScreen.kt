@@ -21,11 +21,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.shared.core.contracts.model.ChatMessage
 import tech.appard.hvala.shared.core.contracts.model.ChatThread
 import tech.appard.hvala.shared.core.contracts.model.resolvedListingId
+import tech.appard.hvala.shared.core.contracts.model.resolvedListingId
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
+import tech.appard.hvala.shared.core.contracts.model.MediaPickerMode
+import tech.appard.hvala.shared.core.ui.platform.rememberMediaPickerLauncher
 import tech.appard.hvala.shared.feature.messages.components.ChatInputBar
 import tech.appard.hvala.shared.feature.messages.components.ChatListingCard
 import tech.appard.hvala.shared.feature.messages.components.ChatMessageItem
@@ -38,6 +41,10 @@ fun ChatScreen(
     onListingClick: (String) -> Unit = {},
 ) {
     val state by stateHolder.chatState.collectAsState()
+    val filePicker = rememberMediaPickerLauncher(
+        mode = MediaPickerMode.Files,
+        onResult = stateHolder::onAttachmentsPicked,
+    )
 
     LaunchedEffect(threadId) {
         stateHolder.loadChat(threadId)
@@ -49,6 +56,7 @@ fun ChatScreen(
         onInputChange = stateHolder::onChatInputChange,
         onSendClick = stateHolder::sendMessage,
         onListingClick = onListingClick,
+        onAttachClick = { filePicker.launch(maxItems = 5) },
     )
 }
 
@@ -58,6 +66,7 @@ private fun ChatContent(
     onInputChange: (String) -> Unit,
     onSendClick: () -> Unit,
     onListingClick: (String) -> Unit,
+    onAttachClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -118,6 +127,7 @@ private fun ChatContent(
                 value = state.inputText,
                 onValueChange = onInputChange,
                 onSendClick = onSendClick,
+                onAttachClick = onAttachClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(White)

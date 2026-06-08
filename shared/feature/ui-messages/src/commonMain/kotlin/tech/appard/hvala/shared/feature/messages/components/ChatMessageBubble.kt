@@ -43,7 +43,7 @@ fun ChatMessageItem(
         return
     }
 
-    val bubbleShape = RoundedCornerShape(dimensions.messageBubbleRadius)
+    val bubbleShape = RoundedCornerShape(dimensions.defaultCornerRadius)
     val horizontalAlignment = if (message.isOutgoing) Alignment.CenterEnd else Alignment.CenterStart
     val bubbleColor = if (message.isOutgoing) White else SecondaryMain
     val textColor = if (message.isOutgoing) InputText else White

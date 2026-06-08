@@ -26,7 +26,6 @@ fun MessagesSearchBar(
         value = query,
         onTextChange = onQueryChange,
         placeholder = "Поиск по чатам",
-        cornerRadius = dimensions.searchBarCornerRadius,
         fieldMinHeight = dimensions.searchBarHeight,
         contentPadding = PaddingValues(
             horizontal = dimensions.horizontalMedium,
