@@ -30,13 +30,14 @@ fun ListingsHeader(
     selectedCategoryId: String?,
     onSearchQueryChange: (String) -> Unit,
     onCategorySelected: (String) -> Unit,
+    onFilterClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     collapseFraction: Float = 0f,
 ) {
     val dimensions = LocalDimensions.current
     val headerShape = RoundedCornerShape(
-        bottomStart = dimensions.listingsHeaderCornerRadius,
-        bottomEnd = dimensions.listingsHeaderCornerRadius,
+        bottomStart = dimensions.defaultCornerRadius,
+        bottomEnd = dimensions.defaultCornerRadius,
     )
     val animatedCollapse by animateFloatAsState(
         targetValue = collapseFraction.coerceIn(0f, 1f),
@@ -87,6 +88,7 @@ fun ListingsHeader(
             ListingsSearchBar(
                 query = searchQuery,
                 onQueryChange = onSearchQueryChange,
+                onFilterClick = onFilterClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensions.horizontalMedium)

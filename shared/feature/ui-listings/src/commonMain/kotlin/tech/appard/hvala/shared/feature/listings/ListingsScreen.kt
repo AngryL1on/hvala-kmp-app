@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.shared.core.contracts.model.Listing
 import tech.appard.hvala.shared.core.contracts.model.ListingCategory
+import tech.appard.hvala.shared.core.contracts.model.ListingsFilters
 import tech.appard.hvala.shared.core.ui.components.listings.ListingCard
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
@@ -38,6 +39,7 @@ import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.rememberNavigationBarBottomPadding
+import tech.appard.hvala.shared.feature.listings.components.ListingsFilterSheet
 import tech.appard.hvala.shared.feature.listings.components.ListingsHeader
 
 @Composable
@@ -46,6 +48,7 @@ fun ListingsScreen(
     modifier: Modifier = Modifier,
     showGuestLoginButton: Boolean = false,
     onLoginClick: () -> Unit = {},
+    onListingClick: (String) -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
 
@@ -60,7 +63,13 @@ fun ListingsScreen(
         onLoginClick = onLoginClick,
         onSearchQueryChange = stateHolder::onSearchQueryChange,
         onCategorySelected = stateHolder::onCategorySelected,
+        onFilterClick = stateHolder::onFilterClick,
         onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
+        onListingClick = onListingClick,
+        onFilterDismiss = stateHolder::onFilterDismiss,
+        onDraftFiltersChange = stateHolder::onDraftFiltersChange,
+        onFilterReset = stateHolder::onFilterReset,
+        onFilterApply = stateHolder::onFilterApply,
     )
 }
 
@@ -69,7 +78,13 @@ private fun ListingsContent(
     state: ListingsUiState,
     onSearchQueryChange: (String) -> Unit,
     onCategorySelected: (String) -> Unit,
+    onFilterClick: () -> Unit = {},
     onListingFavoriteToggle: (String) -> Unit,
+    onListingClick: (String) -> Unit = {},
+    onFilterDismiss: () -> Unit,
+    onDraftFiltersChange: (ListingsFilters) -> Unit,
+    onFilterReset: () -> Unit,
+    onFilterApply: () -> Unit,
     modifier: Modifier = Modifier,
     showGuestLoginButton: Boolean = false,
     onLoginClick: () -> Unit = {},
@@ -102,6 +117,7 @@ private fun ListingsContent(
                 selectedCategoryId = state.selectedCategoryId,
                 onSearchQueryChange = onSearchQueryChange,
                 onCategorySelected = onCategorySelected,
+                onFilterClick = onFilterClick,
                 collapseFraction = collapseFraction,
             )
 
@@ -137,11 +153,24 @@ private fun ListingsContent(
                         ListingCard(
                             listing = listing,
                             onFavoriteClick = { onListingFavoriteToggle(listing.id) },
+                            onClick = { onListingClick(listing.id) },
                         )
                     }
                 }
             }
         }
+
+        ListingsFilterSheet(
+            visible = state.isFilterSheetVisible,
+            draftFilters = state.draftFilters,
+            categories = state.categories,
+            countries = state.countries,
+            regions = state.availableRegions,
+            onDismiss = onFilterDismiss,
+            onDraftChange = onDraftFiltersChange,
+            onReset = onFilterReset,
+            onApply = onFilterApply,
+        )
 
         if (showGuestLoginButton) {
             IconButton(
@@ -195,7 +224,13 @@ private fun ListingsScreenPreview() {
             ),
             onSearchQueryChange = {},
             onCategorySelected = {},
+            onFilterClick = {},
             onListingFavoriteToggle = {},
+            onListingClick = {},
+            onFilterDismiss = {},
+            onDraftFiltersChange = {},
+            onFilterReset = {},
+            onFilterApply = {},
         )
     }
 }

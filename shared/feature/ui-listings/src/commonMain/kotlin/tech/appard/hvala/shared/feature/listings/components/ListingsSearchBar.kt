@@ -28,7 +28,6 @@ fun ListingsSearchBar(
         value = query,
         onTextChange = onQueryChange,
         placeholder = "Search",
-        cornerRadius = dimensions.searchBarCornerRadius,
         fieldMinHeight = dimensions.searchBarHeight,
         contentPadding = PaddingValues(
             horizontal = dimensions.horizontalXSmall,

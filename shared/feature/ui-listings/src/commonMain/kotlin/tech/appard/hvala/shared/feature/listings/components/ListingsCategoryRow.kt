@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +37,21 @@ fun ListingsCategoryRow(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
-    val chipShape = RoundedCornerShape(dimensions.categoryChipHeight / 2)
+    val chipShape = RoundedCornerShape(dimensions.defaultCornerRadius)
     val listState = rememberLazyListState()
+    val orderedCategories = remember(categories, selectedCategoryId) {
+        selectedCategoryId?.let { selectedId ->
+            categories.find { it.id == selectedId }?.let { selected ->
+                listOf(selected) + categories.filter { it.id != selectedId }
+            }
+        } ?: categories
+    }
+
+    LaunchedEffect(selectedCategoryId) {
+        if (selectedCategoryId != null) {
+            listState.animateScrollToItem(0)
+        }
+    }
 
     LazyRow(
         modifier = modifier,
@@ -46,7 +60,7 @@ fun ListingsCategoryRow(
         horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        items(categories, key = { it.id }) { category ->
+        items(orderedCategories, key = { it.id }) { category ->
             val isSelected = category.id == selectedCategoryId
             val chipBorderColor = if (isSelected) SecondaryMain else PrimaryMain
             val interactionSource = remember(category.id) { MutableInteractionSource() }
