@@ -26,7 +26,6 @@ fun Route.showsBottomNav(isAuthenticated: Boolean): Boolean {
         Route.Write,
         Route.Favorites,
         Route.Profile,
-        is Route.Chat,
         -> true
         else -> false
     }

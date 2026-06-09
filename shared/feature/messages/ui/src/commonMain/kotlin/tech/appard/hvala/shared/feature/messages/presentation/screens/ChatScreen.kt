@@ -1,23 +1,34 @@
 package tech.appard.hvala.shared.feature.messages.presentation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tech.appard.hvala.shared.feature.messages.presentation.model.UIChatMessage
@@ -74,11 +85,22 @@ private fun ChatContent(
 ) {
     val dimensions = LocalDimensions.current
     val thread = state.thread
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val dismissKeyboard: () -> Unit = {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { dismissKeyboard() }
+    }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(ScreenBackground),
+            .background(ScreenBackground)
+            .imePadding(),
     ) {
         if (state.isLoading || thread == null) {
             Box(
@@ -96,6 +118,17 @@ private fun ChatContent(
                 listingPriceRub != null
             val listingId = thread.resolvedListingId()
             val listState = rememberLazyListState()
+            val dismissKeyboardOnUserScroll = remember(focusManager, keyboardController) {
+                object : NestedScrollConnection {
+                    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                        if (source == NestedScrollSource.UserInput) {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                        }
+                        return Offset.Zero
+                    }
+                }
+            }
 
             LaunchedEffect(thread.id, state.messages.size, state.messages.lastOrNull()?.id) {
                 val lastIndex = state.messages.lastIndex
@@ -124,7 +157,8 @@ private fun ChatContent(
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .nestedScroll(dismissKeyboardOnUserScroll),
                 state = listState,
                 contentPadding = PaddingValues(
                     top = if (hasListingCard) 0.dp else dimensions.verticalMedium,
@@ -136,7 +170,14 @@ private fun ChatContent(
                     items = state.messages,
                     key = { it.id },
                 ) { message ->
-                    ChatMessageItem(message = message)
+                    ChatMessageItem(
+                        message = message,
+                        modifier = Modifier.clickable(
+                            interactionSource = remember(message.id) { MutableInteractionSource() },
+                            indication = null,
+                            onClick = dismissKeyboard,
+                        ),
+                    )
                 }
             }
 

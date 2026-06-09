@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -64,6 +65,7 @@ fun PrimaryTextField(
     isOnlyNumbers: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     leadingContent: @Composable (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
     cornerRadius: Dp? = null,
@@ -122,6 +124,7 @@ fun PrimaryTextField(
             minLines = minLines,
             singleLine = singleLine,
             keyboardOptions = finalKeyboardOptions,
+            keyboardActions = keyboardActions,
             interactionSource = interactionSource,
             cursorBrush = SolidColor(SecondaryMain),
             decorationBox = { innerTextField ->
