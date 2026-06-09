@@ -15,8 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,13 +35,11 @@ import tech.appard.hvala.shared.core.ui.theme.CardBorder
 import tech.appard.hvala.shared.core.ui.theme.FieldCaption
 import tech.appard.hvala.shared.core.ui.theme.GrayText
 import tech.appard.hvala.shared.core.ui.theme.InputText
-import tech.appard.hvala.shared.core.ui.theme.LinkMedium
+import tech.appard.hvala.shared.core.ui.theme.InputBorder
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
-import tech.appard.hvala.shared.core.ui.theme.StarInactive
 import tech.appard.hvala.shared.core.ui.theme.TitleMedium
 import tech.appard.hvala.shared.core.ui.theme.White
-import kotlin.math.floor
 
 @Composable
 fun ProfileHeaderCard(
@@ -109,53 +106,65 @@ private fun ProfileRatingRow(
 ) {
     val dimensions = LocalDimensions.current
 
-    Row(
+    Column(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXXSmall),
+        verticalArrangement = Arrangement.spacedBy(dimensions.verticalXSmall),
     ) {
-        Text(
-            text = formatRating(rating),
-            style = BodyMedium.copy(color = InputText),
-        )
-        ProfileStarRating(rating = rating)
-        Text(
-            text = reviewsLabel,
-            style = LinkMedium.copy(color = GrayText),
-            modifier = Modifier.clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onReviewsClick,
-            ),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXXSmall),
+        ) {
+            Text(
+                text = formatRatingValue(rating),
+                style = BodyMedium.copy(color = InputText),
+            )
+            StarRatingRow(rating = rating)
+        }
+
+        ProfileReviewsButton(
+            label = reviewsLabel,
+            onClick = onReviewsClick,
         )
     }
 }
 
 @Composable
-private fun ProfileStarRating(
-    rating: Float,
+private fun ProfileReviewsButton(
+    label: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
-    val filledStars = floor(rating).toInt().coerceIn(0, 5)
+    val shape = RoundedCornerShape(dimensions.defaultCornerRadius)
 
-    Row(modifier = modifier) {
-        repeat(5) { index ->
-            Icon(
-                imageVector = if (index < filledStars) Icons.Filled.Star else Icons.Outlined.StarBorder,
-                contentDescription = null,
-                tint = if (index < filledStars) PrimaryMain else StarInactive,
-                modifier = Modifier.size(dimensions.iconDefaultSize),
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(PrimaryMain.copy(alpha = 0.18f))
+            .border(width = 1.dp, color = InputBorder, shape = shape)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick,
             )
-        }
+            .padding(
+                horizontal = dimensions.horizontalSmall,
+                vertical = dimensions.verticalXSmall,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXXSmall),
+    ) {
+        Text(
+            text = label,
+            style = BodyMedium.copy(color = InputText),
+        )
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = PrimaryMain,
+            modifier = Modifier.size(dimensions.iconDefaultSize - 4.dp),
+        )
     }
-}
-
-private fun formatRating(rating: Float): String {
-    val rounded = (rating * 10).toInt() / 10f
-    val whole = rounded.toInt()
-    val fraction = ((rounded * 10).toInt() % 10)
-    return "$whole.$fraction"
 }
 
 @Composable

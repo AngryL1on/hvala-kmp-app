@@ -11,6 +11,7 @@ data class AppStrings(
     val listings: ListingsStrings,
     val messages: MessagesStrings,
     val profile: ProfileStrings,
+    val reviews: ReviewStrings,
     val favorites: FavoritesStrings,
     val settings: SettingsStrings,
 )
@@ -22,6 +23,7 @@ fun AppLanguage.strings(): AppStrings = AppStrings(
     listings = listingsStrings(),
     messages = messagesStrings(),
     profile = profileStrings(),
+    reviews = reviewStrings(),
     favorites = favoritesStrings(),
     settings = settingsStrings(),
 )

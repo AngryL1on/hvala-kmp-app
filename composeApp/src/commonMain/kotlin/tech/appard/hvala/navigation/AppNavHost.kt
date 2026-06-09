@@ -51,7 +51,9 @@ import tech.appard.hvala.shared.feature.profile.presentation.screens.EditProfile
 import tech.appard.hvala.shared.feature.profile.presentation.screens.ProfileScreen
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.presentation.screens.ReviewsScreen
 import tech.appard.hvala.shared.feature.profile.presentation.screens.SellerProfileScreen
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileStateHolder
 import tech.appard.hvala.shared.feature.listings.domain.ToggleListingFavoriteUseCase
 import tech.appard.hvala.shared.core.i18n.appStrings
@@ -71,6 +73,7 @@ fun AppNavHost(
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val editProfileStateHolder = koinInject<EditProfileStateHolder>()
     val sellerProfileStateHolder = koinInject<SellerProfileStateHolder>()
+    val reviewsStateHolder = koinInject<ReviewsStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
     val settingsStateHolder = koinInject<SettingsStateHolder>()
     val toggleListingFavoriteUseCase = koinInject<ToggleListingFavoriteUseCase>()
@@ -114,6 +117,10 @@ fun AppNavHost(
         }
     }
 
+    val onReviewsClick: (String) -> Unit = { sellerId ->
+        navController.navigateTo(Route.Reviews(sellerId))
+    }
+
     val onSessionEnd: () -> Unit = {
         scope.launch {
             authStateHolder.signOut()
@@ -130,6 +137,7 @@ fun AppNavHost(
         Route.Registration,
         is Route.ListingDetail,
         is Route.SellerProfile,
+        is Route.Reviews,
         -> true
         Route.Profile,
         Route.Settings,
@@ -151,6 +159,7 @@ fun AppNavHost(
             Route.CreateListing -> strings.nav.createListing
             is Route.ListingDetail -> listingDetailState.listing?.title ?: strings.common.listing
             is Route.SellerProfile -> sellerProfileState.seller?.name ?: strings.common.seller
+            is Route.Reviews -> strings.reviews.screenTitle
             Route.Write -> strings.nav.messages
             Route.Favorites -> strings.nav.favoritesTitle
             is Route.Chat -> chatState.thread?.participantName ?: strings.common.chat
@@ -164,6 +173,7 @@ fun AppNavHost(
             Route.CreateListing,
             is Route.ListingDetail,
             is Route.SellerProfile,
+            is Route.Reviews,
             is Route.Chat,
             -> true
             else -> false
@@ -175,6 +185,7 @@ fun AppNavHost(
             currentRoute == Route.CreateListing ||
             currentRoute is Route.ListingDetail ||
             currentRoute is Route.SellerProfile ||
+            currentRoute is Route.Reviews ||
             currentRoute == Route.Write ||
             currentRoute == Route.Favorites,
         showSettingsButton = currentRoute == Route.Profile,
@@ -198,6 +209,7 @@ fun AppNavHost(
         Route.CreateListing,
         is Route.ListingDetail,
         is Route.SellerProfile,
+        is Route.Reviews,
         Route.Listings,
         Route.Write,
         Route.Favorites,
@@ -280,6 +292,7 @@ fun AppNavHost(
                         is Route.Chat -> route.threadId
                         is Route.ListingDetail -> route.listingId
                         is Route.SellerProfile -> route.sellerId
+                        is Route.Reviews -> route.sellerId
                         else -> route::class
                     }
                 },
@@ -323,6 +336,9 @@ fun AppNavHost(
                     Route.Profile -> ProfileScreen(
                         stateHolder = profileStateHolder,
                         onListingClick = onListingClick,
+                        onReviewsClick = {
+                            profileState.profile?.id?.let(onReviewsClick)
+                        },
                     )
                     Route.Settings -> SettingsScreen(
                         stateHolder = settingsStateHolder,
@@ -369,6 +385,11 @@ fun AppNavHost(
                         sellerId = route.sellerId,
                         stateHolder = sellerProfileStateHolder,
                         onListingClick = onListingClick,
+                        onReviewsClick = { onReviewsClick(route.sellerId) },
+                    )
+                    is Route.Reviews -> ReviewsScreen(
+                        sellerId = route.sellerId,
+                        stateHolder = reviewsStateHolder,
                     )
                 }
             }

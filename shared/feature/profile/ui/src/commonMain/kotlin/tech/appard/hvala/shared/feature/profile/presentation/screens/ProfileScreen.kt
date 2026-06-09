@@ -47,6 +47,7 @@ fun ProfileScreen(
     stateHolder: ProfileStateHolder,
     modifier: Modifier = Modifier,
     onListingClick: (String) -> Unit = {},
+    onReviewsClick: () -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
 
@@ -60,6 +61,7 @@ fun ProfileScreen(
         onTabSelected = stateHolder::onTabSelected,
         onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
         onListingClick = onListingClick,
+        onReviewsClick = onReviewsClick,
     )
 }
 
@@ -69,6 +71,7 @@ private fun ProfileContent(
     onTabSelected: (ProfileListingsTab) -> Unit,
     onListingFavoriteToggle: (String) -> Unit,
     onListingClick: (String) -> Unit,
+    onReviewsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -118,6 +121,7 @@ private fun ProfileContent(
                         rating = state.rating,
                         memberSince = state.memberSince,
                         avatarUrl = state.profile?.avatarUrl,
+                        onReviewsClick = onReviewsClick,
                     )
 
                     ProfileSegmentedTabs(
@@ -229,6 +233,7 @@ private fun ProfileScreenPreview() {
             onTabSelected = {},
             onListingFavoriteToggle = {},
             onListingClick = {},
+            onReviewsClick = {},
         )
     }
 }

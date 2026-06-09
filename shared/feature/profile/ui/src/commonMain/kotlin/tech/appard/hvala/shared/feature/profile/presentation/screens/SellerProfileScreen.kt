@@ -40,6 +40,7 @@ fun SellerProfileScreen(
     stateHolder: SellerProfileStateHolder,
     modifier: Modifier = Modifier,
     onListingClick: (String) -> Unit = {},
+    onReviewsClick: () -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
 
@@ -52,6 +53,7 @@ fun SellerProfileScreen(
         state = state,
         onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
         onListingClick = onListingClick,
+        onReviewsClick = onReviewsClick,
     )
 }
 
@@ -60,6 +62,7 @@ private fun SellerProfileContent(
     state: SellerProfileUiState,
     onListingFavoriteToggle: (String) -> Unit,
     onListingClick: (String) -> Unit,
+    onReviewsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -102,6 +105,7 @@ private fun SellerProfileContent(
                         activeListingsCount = seller.activeListingsCount,
                         rating = seller.rating,
                         memberSince = seller.memberSince,
+                        onReviewsClick = onReviewsClick,
                     )
 
                     if (state.listings.isEmpty()) {
@@ -167,6 +171,7 @@ private fun SellerProfileScreenPreview() {
             ),
             onListingFavoriteToggle = {},
             onListingClick = {},
+            onReviewsClick = {},
         )
     }
 }
