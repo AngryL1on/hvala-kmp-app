@@ -94,4 +94,3 @@ class SellerProfileViewModel(
     }
 }
 
-typealias SellerProfileStateHolder = SellerProfileViewModel

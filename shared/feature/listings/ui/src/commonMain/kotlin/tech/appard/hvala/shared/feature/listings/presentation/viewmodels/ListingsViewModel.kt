@@ -202,5 +202,3 @@ class ListingsViewModel(
     ).toListingsUi()
 }
 
-/** @deprecated Use [ListingsViewModel]. Kept for gradual migration. */
-typealias ListingsStateHolder = ListingsViewModel

@@ -54,7 +54,7 @@ import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.theme.CardBorder
 import tech.appard.hvala.shared.core.i18n.ListingsStrings
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailUiState
 import tech.appard.hvala.shared.feature.listings.presentation.components.CreateListingMapPlaceholder
 import tech.appard.hvala.shared.feature.listings.presentation.components.ListingDetailInfoCard
@@ -63,23 +63,23 @@ import tech.appard.hvala.shared.feature.listings.presentation.components.Listing
 @Composable
 fun ListingDetailScreen(
     listingId: String,
-    stateHolder: ListingDetailStateHolder,
+    viewModel: ListingDetailViewModel,
     modifier: Modifier = Modifier,
     isFavoriteOverride: Boolean? = null,
     onFavoriteToggle: (String) -> Unit = {},
     onContactClick: () -> Unit = {},
     onSellerClick: (String) -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(listingId, isFavoriteOverride) {
-        stateHolder.load(listingId, isFavoriteOverride)
+        viewModel.load(listingId, isFavoriteOverride)
     }
 
     ListingDetailContent(
         modifier = modifier,
         state = state,
-        onPhotoSelected = stateHolder::onPhotoSelected,
+        onPhotoSelected = viewModel::onPhotoSelected,
         onFavoriteClick = {
             state.listing?.id?.let(onFavoriteToggle)
         },

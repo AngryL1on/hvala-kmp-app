@@ -30,28 +30,28 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileViewModel
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileUiState
 import tech.appard.hvala.shared.feature.profile.presentation.components.ProfileHeaderCard
 
 @Composable
 fun SellerProfileScreen(
     sellerId: String,
-    stateHolder: SellerProfileStateHolder,
+    viewModel: SellerProfileViewModel,
     modifier: Modifier = Modifier,
     onListingClick: (String) -> Unit = {},
     onReviewsClick: () -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(sellerId) {
-        stateHolder.load(sellerId)
+        viewModel.load(sellerId)
     }
 
     SellerProfileContent(
         modifier = modifier,
         state = state,
-        onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
+        onListingFavoriteToggle = viewModel::onListingFavoriteToggle,
         onListingClick = onListingClick,
         onReviewsClick = onReviewsClick,
     )

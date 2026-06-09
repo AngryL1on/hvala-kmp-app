@@ -142,4 +142,3 @@ class MessagesViewModel(
     }
 }
 
-typealias MessagesStateHolder = MessagesViewModel

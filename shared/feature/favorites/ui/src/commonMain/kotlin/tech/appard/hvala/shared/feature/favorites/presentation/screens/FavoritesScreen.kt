@@ -32,34 +32,34 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesStateHolder
+import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesViewModel
 import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesUiState
 import tech.appard.hvala.shared.feature.favorites.presentation.components.FavoritesToolbar
 
 @Composable
 fun FavoritesScreen(
-    stateHolder: FavoritesStateHolder,
+    viewModel: FavoritesViewModel,
     modifier: Modifier = Modifier,
     onListingClick: (String) -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        stateHolder.load()
+        viewModel.load()
     }
 
     FavoritesContent(
         modifier = modifier,
         state = state,
-        onSortOrderChange = stateHolder::onSortOrderChange,
-        onFilterClick = stateHolder::onFilterClick,
-        onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
+        onSortOrderChange = viewModel::onSortOrderChange,
+        onFilterClick = viewModel::onFilterClick,
+        onListingFavoriteToggle = viewModel::onListingFavoriteToggle,
         onListingClick = onListingClick,
-        onFilterDismiss = stateHolder::onFilterDismiss,
-        onDraftFiltersChange = stateHolder::onDraftFiltersChange,
-        onDraftSortOrderChange = stateHolder::onDraftSortOrderChange,
-        onFilterReset = stateHolder::onFilterReset,
-        onFilterApply = stateHolder::onFilterApply,
+        onFilterDismiss = viewModel::onFilterDismiss,
+        onDraftFiltersChange = viewModel::onDraftFiltersChange,
+        onDraftSortOrderChange = viewModel::onDraftSortOrderChange,
+        onFilterReset = viewModel::onFilterReset,
+        onFilterApply = viewModel::onFilterApply,
     )
 }
 

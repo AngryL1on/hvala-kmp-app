@@ -316,4 +316,3 @@ class ReviewsViewModel(
     }
 }
 
-typealias ReviewsStateHolder = ReviewsViewModel

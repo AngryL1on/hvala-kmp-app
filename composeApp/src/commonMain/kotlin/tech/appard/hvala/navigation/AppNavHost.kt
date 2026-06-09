@@ -33,56 +33,56 @@ import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.HvalaStatusBarEffect
 import tech.appard.hvala.shared.feature.auth.presentation.screens.AuthScreen
-import tech.appard.hvala.shared.feature.auth.presentation.AuthStateHolder
+import tech.appard.hvala.shared.feature.auth.presentation.AuthViewModel
 import tech.appard.hvala.shared.feature.auth.presentation.screens.RegistrationScreen
 import tech.appard.hvala.shared.feature.favorites.presentation.screens.FavoritesScreen
-import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesStateHolder
+import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.screens.CreateListingScreen
-import tech.appard.hvala.shared.feature.listings.presentation.CreateListingStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.CreateListingViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.screens.ListingDetailScreen
-import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.screens.ListingsScreen
-import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsViewModel
 import tech.appard.hvala.shared.feature.messages.presentation.screens.ChatScreen
 import tech.appard.hvala.shared.feature.messages.presentation.screens.MessagesScreen
-import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesStateHolder
+import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesViewModel
 import tech.appard.hvala.shared.feature.messages.presentation.mapper.resolvedSellerId
 import tech.appard.hvala.shared.feature.profile.presentation.screens.EditProfileScreen
 import tech.appard.hvala.shared.feature.profile.presentation.screens.ProfileScreen
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileStateHolder
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileViewModel
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileViewModel
 import tech.appard.hvala.shared.feature.profile.presentation.screens.ReviewsScreen
 import tech.appard.hvala.shared.feature.profile.presentation.screens.SellerProfileScreen
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsStateHolder
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsViewModel
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileViewModel
 import tech.appard.hvala.shared.feature.listings.domain.ToggleListingFavoriteUseCase
 import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.settings.presentation.screens.SettingsScreen
-import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsStateHolder
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
-    val authStateHolder = koinInject<AuthStateHolder>()
-    val listingsStateHolder = koinInject<ListingsStateHolder>()
-    val createListingStateHolder = koinInject<CreateListingStateHolder>()
-    val listingDetailStateHolder = koinInject<ListingDetailStateHolder>()
-    val messagesStateHolder = koinInject<MessagesStateHolder>()
-    val profileStateHolder = koinInject<ProfileStateHolder>()
-    val editProfileStateHolder = koinInject<EditProfileStateHolder>()
-    val sellerProfileStateHolder = koinInject<SellerProfileStateHolder>()
-    val reviewsStateHolder = koinInject<ReviewsStateHolder>()
-    val favoritesStateHolder = koinInject<FavoritesStateHolder>()
-    val settingsStateHolder = koinInject<SettingsStateHolder>()
+    val authViewModel = koinInject<AuthViewModel>()
+    val listingsViewModel = koinInject<ListingsViewModel>()
+    val createListingViewModel = koinInject<CreateListingViewModel>()
+    val listingDetailViewModel = koinInject<ListingDetailViewModel>()
+    val messagesViewModel = koinInject<MessagesViewModel>()
+    val profileViewModel = koinInject<ProfileViewModel>()
+    val editProfileViewModel = koinInject<EditProfileViewModel>()
+    val sellerProfileViewModel = koinInject<SellerProfileViewModel>()
+    val reviewsViewModel = koinInject<ReviewsViewModel>()
+    val favoritesViewModel = koinInject<FavoritesViewModel>()
+    val settingsViewModel = koinInject<SettingsViewModel>()
     val toggleListingFavoriteUseCase = koinInject<ToggleListingFavoriteUseCase>()
-    val profileState by profileStateHolder.state.collectAsState()
-    val sellerProfileState by sellerProfileStateHolder.state.collectAsState()
-    val listingsState by listingsStateHolder.state.collectAsState()
-    val listingDetailState by listingDetailStateHolder.state.collectAsState()
-    val chatState by messagesStateHolder.chatState.collectAsState()
-    val isAuthenticated by authStateHolder.isAuthenticated.collectAsState()
+    val profileState by profileViewModel.state.collectAsState()
+    val sellerProfileState by sellerProfileViewModel.state.collectAsState()
+    val listingsState by listingsViewModel.state.collectAsState()
+    val listingDetailState by listingDetailViewModel.state.collectAsState()
+    val chatState by messagesViewModel.chatState.collectAsState()
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val strings = appStrings()
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentRoute
@@ -116,7 +116,7 @@ fun AppNavHost(
 
             scope.launch {
                 toggleListingFavoriteUseCase(listingId)
-                listingDetailStateHolder.syncFavorite(!currentFavorite)
+                listingDetailViewModel.syncFavorite(!currentFavorite)
             }
         }
     }
@@ -127,11 +127,11 @@ fun AppNavHost(
 
     val onSessionEnd: () -> Unit = {
         scope.launch {
-            authStateHolder.signOut()
-            profileStateHolder.reset()
-            favoritesStateHolder.reset()
-            listingDetailStateHolder.reset()
-            sellerProfileStateHolder.reset()
+            authViewModel.signOut()
+            profileViewModel.reset()
+            favoritesViewModel.reset()
+            listingDetailViewModel.reset()
+            sellerProfileViewModel.reset()
             navController.navigateToRoot(Route.Listings)
         }
     }
@@ -304,70 +304,70 @@ fun AppNavHost(
             ) { screen ->
                 when (val route = screen.route) {
                     Route.Auth -> AuthScreen(
-                        stateHolder = authStateHolder,
+                        viewModel = authViewModel,
                         onAuthenticated = { navController.navigateToRoot(Route.Listings) },
                         onSignUpClick = { navController.navigateTo(Route.Registration) },
                     )
                     Route.Registration -> RegistrationScreen(
-                        stateHolder = authStateHolder,
+                        viewModel = authViewModel,
                         onRegistered = {
-                            authStateHolder.resetRegistration()
-                            profileStateHolder.reset()
+                            authViewModel.resetRegistration()
+                            profileViewModel.reset()
                             navController.navigateToRoot(Route.Listings)
                         },
                     )
                     Route.Listings -> ListingsScreen(
-                        stateHolder = listingsStateHolder,
+                        viewModel = listingsViewModel,
                         showGuestLoginButton = !isAuthenticated,
                         onLoginClick = { navController.navigateTo(Route.Auth) },
                         onListingClick = onListingClick,
                     )
                     Route.Write -> MessagesScreen(
-                        stateHolder = messagesStateHolder,
+                        viewModel = messagesViewModel,
                         onChatClick = { threadId ->
                             navController.navigateTo(Route.Chat(threadId))
                         },
                     )
                     is Route.Chat -> ChatScreen(
                         threadId = route.threadId,
-                        stateHolder = messagesStateHolder,
+                        viewModel = messagesViewModel,
                         onListingClick = onListingClick,
                     )
                     Route.Favorites -> FavoritesScreen(
-                        stateHolder = favoritesStateHolder,
+                        viewModel = favoritesViewModel,
                         onListingClick = onListingClick,
                     )
                     Route.Profile -> ProfileScreen(
-                        stateHolder = profileStateHolder,
+                        viewModel = profileViewModel,
                         onListingClick = onListingClick,
                         onReviewsClick = {
                             profileState.profile?.id?.let(onReviewsClick)
                         },
                     )
                     Route.Settings -> SettingsScreen(
-                        stateHolder = settingsStateHolder,
+                        viewModel = settingsViewModel,
                         fullName = profileState.profile?.fullName ?: "",
                         email = profileState.profile?.email ?: "",
                         phone = profileState.profile?.phone ?: "",
                         avatarUrl = profileState.profile?.avatarUrl,
                         onEditProfileClick = { navController.navigateTo(Route.EditProfile) },
-                        onAvatarPicked = profileStateHolder::updateAvatar,
+                        onAvatarPicked = profileViewModel::updateAvatar,
                         onSessionEnd = onSessionEnd,
                     )
                     Route.EditProfile -> EditProfileScreen(
-                        stateHolder = editProfileStateHolder,
+                        viewModel = editProfileViewModel,
                         onSaved = {
-                            profileStateHolder.refreshProfile()
+                            profileViewModel.refreshProfile()
                             navController.back()
                         },
                     )
                     Route.CreateListing -> CreateListingScreen(
-                        stateHolder = createListingStateHolder,
+                        viewModel = createListingViewModel,
                         onSubmitted = { navController.back() },
                     )
                     is Route.ListingDetail -> ListingDetailScreen(
                         listingId = route.listingId,
-                        stateHolder = listingDetailStateHolder,
+                        viewModel = listingDetailViewModel,
                         isFavoriteOverride = listingsState.allListings
                             .find { it.id == route.listingId }
                             ?.isFavorite,
@@ -377,7 +377,7 @@ fun AppNavHost(
                                 navController.navigateTo(Route.Auth)
                             } else {
                                 scope.launch {
-                                    messagesStateHolder.openChatForListing(route.listingId)?.let { threadId ->
+                                    messagesViewModel.openChatForListing(route.listingId)?.let { threadId ->
                                         navController.navigateTo(Route.Chat(threadId))
                                     }
                                 }
@@ -387,13 +387,13 @@ fun AppNavHost(
                     )
                     is Route.SellerProfile -> SellerProfileScreen(
                         sellerId = route.sellerId,
-                        stateHolder = sellerProfileStateHolder,
+                        viewModel = sellerProfileViewModel,
                         onListingClick = onListingClick,
                         onReviewsClick = { onReviewsClick(route.sellerId) },
                     )
                     is Route.Reviews -> ReviewsScreen(
                         sellerId = route.sellerId,
-                        stateHolder = reviewsStateHolder,
+                        viewModel = reviewsViewModel,
                     )
                 }
             }

@@ -168,4 +168,3 @@ class FavoritesViewModel(
         .sortedByUi(sortOrder, filters.currency)
 }
 
-typealias FavoritesStateHolder = FavoritesViewModel

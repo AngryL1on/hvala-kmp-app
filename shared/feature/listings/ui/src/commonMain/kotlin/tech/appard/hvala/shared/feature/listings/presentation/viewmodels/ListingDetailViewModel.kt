@@ -117,4 +117,3 @@ class ListingDetailViewModel(
     }
 }
 
-typealias ListingDetailStateHolder = ListingDetailViewModel

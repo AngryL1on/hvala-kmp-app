@@ -38,17 +38,17 @@ import tech.appard.hvala.shared.core.ui.theme.LinkMedium
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.auth.presentation.AuthStateHolder
+import tech.appard.hvala.shared.feature.auth.presentation.AuthViewModel
 
 @Composable
 fun AuthScreen(
-    stateHolder: AuthStateHolder,
+    viewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     onAuthenticated: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     AuthContent(
         modifier = modifier,
@@ -56,9 +56,9 @@ fun AuthScreen(
         password = state.password,
         error = state.error,
         isLoading = state.isLoading,
-        onLoginChange = stateHolder::onLoginChange,
-        onPasswordChange = stateHolder::onPasswordChange,
-        onSignIn = { stateHolder.signIn(onAuthenticated) },
+        onLoginChange = viewModel::onLoginChange,
+        onPasswordChange = viewModel::onPasswordChange,
+        onSignIn = { viewModel.signIn(onAuthenticated) },
         onForgotPasswordClick = onForgotPasswordClick,
         onSignUpClick = onSignUpClick,
     )

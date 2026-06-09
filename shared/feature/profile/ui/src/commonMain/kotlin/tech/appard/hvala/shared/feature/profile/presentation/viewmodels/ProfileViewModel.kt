@@ -119,4 +119,3 @@ class ProfileViewModel(
     }
 }
 
-typealias ProfileStateHolder = ProfileViewModel

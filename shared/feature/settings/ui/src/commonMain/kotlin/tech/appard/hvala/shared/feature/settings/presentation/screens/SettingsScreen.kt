@@ -38,12 +38,12 @@ import tech.appard.hvala.shared.feature.settings.presentation.components.Setting
 import tech.appard.hvala.shared.feature.settings.presentation.model.SettingsMenuItem
 import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsConfirmAction
 import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsEffect
-import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsStateHolder
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsViewModel
 import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsUiState
 
 @Composable
 fun SettingsScreen(
-    stateHolder: SettingsStateHolder,
+    viewModel: SettingsViewModel,
     fullName: String,
     email: String,
     phone: String,
@@ -53,11 +53,11 @@ fun SettingsScreen(
     onAvatarPicked: (String) -> Unit = {},
     onSessionEnd: () -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
     val imagePicker = rememberImagePicker()
 
-    LaunchedEffect(stateHolder) {
-        stateHolder.effects.collect { effect ->
+    LaunchedEffect(viewModel) {
+        viewModel.effects.collect { effect ->
             when (effect) {
                 SettingsEffect.SessionEndRequested -> onSessionEnd()
             }
@@ -73,19 +73,19 @@ fun SettingsScreen(
         avatarUrl = avatarUrl,
         onEditProfileClick = onEditProfileClick,
         onEditAvatarClick = { imagePicker.pick { uri -> uri?.let(onAvatarPicked) } },
-        onMenuItemClick = stateHolder::onMenuItemClick,
-        onLogoutClick = stateHolder::onLogoutClick,
-        onDeleteAccountClick = stateHolder::onDeleteAccountClick,
-        onConfirmDismiss = stateHolder::onConfirmDismiss,
-        onLogoutConfirmed = stateHolder::onLogoutConfirmed,
-        onDeleteAccountConfirmed = stateHolder::onDeleteAccountConfirmed,
-        onLanguagePickerDismiss = stateHolder::onLanguagePickerDismiss,
-        onLanguageDraftSelected = stateHolder::onLanguageDraftSelected,
-        onLanguageConfirmed = stateHolder::onLanguageConfirmed,
-        onNotificationSettingsDismiss = stateHolder::onNotificationSettingsDismiss,
-        onNotificationsEnabledChanged = stateHolder::onNotificationsEnabledChanged,
-        onNotificationSoundChanged = stateHolder::onNotificationSoundChanged,
-        onNotificationSettingsConfirmed = stateHolder::onNotificationSettingsConfirmed,
+        onMenuItemClick = viewModel::onMenuItemClick,
+        onLogoutClick = viewModel::onLogoutClick,
+        onDeleteAccountClick = viewModel::onDeleteAccountClick,
+        onConfirmDismiss = viewModel::onConfirmDismiss,
+        onLogoutConfirmed = viewModel::onLogoutConfirmed,
+        onDeleteAccountConfirmed = viewModel::onDeleteAccountConfirmed,
+        onLanguagePickerDismiss = viewModel::onLanguagePickerDismiss,
+        onLanguageDraftSelected = viewModel::onLanguageDraftSelected,
+        onLanguageConfirmed = viewModel::onLanguageConfirmed,
+        onNotificationSettingsDismiss = viewModel::onNotificationSettingsDismiss,
+        onNotificationsEnabledChanged = viewModel::onNotificationsEnabledChanged,
+        onNotificationSoundChanged = viewModel::onNotificationSoundChanged,
+        onNotificationSettingsConfirmed = viewModel::onNotificationSettingsConfirmed,
     )
 }
 

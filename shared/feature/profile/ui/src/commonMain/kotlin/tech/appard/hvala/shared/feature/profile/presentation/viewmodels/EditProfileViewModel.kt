@@ -112,4 +112,3 @@ class EditProfileViewModel(
     }
 }
 
-typealias EditProfileStateHolder = EditProfileViewModel

@@ -32,7 +32,7 @@ data class RegistrationUiState(
     val error: String? = null,
 )
 
-class AuthStateHolder(
+class AuthViewModel(
     private val authRepository: AuthRepository,
     private val localeRepository: LocaleRepository,
 ) {

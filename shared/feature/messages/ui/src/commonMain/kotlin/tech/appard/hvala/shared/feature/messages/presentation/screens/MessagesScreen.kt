@@ -24,27 +24,27 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
-import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesStateHolder
+import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesViewModel
 import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesUiState
 import tech.appard.hvala.shared.feature.messages.presentation.components.ChatThreadCard
 import tech.appard.hvala.shared.feature.messages.presentation.components.MessagesSearchBar
 
 @Composable
 fun MessagesScreen(
-    stateHolder: MessagesStateHolder,
+    viewModel: MessagesViewModel,
     modifier: Modifier = Modifier,
     onChatClick: (String) -> Unit = {},
 ) {
-    val state by stateHolder.messagesState.collectAsState()
+    val state by viewModel.messagesState.collectAsState()
 
     LaunchedEffect(Unit) {
-        stateHolder.loadThreads()
+        viewModel.loadThreads()
     }
 
     MessagesContent(
         modifier = modifier,
         state = state,
-        onSearchQueryChange = stateHolder::onSearchQueryChange,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
         onChatClick = onChatClick,
     )
 }

@@ -42,7 +42,7 @@ import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.platform.rememberMediaPickerLauncher
 import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.ChatUiState
-import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesStateHolder
+import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesViewModel
 import tech.appard.hvala.shared.feature.messages.presentation.components.ChatInputBar
 import tech.appard.hvala.shared.feature.messages.presentation.components.ChatListingCard
 import tech.appard.hvala.shared.feature.messages.presentation.components.ChatMessageItem
@@ -50,25 +50,25 @@ import tech.appard.hvala.shared.feature.messages.presentation.components.ChatMes
 @Composable
 fun ChatScreen(
     threadId: String,
-    stateHolder: MessagesStateHolder,
+    viewModel: MessagesViewModel,
     modifier: Modifier = Modifier,
     onListingClick: (String) -> Unit = {},
 ) {
-    val state by stateHolder.chatState.collectAsState()
+    val state by viewModel.chatState.collectAsState()
     val filePicker = rememberMediaPickerLauncher(
         mode = MediaPickerMode.Files,
-        onResult = stateHolder::onAttachmentsPicked,
+        onResult = viewModel::onAttachmentsPicked,
     )
 
     LaunchedEffect(threadId) {
-        stateHolder.loadChat(threadId)
+        viewModel.loadChat(threadId)
     }
 
     ChatContent(
         modifier = modifier,
         state = state,
-        onInputChange = stateHolder::onChatInputChange,
-        onSendClick = stateHolder::sendMessage,
+        onInputChange = viewModel::onChatInputChange,
+        onSendClick = viewModel::sendMessage,
         onListingClick = onListingClick,
         onAttachClick = { filePicker.launch(maxItems = 5) },
     )

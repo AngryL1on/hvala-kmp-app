@@ -40,23 +40,23 @@ import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.rememberNavigationBarBottomPadding
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsUiState
 import tech.appard.hvala.shared.feature.listings.presentation.components.ListingsFilterSheet
 import tech.appard.hvala.shared.feature.listings.presentation.components.ListingsHeader
 
 @Composable
 fun ListingsScreen(
-    stateHolder: ListingsStateHolder,
+    viewModel: ListingsViewModel,
     modifier: Modifier = Modifier,
     showGuestLoginButton: Boolean = false,
     onLoginClick: () -> Unit = {},
     onListingClick: (String) -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        stateHolder.load()
+        viewModel.load()
     }
 
     ListingsContent(
@@ -64,15 +64,15 @@ fun ListingsScreen(
         state = state,
         showGuestLoginButton = showGuestLoginButton,
         onLoginClick = onLoginClick,
-        onSearchQueryChange = stateHolder::onSearchQueryChange,
-        onCategorySelected = stateHolder::onCategorySelected,
-        onFilterClick = stateHolder::onFilterClick,
-        onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
+        onSearchQueryChange = viewModel::onSearchQueryChange,
+        onCategorySelected = viewModel::onCategorySelected,
+        onFilterClick = viewModel::onFilterClick,
+        onListingFavoriteToggle = viewModel::onListingFavoriteToggle,
         onListingClick = onListingClick,
-        onFilterDismiss = stateHolder::onFilterDismiss,
-        onDraftFiltersChange = stateHolder::onDraftFiltersChange,
-        onFilterReset = stateHolder::onFilterReset,
-        onFilterApply = stateHolder::onFilterApply,
+        onFilterDismiss = viewModel::onFilterDismiss,
+        onDraftFiltersChange = viewModel::onDraftFiltersChange,
+        onFilterReset = viewModel::onFilterReset,
+        onFilterApply = viewModel::onFilterApply,
     )
 }
 

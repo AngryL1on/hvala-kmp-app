@@ -34,7 +34,7 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileViewModel
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileUiState
 import tech.appard.hvala.shared.feature.profile.presentation.components.ProfileHeaderCard
 import tech.appard.hvala.shared.feature.profile.presentation.components.ProfileSegmentedTabs
@@ -44,22 +44,22 @@ import tech.appard.hvala.shared.feature.profile.presentation.model.profileListin
 
 @Composable
 fun ProfileScreen(
-    stateHolder: ProfileStateHolder,
+    viewModel: ProfileViewModel,
     modifier: Modifier = Modifier,
     onListingClick: (String) -> Unit = {},
     onReviewsClick: () -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        stateHolder.load()
+        viewModel.load()
     }
 
     ProfileContent(
         modifier = modifier,
         state = state,
-        onTabSelected = stateHolder::onTabSelected,
-        onListingFavoriteToggle = stateHolder::onListingFavoriteToggle,
+        onTabSelected = viewModel::onTabSelected,
+        onListingFavoriteToggle = viewModel::onListingFavoriteToggle,
         onListingClick = onListingClick,
         onReviewsClick = onReviewsClick,
     )

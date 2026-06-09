@@ -40,7 +40,7 @@ import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCur
 import tech.appard.hvala.shared.core.ui.model.MediaPickerMode
 import tech.appard.hvala.shared.core.ui.platform.rememberMediaPickerLauncher
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.listings.presentation.CreateListingStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.CreateListingViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.createListingSelectOptions
 import tech.appard.hvala.shared.feature.listings.presentation.CreateListingUiState
 import tech.appard.hvala.shared.feature.listings.presentation.components.CreateListingMapPlaceholder
@@ -48,47 +48,47 @@ import tech.appard.hvala.shared.feature.listings.presentation.components.CreateL
 
 @Composable
 fun CreateListingScreen(
-    stateHolder: CreateListingStateHolder,
+    viewModel: CreateListingViewModel,
     modifier: Modifier = Modifier,
     onSubmitted: () -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
     val photoPicker = rememberMediaPickerLauncher(
         mode = MediaPickerMode.Images,
-        onResult = stateHolder::onPhotosPicked,
+        onResult = viewModel::onPhotosPicked,
     )
 
     LaunchedEffect(Unit) {
-        stateHolder.load()
+        viewModel.load()
     }
 
     CreateListingContent(
         modifier = modifier,
         state = state,
-        onTitleChange = stateHolder::onTitleChange,
-        onPhoneChange = stateHolder::onPhoneChange,
-        onCountryChange = stateHolder::onCountryChange,
-        onRegionChange = stateHolder::onRegionChange,
-        onLocationChange = stateHolder::onLocationChange,
-        onPriceChange = stateHolder::onPriceChange,
-        onCurrencyChange = stateHolder::onCurrencyChange,
-        onAvailabilityChange = stateHolder::onAvailabilityChange,
-        onCategoryChange = stateHolder::onCategoryChange,
-        onBodyTypeChange = stateHolder::onBodyTypeChange,
-        onColorChange = stateHolder::onColorChange,
-        onTransmissionChange = stateHolder::onTransmissionChange,
-        onDrivetrainChange = stateHolder::onDrivetrainChange,
-        onSteeringWheelChange = stateHolder::onSteeringWheelChange,
-        onConditionChange = stateHolder::onConditionChange,
-        onNumberOfOwnersChange = stateHolder::onNumberOfOwnersChange,
-        onDescriptionChange = stateHolder::onDescriptionChange,
+        onTitleChange = viewModel::onTitleChange,
+        onPhoneChange = viewModel::onPhoneChange,
+        onCountryChange = viewModel::onCountryChange,
+        onRegionChange = viewModel::onRegionChange,
+        onLocationChange = viewModel::onLocationChange,
+        onPriceChange = viewModel::onPriceChange,
+        onCurrencyChange = viewModel::onCurrencyChange,
+        onAvailabilityChange = viewModel::onAvailabilityChange,
+        onCategoryChange = viewModel::onCategoryChange,
+        onBodyTypeChange = viewModel::onBodyTypeChange,
+        onColorChange = viewModel::onColorChange,
+        onTransmissionChange = viewModel::onTransmissionChange,
+        onDrivetrainChange = viewModel::onDrivetrainChange,
+        onSteeringWheelChange = viewModel::onSteeringWheelChange,
+        onConditionChange = viewModel::onConditionChange,
+        onNumberOfOwnersChange = viewModel::onNumberOfOwnersChange,
+        onDescriptionChange = viewModel::onDescriptionChange,
         onAddPhotoClick = {
-            val remaining = CreateListingStateHolder.MAX_PHOTOS - state.photos.size
+            val remaining = CreateListingViewModel.MAX_PHOTOS - state.photos.size
             if (remaining > 0) {
                 photoPicker.launch(remaining)
             }
         },
-        onSubmit = { stateHolder.submit(onSubmitted) },
+        onSubmit = { viewModel.submit(onSubmitted) },
     )
 }
 
@@ -143,7 +143,7 @@ private fun CreateListingContent(
         CreateListingPhotoSection(
             photos = state.photos,
             onAddPhotoClick = onAddPhotoClick,
-            canAddMore = state.photos.size < CreateListingStateHolder.MAX_PHOTOS,
+            canAddMore = state.photos.size < CreateListingViewModel.MAX_PHOTOS,
         )
 
         SectionTitle(strings.fillDescription)

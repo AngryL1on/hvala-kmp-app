@@ -209,4 +209,3 @@ class SettingsViewModel(
     fun onDeleteAccountConfirmed() = onIntent(SettingsIntent.DeleteAccountConfirmed)
 }
 
-typealias SettingsStateHolder = SettingsViewModel

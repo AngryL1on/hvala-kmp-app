@@ -38,23 +38,23 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileEffect
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileStateHolder
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileViewModel
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileUiState
 
 @Composable
 fun EditProfileScreen(
-    stateHolder: EditProfileStateHolder,
+    viewModel: EditProfileViewModel,
     modifier: Modifier = Modifier,
     onSaved: () -> Unit = {},
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(stateHolder) {
-        stateHolder.load()
+    LaunchedEffect(viewModel) {
+        viewModel.load()
     }
 
-    LaunchedEffect(stateHolder) {
-        stateHolder.effects.collect { effect ->
+    LaunchedEffect(viewModel) {
+        viewModel.effects.collect { effect ->
             when (effect) {
                 EditProfileEffect.Saved -> onSaved()
             }
@@ -64,10 +64,10 @@ fun EditProfileScreen(
     EditProfileContent(
         modifier = modifier,
         state = state,
-        onFullNameChange = stateHolder::onFullNameChange,
-        onEmailChange = stateHolder::onEmailChange,
-        onPhoneChange = stateHolder::onPhoneChange,
-        onSaveClick = stateHolder::save,
+        onFullNameChange = viewModel::onFullNameChange,
+        onEmailChange = viewModel::onEmailChange,
+        onPhoneChange = viewModel::onPhoneChange,
+        onSaveClick = viewModel::save,
     )
 }
 

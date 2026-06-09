@@ -84,7 +84,7 @@ fun createListingSelectOptions(strings: ListingsStrings): CreateListingSelectOpt
         condition = strings.conditionOptions().map { SelectOption(it.id, it.label) },
     )
 
-class CreateListingStateHolder(
+class CreateListingViewModel(
     private val getCatalogDefaultsUseCase: GetCatalogDefaultsUseCase,
     private val localeRepository: LocaleRepository,
 ) {

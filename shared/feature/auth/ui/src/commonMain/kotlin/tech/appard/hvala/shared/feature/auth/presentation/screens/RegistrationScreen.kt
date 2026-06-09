@@ -42,27 +42,27 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.i18n.appStrings
-import tech.appard.hvala.shared.feature.auth.presentation.AuthStateHolder
+import tech.appard.hvala.shared.feature.auth.presentation.AuthViewModel
 import tech.appard.hvala.shared.feature.auth.presentation.RegistrationUiState
 
 @Composable
 fun RegistrationScreen(
-    stateHolder: AuthStateHolder,
+    viewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     onRegistered: () -> Unit = {},
 ) {
-    val state by stateHolder.registrationState.collectAsState()
+    val state by viewModel.registrationState.collectAsState()
 
     RegistrationContent(
         modifier = modifier,
         state = state,
-        onFullNameChange = stateHolder::onRegistrationFullNameChange,
-        onEmailChange = stateHolder::onRegistrationEmailChange,
-        onPhoneChange = stateHolder::onRegistrationPhoneChange,
-        onPasswordChange = stateHolder::onRegistrationPasswordChange,
-        onConfirmPasswordChange = stateHolder::onRegistrationConfirmPasswordChange,
-        onTermsAcceptedChange = stateHolder::onRegistrationTermsAcceptedChange,
-        onSignUp = { stateHolder.signUp(onRegistered) },
+        onFullNameChange = viewModel::onRegistrationFullNameChange,
+        onEmailChange = viewModel::onRegistrationEmailChange,
+        onPhoneChange = viewModel::onRegistrationPhoneChange,
+        onPasswordChange = viewModel::onRegistrationPasswordChange,
+        onConfirmPasswordChange = viewModel::onRegistrationConfirmPasswordChange,
+        onTermsAcceptedChange = viewModel::onRegistrationTermsAcceptedChange,
+        onSignUp = { viewModel.signUp(onRegistered) },
     )
 }
 

@@ -43,39 +43,38 @@ import tech.appard.hvala.shared.feature.profile.presentation.components.WriteRev
 import tech.appard.hvala.shared.feature.profile.presentation.model.ReviewSortOrder
 import tech.appard.hvala.shared.feature.profile.presentation.model.UIReview
 import tech.appard.hvala.shared.feature.profile.presentation.model.UIReviewSummary
-import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsUiState
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsViewModel
 
 @Composable
 fun ReviewsScreen(
     sellerId: String,
-    stateHolder: ReviewsStateHolder,
+    viewModel: ReviewsViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val state by stateHolder.state.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     val photoPicker = rememberMediaPickerLauncher(
         mode = MediaPickerMode.Images,
         onResult = { media ->
-            stateHolder.onWriteReviewPhotosAdded(media.map { it.uri })
+            viewModel.onWriteReviewPhotosAdded(media.map { it.uri })
         },
     )
 
     LaunchedEffect(sellerId) {
-        stateHolder.load(sellerId)
+        viewModel.load(sellerId)
     }
 
     ReviewsContent(
         modifier = modifier,
         state = state,
-        onSortOrderSelected = stateHolder::onSortOrderSelected,
-        onOnlyWithPhotosToggle = stateHolder::onOnlyWithPhotosToggle,
-        onLeaveReviewClick = stateHolder::onLeaveReviewClick,
-        onWriteReviewDismiss = stateHolder::onWriteReviewDismiss,
-        onWriteReviewRatingChanged = stateHolder::onWriteReviewRatingChanged,
-        onWriteReviewTextChanged = stateHolder::onWriteReviewTextChanged,
-        onWriteReviewListingSelected = stateHolder::onWriteReviewListingSelected,
+        onSortOrderSelected = viewModel::onSortOrderSelected,
+        onOnlyWithPhotosToggle = viewModel::onOnlyWithPhotosToggle,
+        onLeaveReviewClick = viewModel::onLeaveReviewClick,
+        onWriteReviewDismiss = viewModel::onWriteReviewDismiss,
+        onWriteReviewRatingChanged = viewModel::onWriteReviewRatingChanged,
+        onWriteReviewTextChanged = viewModel::onWriteReviewTextChanged,
+        onWriteReviewListingSelected = viewModel::onWriteReviewListingSelected,
         onAddReviewPhotoClick = {
             val dialog = state.writeReviewDialog ?: return@ReviewsContent
             val remaining = ReviewsViewModel.MAX_REVIEW_PHOTOS - dialog.photoUris.size
@@ -83,11 +82,11 @@ fun ReviewsScreen(
                 photoPicker.launch(maxItems = remaining)
             }
         },
-        onSubmitWriteReview = stateHolder::onSubmitWriteReview,
-        onReplyClick = stateHolder::onReplyClick,
-        onReplyReviewDismiss = stateHolder::onReplyReviewDismiss,
-        onReplyReviewTextChanged = stateHolder::onReplyReviewTextChanged,
-        onSubmitReplyReview = stateHolder::onSubmitReplyReview,
+        onSubmitWriteReview = viewModel::onSubmitWriteReview,
+        onReplyClick = viewModel::onReplyClick,
+        onReplyReviewDismiss = viewModel::onReplyReviewDismiss,
+        onReplyReviewTextChanged = viewModel::onReplyReviewTextChanged,
+        onSubmitReplyReview = viewModel::onSubmitReplyReview,
     )
 }
 
