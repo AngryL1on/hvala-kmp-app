@@ -7,5 +7,5 @@ import tech.appard.hvala.shared.feature.messages.domain.repository.MessagesRepos
 
 val messagesDataModule = module {
     single { MessagesJsonDataSource() }
-    single<MessagesRepository> { JsonMessagesRepository(get(), get(), get(), get()) }
+    single<MessagesRepository> { JsonMessagesRepository(get(), get(), get(), get(), get()) }
 }

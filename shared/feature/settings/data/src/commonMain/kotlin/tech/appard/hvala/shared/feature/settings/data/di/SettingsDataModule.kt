@@ -7,6 +7,6 @@ import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleReposit
 import tech.appard.hvala.shared.feature.settings.domain.repository.NotificationPreferencesRepository
 
 val settingsDataModule = module {
-    single<LocaleRepository> { LocaleRepositoryImpl() }
-    single<NotificationPreferencesRepository> { NotificationPreferencesRepositoryImpl() }
+    single<LocaleRepository> { LocaleRepositoryImpl(get()) }
+    single<NotificationPreferencesRepository> { NotificationPreferencesRepositoryImpl(get()) }
 }

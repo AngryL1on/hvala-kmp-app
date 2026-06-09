@@ -11,7 +11,7 @@ import tech.appard.hvala.shared.feature.profile.domain.repository.SellerReposito
 
 val profileDataModule = module {
     single { ProfileJsonDataSource() }
-    single<ProfileOverviewRepository> { JsonProfileOverviewRepository(get()) }
-    single<SellerRepository> { JsonSellerRepository(get(), get()) }
-    single<ReviewsRepository> { JsonReviewsRepository(get()) }
+    single<ProfileOverviewRepository> { JsonProfileOverviewRepository(get(), get()) }
+    single<SellerRepository> { JsonSellerRepository(get(), get(), get()) }
+    single<ReviewsRepository> { JsonReviewsRepository(get(), get()) }
 }

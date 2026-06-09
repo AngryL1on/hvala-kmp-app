@@ -8,6 +8,8 @@ import tech.appard.hvala.shared.feature.auth.domain.repository.ProfileRepository
 import tech.appard.hvala.shared.core.data.network.NetworkClient
 import tech.appard.hvala.shared.core.data.network.repository.AuthRepositoryImpl
 import tech.appard.hvala.shared.core.data.network.repository.ProfileRepositoryImpl
+import tech.appard.hvala.shared.core.datastore.di.datastoreModule
+import tech.appard.hvala.shared.core.database.di.databaseModule
 import tech.appard.hvala.shared.feature.auth.di.authFeatureModule
 import tech.appard.hvala.shared.feature.favorites.di.favoritesFeatureModule
 import tech.appard.hvala.shared.feature.listings.data.di.listingsDataModule
@@ -24,10 +26,9 @@ import tech.appard.hvala.shared.feature.settings.domain.di.settingsDomainModule
 import tech.appard.hvala.shared.feature.settings.presentation.di.settingsFeatureModule
 
 val appModule = module {
-    singleOf(::NetworkClient)
-    singleOf(::AuthRepositoryImpl) { bind<AuthRepository>() }
-    singleOf(::ProfileRepositoryImpl) { bind<ProfileRepository>() }
     includes(
+        datastoreModule,
+        databaseModule,
         listingsDataModule,
         profileDataModule,
         messagesDataModule,
@@ -43,4 +44,7 @@ val appModule = module {
         favoritesFeatureModule,
         settingsFeatureModule,
     )
+    singleOf(::NetworkClient)
+    singleOf(::AuthRepositoryImpl) { bind<AuthRepository>() }
+    singleOf(::ProfileRepositoryImpl) { bind<ProfileRepository>() }
 }

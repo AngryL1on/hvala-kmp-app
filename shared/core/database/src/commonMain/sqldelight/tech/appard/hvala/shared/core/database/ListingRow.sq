@@ -1,0 +1,95 @@
+CREATE TABLE listing_row (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    price_usd INTEGER NOT NULL,
+    price_rub INTEGER NOT NULL,
+    location TEXT NOT NULL,
+    category_id TEXT NOT NULL,
+    country_id TEXT NOT NULL,
+    region_id TEXT NOT NULL,
+    image_url TEXT,
+    total_images INTEGER NOT NULL,
+    current_image INTEGER NOT NULL,
+    phone TEXT NOT NULL,
+    description TEXT NOT NULL,
+    availability TEXT NOT NULL,
+    seller_id TEXT NOT NULL,
+    seller_name TEXT NOT NULL,
+    posted_at TEXT NOT NULL,
+    auto_body_type TEXT,
+    auto_color TEXT,
+    auto_transmission TEXT,
+    auto_drivetrain TEXT,
+    auto_steering_wheel TEXT,
+    auto_condition TEXT,
+    auto_number_of_owners TEXT
+);
+
+countAll:
+SELECT COUNT(*)
+FROM listing_row;
+
+selectAll:
+SELECT *
+FROM listing_row;
+
+selectById:
+SELECT *
+FROM listing_row
+WHERE id = ?;
+
+insertOrReplace:
+INSERT OR REPLACE INTO listing_row(
+    id,
+    title,
+    price_usd,
+    price_rub,
+    location,
+    category_id,
+    country_id,
+    region_id,
+    image_url,
+    total_images,
+    current_image,
+    phone,
+    description,
+    availability,
+    seller_id,
+    seller_name,
+    posted_at,
+    auto_body_type,
+    auto_color,
+    auto_transmission,
+    auto_drivetrain,
+    auto_steering_wheel,
+    auto_condition,
+    auto_number_of_owners
+) VALUES (
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?
+);
+
+deleteAll:
+DELETE FROM listing_row;

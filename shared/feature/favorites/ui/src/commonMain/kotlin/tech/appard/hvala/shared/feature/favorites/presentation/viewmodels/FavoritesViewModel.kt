@@ -81,7 +81,9 @@ class FavoritesViewModel(
         }
         viewModelScope.launch {
             observeListingsUseCase.listingsFlow.collectLatest { allListings ->
-                val favorites = allListings.filter { it.isFavorite }.toListingsUi()
+                val favorites = allListings
+                    .filter { it.isFavorite && it.id.startsWith("listing-") }
+                    .toListingsUi()
                 updateState { current ->
                     current.copy(
                         allListings = favorites,

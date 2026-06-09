@@ -1,0 +1,24 @@
+CREATE TABLE review_photo_row (
+    review_id TEXT NOT NULL,
+    sort_order INTEGER NOT NULL,
+    uri TEXT NOT NULL,
+    PRIMARY KEY (review_id, sort_order),
+    FOREIGN KEY (review_id) REFERENCES review_row(id) ON DELETE CASCADE
+);
+
+selectForReview:
+SELECT uri
+FROM review_photo_row
+WHERE review_id = ?
+ORDER BY sort_order ASC;
+
+deleteForReview:
+DELETE FROM review_photo_row
+WHERE review_id = ?;
+
+insert:
+INSERT OR REPLACE INTO review_photo_row(review_id, sort_order, uri)
+VALUES (?, ?, ?);
+
+deleteAll:
+DELETE FROM review_photo_row;

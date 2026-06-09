@@ -105,15 +105,19 @@ fun AppNavHost(
     }
 
     val onListingFavoriteToggle: (String) -> Unit = { listingId ->
-        val currentFavorite = listingDetailState.listing
-            ?.takeIf { it.id == listingId }
-            ?.isFavorite
-            ?: listingsState.allListings.find { it.id == listingId }?.isFavorite
-            ?: false
+        if (!isAuthenticated) {
+            navController.navigateTo(Route.Auth)
+        } else {
+            val currentFavorite = listingDetailState.listing
+                ?.takeIf { it.id == listingId }
+                ?.isFavorite
+                ?: listingsState.allListings.find { it.id == listingId }?.isFavorite
+                ?: false
 
-        scope.launch {
-            toggleListingFavoriteUseCase(listingId)
-            listingDetailStateHolder.syncFavorite(!currentFavorite)
+            scope.launch {
+                toggleListingFavoriteUseCase(listingId)
+                listingDetailStateHolder.syncFavorite(!currentFavorite)
+            }
         }
     }
 

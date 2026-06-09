@@ -1,11 +1,20 @@
 package tech.appard.hvala.shared.feature.messages.data.repository
 
+import tech.appard.hvala.shared.core.database.DatabaseSeedKeys
+import tech.appard.hvala.shared.core.database.HvalaDatabase
+import tech.appard.hvala.shared.core.database.isSeeded
+import tech.appard.hvala.shared.core.database.markSeeded
 import tech.appard.hvala.shared.core.i18n.PreviewMessage
 import tech.appard.hvala.shared.core.i18n.formatLastMessagePreview
 import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.listings.domain.repository.ListingsRepository
+import tech.appard.hvala.shared.feature.messages.data.mapper.insertMessage
+import tech.appard.hvala.shared.feature.messages.data.mapper.insertThread
+import tech.appard.hvala.shared.feature.messages.data.mapper.loadMessages
+import tech.appard.hvala.shared.feature.messages.data.mapper.nextMessageSortOrder
+import tech.appard.hvala.shared.feature.messages.data.mapper.toChatThread
+import tech.appard.hvala.shared.feature.messages.data.mapper.updateThreadPreview
 import tech.appard.hvala.shared.feature.messages.data.mapper.toDomain
-import tech.appard.hvala.shared.feature.messages.data.model.ConversationFileDto
 import tech.appard.hvala.shared.feature.messages.data.source.MessagesJsonDataSource
 import tech.appard.hvala.shared.feature.messages.domain.model.ChatMessage
 import tech.appard.hvala.shared.feature.messages.domain.model.ChatThread
@@ -14,41 +23,52 @@ import tech.appard.hvala.shared.feature.messages.domain.repository.MessagesRepos
 import tech.appard.hvala.shared.feature.profile.domain.repository.SellerRepository
 import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
-private class ConversationState(
-    var thread: ChatThread,
-    val messages: MutableList<ChatMessage>,
-)
-
 internal class JsonMessagesRepository(
+    private val database: HvalaDatabase,
     private val dataSource: MessagesJsonDataSource,
     private val listingsRepository: ListingsRepository,
     private val sellerRepository: SellerRepository,
     private val localeRepository: LocaleRepository,
 ) : MessagesRepository {
-    private val conversations = linkedMapOf<String, ConversationState>()
-
     override suspend fun ensureLoaded() {
-        if (conversations.isNotEmpty()) return
+        if (database.isSeeded(DatabaseSeedKeys.MESSAGES)) return
+
         listingsRepository.ensureLoaded()
         sellerRepository.ensureLoaded()
-        dataSource.conversations().conversations.forEach { dto ->
-            conversations[dto.thread.id] = dto.toState()
+
+        val conversations = dataSource.conversations().conversations
+        database.transaction {
+            database.chatMessageRowQueries.deleteAll()
+            database.chatThreadRowQueries.deleteAll()
+            conversations.forEach { conversation ->
+                val thread = conversation.thread.toDomain()
+                database.insertThread(thread.withPreview(conversation.messages.map { it.toDomain() }))
+                conversation.messages.forEachIndexed { index, messageDto ->
+                    database.insertMessage(
+                        threadId = thread.id,
+                        message = messageDto.toDomain(),
+                        sortOrder = index,
+                    )
+                }
+            }
+            database.markSeeded(DatabaseSeedKeys.MESSAGES)
         }
-        refreshThreadPreviews()
     }
 
     override fun getThreads(): List<ChatThread> =
-        conversations.values.map { it.thread.withPreview(it.messages) }
+        database.chatThreadRowQueries.selectAll()
+            .executeAsList()
+            .map { it.toChatThread() }
 
     override fun getMessages(threadId: String): List<ChatMessage> =
-        conversations[threadId]?.messages?.toList().orEmpty()
+        database.loadMessages(threadId)
 
     override suspend fun sendMessage(
         threadId: String,
         text: String,
         attachments: List<PickedMedia>,
     ) {
-        val conversation = conversations[threadId] ?: return
+        ensureLoaded()
         val trimmed = text.trim()
         if (trimmed.isEmpty() && attachments.isEmpty()) return
 
@@ -64,72 +84,66 @@ internal class JsonMessagesRepository(
             }
         }
 
-        conversation.messages.add(
-            ChatMessage(
-                id = "$threadId-msg-${conversation.messages.size}",
-                text = messageText,
-                isOutgoing = true,
-            ),
+        val sortOrder = database.nextMessageSortOrder(threadId)
+        val message = ChatMessage(
+            id = "$threadId-msg-$sortOrder",
+            text = messageText,
+            isOutgoing = true,
         )
-        conversation.thread = conversation.thread.withPreview(conversation.messages)
+        database.insertMessage(threadId, message, sortOrder)
+
+        val preview = formatPreview(database.loadMessages(threadId))
+        database.updateThreadPreview(threadId, preview)
     }
 
     override suspend fun openChatForListing(listingId: String): String? {
         listingsRepository.ensureLoaded()
         sellerRepository.ensureLoaded()
+        ensureLoaded()
 
         val listing = listingsRepository.getListingById(listingId) ?: return null
         val threadId = "listing-$listingId"
         val messagesStrings = localeRepository.getLanguage().strings().messages
         val commonStrings = localeRepository.getLanguage().strings().common
 
-        if (conversations[threadId] == null) {
-            conversations[threadId] = ConversationState(
-                thread = ChatThread(
-                    id = threadId,
-                    participantName = listing.sellerName,
-                    lastMessagePreview = "",
-                    avatarColorArgb = sellerRepository.getSellerById(listing.sellerId)?.avatarColorArgb
-                        ?: avatarColorFor(listing.sellerName),
-                    listingId = listing.id,
-                    sellerId = listing.sellerId,
-                    listingTitle = listing.title,
-                    listingPriceUsd = listing.priceUsd,
-                    listingPriceRub = listing.priceRub,
+        if (database.chatThreadRowQueries.selectById(threadId).executeAsOneOrNull() == null) {
+            val thread = ChatThread(
+                id = threadId,
+                participantName = listing.sellerName,
+                lastMessagePreview = "",
+                avatarColorArgb = sellerRepository.getSellerById(listing.sellerId)?.avatarColorArgb
+                    ?: avatarColorFor(listing.sellerName),
+                listingId = listing.id,
+                sellerId = listing.sellerId,
+                listingTitle = listing.title,
+                listingPriceUsd = listing.priceUsd,
+                listingPriceRub = listing.priceRub,
+            )
+            val messages = listOf(
+                ChatMessage(
+                    id = "$threadId-divider-today",
+                    text = commonStrings.today,
+                    isOutgoing = false,
+                    isDateDivider = true,
                 ),
-                messages = mutableListOf(
-                    ChatMessage(
-                        id = "$threadId-divider-today",
-                        text = commonStrings.today,
-                        isOutgoing = false,
-                        isDateDivider = true,
-                    ),
-                    ChatMessage(
-                        id = "$threadId-msg-0",
-                        text = messagesStrings.chatOpener(listing.title),
-                        isOutgoing = true,
-                    ),
+                ChatMessage(
+                    id = "$threadId-msg-0",
+                    text = messagesStrings.chatOpener(listing.title),
+                    isOutgoing = true,
                 ),
             )
-            refreshThreadPreviews()
+            database.insertThread(thread.withPreview(messages))
+            messages.forEachIndexed { index, message ->
+                database.insertMessage(threadId, message, index)
+            }
+            val preview = formatPreview(messages)
+            database.updateThreadPreview(threadId, preview)
         }
 
         return threadId
     }
 
-    private fun refreshThreadPreviews() {
-        conversations.values.forEach { conversation ->
-            conversation.thread = conversation.thread.withPreview(conversation.messages)
-        }
-    }
-
-    private fun ConversationFileDto.toState(): ConversationState =
-        ConversationState(
-            thread = thread.toDomain(),
-            messages = messages.map { it.toDomain() }.toMutableList(),
-        )
-
-    private fun ChatThread.withPreview(messages: List<ChatMessage>): ChatThread {
+    private fun formatPreview(messages: List<ChatMessage>): String {
         val messagesStrings = localeRepository.getLanguage().strings().messages
         val previewMessages = messages.map { message ->
             PreviewMessage(
@@ -138,8 +152,11 @@ internal class JsonMessagesRepository(
                 isDateDivider = message.isDateDivider,
             )
         }
-        return copy(lastMessagePreview = formatLastMessagePreview(previewMessages, messagesStrings))
+        return formatLastMessagePreview(previewMessages, messagesStrings)
     }
+
+    private fun ChatThread.withPreview(messages: List<ChatMessage>): ChatThread =
+        copy(lastMessagePreview = formatPreview(messages))
 
     private fun avatarColorFor(key: String): Long {
         val colors = listOf(

@@ -1,0 +1,38 @@
+CREATE TABLE chat_message_row (
+    id TEXT NOT NULL PRIMARY KEY,
+    thread_id TEXT NOT NULL,
+    sort_order INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    is_outgoing INTEGER NOT NULL,
+    is_date_divider INTEGER NOT NULL,
+    FOREIGN KEY (thread_id) REFERENCES chat_thread_row(id) ON DELETE CASCADE
+);
+
+selectForThread:
+SELECT *
+FROM chat_message_row
+WHERE thread_id = ?
+ORDER BY sort_order ASC;
+
+countForThread:
+SELECT COUNT(*)
+FROM chat_message_row
+WHERE thread_id = ?;
+
+maxSortOrderForThread:
+SELECT COALESCE(MAX(sort_order), -1)
+FROM chat_message_row
+WHERE thread_id = ?;
+
+insertOrReplace:
+INSERT OR REPLACE INTO chat_message_row(
+    id,
+    thread_id,
+    sort_order,
+    text,
+    is_outgoing,
+    is_date_divider
+) VALUES (?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM chat_message_row;

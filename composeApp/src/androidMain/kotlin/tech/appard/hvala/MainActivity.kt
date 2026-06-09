@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 darkScrim = Color.WHITE,
             ),
         )
-        initKoin()
+        initKoin(applicationContext)
 
         super.onCreate(savedInstanceState)
 

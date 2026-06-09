@@ -1,15 +1,14 @@
 package tech.appard.hvala.shared.feature.settings.data.repository
 
-import com.russhwolf.settings.Settings
-import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import tech.appard.hvala.shared.core.datastore.PreferencesStore
 import tech.appard.hvala.shared.core.i18n.AppLanguage
 import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 internal class LocaleRepositoryImpl(
-    private val settings: Settings = Settings(),
+    private val preferences: PreferencesStore,
 ) : LocaleRepository {
 
     private val _language = MutableStateFlow(loadLanguage())
@@ -18,12 +17,12 @@ internal class LocaleRepositoryImpl(
     override fun getLanguage(): AppLanguage = _language.value
 
     override suspend fun setLanguage(language: AppLanguage) {
-        settings[LANGUAGE_KEY] = language.code
+        preferences.putString(LANGUAGE_KEY, language.code)
         _language.value = language
     }
 
     private fun loadLanguage(): AppLanguage {
-        val code = settings.getStringOrNull(LANGUAGE_KEY)
+        val code = preferences.getString(LANGUAGE_KEY)
         return AppLanguage.fromCode(code) ?: AppLanguage.default
     }
 

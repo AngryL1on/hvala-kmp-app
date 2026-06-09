@@ -3,9 +3,14 @@ package tech.appard.hvala.shared.feature.listings.data.repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import tech.appard.hvala.shared.core.database.DatabaseSeedKeys
+import tech.appard.hvala.shared.core.database.HvalaDatabase
+import tech.appard.hvala.shared.core.database.isSeeded
+import tech.appard.hvala.shared.core.database.markSeeded
 import tech.appard.hvala.shared.core.i18n.strings
-import tech.appard.hvala.shared.feature.listings.data.mapper.toDomain
+import tech.appard.hvala.shared.feature.listings.data.mapper.insertListing
+import tech.appard.hvala.shared.feature.listings.data.mapper.isListingFavorite
+import tech.appard.hvala.shared.feature.listings.data.mapper.loadAllListings
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainCategories
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainCountries
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainListings
@@ -19,6 +24,7 @@ import tech.appard.hvala.shared.feature.listings.domain.repository.ListingsRepos
 import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 internal class JsonListingsRepository(
+    private val database: HvalaDatabase,
     private val dataSource: ListingsJsonDataSource,
     private val localeRepository: LocaleRepository,
 ) : ListingsRepository {
@@ -27,8 +33,22 @@ internal class JsonListingsRepository(
 
     override suspend fun ensureLoaded() {
         if (_listings.value.isNotEmpty()) return
+
+        if (database.isSeeded(DatabaseSeedKeys.LISTINGS)) {
+            _listings.value = database.loadAllListings()
+            return
+        }
+
         val loaded = dataSource.listings().toDomainListings().map(::enrichListing)
-        _listings.value = loaded
+        database.transaction {
+            database.listingRowQueries.deleteAll()
+            database.favoriteRowQueries.deleteAll()
+            loaded.forEach { listing ->
+                database.insertListing(listing)
+            }
+            database.markSeeded(DatabaseSeedKeys.LISTINGS)
+        }
+        _listings.value = database.loadAllListings()
     }
 
     override fun getListingById(id: String): Listing? =
@@ -50,15 +70,15 @@ internal class JsonListingsRepository(
         _listings.value.filter { it.id.startsWith("archive-") }
 
     override suspend fun toggleFavorite(listingId: String) {
-        _listings.update { items ->
-            items.map { listing ->
-                if (listing.id == listingId) {
-                    listing.copy(isFavorite = !listing.isFavorite)
-                } else {
-                    listing
-                }
+        ensureLoaded()
+        database.transaction {
+            if (database.isListingFavorite(listingId)) {
+                database.favoriteRowQueries.delete(listingId)
+            } else {
+                database.favoriteRowQueries.insert(listingId)
             }
         }
+        _listings.value = database.loadAllListings()
     }
 
     private fun enrichListing(listing: Listing): Listing {

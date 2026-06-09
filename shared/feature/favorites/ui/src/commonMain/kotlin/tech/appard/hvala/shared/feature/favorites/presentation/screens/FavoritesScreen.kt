@@ -172,26 +172,26 @@ private fun FavoritesScreenPreview() {
     HvalaTheme {
         FavoritesContent(
             state = FavoritesUiState(
-                allListings = List(4) { index ->
+                allListings = listOf(
                     UIListing(
-                        id = "favorite-$index",
-                        title = "Худи Number Nine",
-                        priceUsd = 150,
-                        priceRub = 12_570,
-                        location = "Химки, МО",
+                        id = "listing-0",
+                        title = "Number Nine Hoodie",
+                        priceUsd = 80,
+                        priceRub = 6_700,
+                        location = "Moscow",
                         isFavorite = true,
-                    )
-                },
-                listings = List(4) { index ->
+                    ),
+                ),
+                listings = listOf(
                     UIListing(
-                        id = "favorite-$index",
-                        title = "Худи Number Nine",
-                        priceUsd = 150,
-                        priceRub = 12_570,
-                        location = "Химки, МО",
+                        id = "listing-0",
+                        title = "Number Nine Hoodie",
+                        priceUsd = 80,
+                        priceRub = 6_700,
+                        location = "Moscow",
                         isFavorite = true,
-                    )
-                },
+                    ),
+                ),
             ),
             onSortOrderChange = {},
             onFilterClick = {},

@@ -29,6 +29,7 @@ kotlin {
             implementation(libs.io.insert.koin.core)
             implementation(projects.shared.feature.profile.domain)
             implementation(projects.shared.feature.listings.domain)
+            implementation(projects.shared.core.database)
         }
     }
 }

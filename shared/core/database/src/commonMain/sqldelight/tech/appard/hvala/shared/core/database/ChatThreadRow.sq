@@ -1,0 +1,45 @@
+CREATE TABLE chat_thread_row (
+    id TEXT NOT NULL PRIMARY KEY,
+    participant_name TEXT NOT NULL,
+    last_message_preview TEXT NOT NULL,
+    avatar_color_argb INTEGER NOT NULL,
+    listing_id TEXT,
+    listing_title TEXT,
+    listing_price_usd INTEGER,
+    listing_price_rub INTEGER,
+    seller_id TEXT
+);
+
+countAll:
+SELECT COUNT(*)
+FROM chat_thread_row;
+
+selectAll:
+SELECT *
+FROM chat_thread_row;
+
+selectById:
+SELECT *
+FROM chat_thread_row
+WHERE id = ?;
+
+insertOrReplace:
+INSERT OR REPLACE INTO chat_thread_row(
+    id,
+    participant_name,
+    last_message_preview,
+    avatar_color_argb,
+    listing_id,
+    listing_title,
+    listing_price_usd,
+    listing_price_rub,
+    seller_id
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updatePreview:
+UPDATE chat_thread_row
+SET last_message_preview = ?
+WHERE id = ?;
+
+deleteAll:
+DELETE FROM chat_thread_row;

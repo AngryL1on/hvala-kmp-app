@@ -30,6 +30,7 @@ kotlin {
             implementation(projects.shared.feature.listings.domain)
             implementation(projects.shared.feature.settings.domain)
             implementation(projects.shared.core.i18n)
+            implementation(projects.shared.core.database)
         }
     }
 }

@@ -1,15 +1,14 @@
 package tech.appard.hvala.shared.feature.settings.data.repository
 
-import com.russhwolf.settings.Settings
-import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import tech.appard.hvala.shared.core.datastore.PreferencesStore
 import tech.appard.hvala.shared.feature.settings.domain.model.NotificationPreferences
 import tech.appard.hvala.shared.feature.settings.domain.repository.NotificationPreferencesRepository
 
 internal class NotificationPreferencesRepositoryImpl(
-    private val settings: Settings = Settings(),
+    private val preferences: PreferencesStore,
 ) : NotificationPreferencesRepository {
 
     private val _preferences = MutableStateFlow(loadPreferences())
@@ -18,15 +17,15 @@ internal class NotificationPreferencesRepositoryImpl(
     override fun getPreferences(): NotificationPreferences = _preferences.value
 
     override suspend fun setPreferences(preferences: NotificationPreferences) {
-        settings[NOTIFICATIONS_ENABLED_KEY] = preferences.notificationsEnabled
-        settings[SOUND_ENABLED_KEY] = preferences.soundEnabled
+        this.preferences.putBoolean(NOTIFICATIONS_ENABLED_KEY, preferences.notificationsEnabled)
+        this.preferences.putBoolean(SOUND_ENABLED_KEY, preferences.soundEnabled)
         _preferences.value = preferences
     }
 
     private fun loadPreferences(): NotificationPreferences =
         NotificationPreferences(
-            notificationsEnabled = settings.getBooleanOrNull(NOTIFICATIONS_ENABLED_KEY) ?: false,
-            soundEnabled = settings.getBooleanOrNull(SOUND_ENABLED_KEY) ?: true,
+            notificationsEnabled = preferences.getBoolean(NOTIFICATIONS_ENABLED_KEY) ?: false,
+            soundEnabled = preferences.getBoolean(SOUND_ENABLED_KEY) ?: true,
         )
 
     private companion object {

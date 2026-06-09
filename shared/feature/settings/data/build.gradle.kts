@@ -21,8 +21,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.io.insert.koin.core)
-            implementation(libs.multiplatform.settings)
-            implementation(libs.multiplatform.settings.no.arg)
+            implementation(projects.shared.core.datastore)
             implementation(projects.shared.feature.settings.domain)
             implementation(projects.shared.core.i18n)
         }

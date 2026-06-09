@@ -1,0 +1,26 @@
+CREATE TABLE profile_overview_row (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+    active_listings_count INTEGER NOT NULL,
+    rating REAL NOT NULL,
+    member_since TEXT NOT NULL,
+    active_listing_ids_json TEXT NOT NULL,
+    archive_listing_ids_json TEXT NOT NULL
+);
+
+selectOne:
+SELECT *
+FROM profile_overview_row
+WHERE id = 1;
+
+insertOrReplace:
+INSERT OR REPLACE INTO profile_overview_row(
+    id,
+    active_listings_count,
+    rating,
+    member_since,
+    active_listing_ids_json,
+    archive_listing_ids_json
+) VALUES (1, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM profile_overview_row;

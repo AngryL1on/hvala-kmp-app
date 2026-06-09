@@ -21,6 +21,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.io.insert.koin.core)
+            implementation(projects.shared.feature.auth.domain)
         }
     }
 }

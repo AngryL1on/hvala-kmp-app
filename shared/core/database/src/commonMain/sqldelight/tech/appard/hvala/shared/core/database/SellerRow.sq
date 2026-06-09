@@ -1,0 +1,34 @@
+CREATE TABLE seller_row (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    active_listings_count INTEGER NOT NULL,
+    rating REAL NOT NULL,
+    member_since TEXT NOT NULL,
+    avatar_color_argb INTEGER NOT NULL
+);
+
+countAll:
+SELECT COUNT(*)
+FROM seller_row;
+
+selectAll:
+SELECT *
+FROM seller_row;
+
+selectById:
+SELECT *
+FROM seller_row
+WHERE id = ?;
+
+insertOrReplace:
+INSERT OR REPLACE INTO seller_row(
+    id,
+    name,
+    active_listings_count,
+    rating,
+    member_since,
+    avatar_color_argb
+) VALUES (?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM seller_row;

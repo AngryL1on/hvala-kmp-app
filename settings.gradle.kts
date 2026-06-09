@@ -24,6 +24,8 @@ include(":shared:core:ui")
 include(":shared:core:mvi")
 include(":shared:core:i18n")
 include(":shared:core:data-network")
+include(":shared:core:datastore")
+include(":shared:core:database")
 
 // Feature modules
 include(":shared:feature:auth:domain")
