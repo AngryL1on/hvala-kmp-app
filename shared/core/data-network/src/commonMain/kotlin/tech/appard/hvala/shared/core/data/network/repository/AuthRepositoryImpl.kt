@@ -21,6 +21,7 @@ class AuthRepositoryImpl(
                     id = "1",
                     fullName = credentials.login.substringBefore("@").replaceFirstChar { it.uppercaseChar() },
                     email = credentials.login.trim(),
+                    phone = "+382 67 123 456",
                 ),
             )
         }
@@ -39,6 +40,7 @@ class AuthRepositoryImpl(
                     id = "1",
                     fullName = data.fullName.trim(),
                     email = data.email.trim(),
+                    phone = data.phone.trim(),
                 ),
             )
         }

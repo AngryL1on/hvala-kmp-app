@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import tech.appard.hvala.shared.core.i18n.appStrings
+import tech.appard.hvala.shared.core.ui.components.image.LocalUriImage
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconPlaceholder
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconVariant
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
@@ -38,6 +40,7 @@ import tech.appard.hvala.shared.core.ui.theme.White
 fun SettingsProfileHeader(
     fullName: String,
     email: String,
+    phone: String,
     modifier: Modifier = Modifier,
     avatarUrl: String? = null,
     onEditAvatarClick: () -> Unit = {},
@@ -72,8 +75,14 @@ fun SettingsProfileHeader(
                         showBackground = false,
                         iconScale = 0.55f,
                     )
+                } else {
+                    LocalUriImage(
+                        uri = avatarUrl,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = strings.editAvatar,
+                    )
                 }
-                // TODO: show loaded photo when avatarUrl is provided and image loading is integrated
             }
 
             Box(
@@ -110,5 +119,13 @@ fun SettingsProfileHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = dimensions.verticalXXSmall),
         )
+        if (phone.isNotBlank()) {
+            Text(
+                text = phone,
+                style = BodyMedium.copy(color = GrayText),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = dimensions.verticalXXSmall),
+            )
+        }
     }
 }

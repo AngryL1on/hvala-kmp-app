@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListing
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingAutoDetails
 import tech.appard.hvala.shared.core.ui.components.buttons.PrimaryButton
+import tech.appard.hvala.shared.core.ui.components.buttons.SecondaryOutlineButton
+import tech.appard.hvala.shared.core.ui.platform.rememberPhoneDialer
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
 import tech.appard.hvala.shared.core.ui.theme.ButtonLarge
 import tech.appard.hvala.shared.core.ui.theme.FieldCaption
@@ -97,6 +99,7 @@ private fun ListingDetailContent(
 ) {
     val dimensions = LocalDimensions.current
     val strings = appStrings().listings
+    val phoneDialer = rememberPhoneDialer()
 
     Box(
         modifier = modifier
@@ -195,12 +198,24 @@ private fun ListingDetailContent(
                         description = listing.description,
                     )
 
-                    PrimaryButton(
-                        text = strings.contactSeller,
-                        onClick = onContactClick,
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        textStyle = ButtonLarge,
-                    )
+                        horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalSmall),
+                    ) {
+                        SecondaryOutlineButton(
+                            text = strings.callSeller,
+                            onClick = { phoneDialer.dial(listing.phone) },
+                            modifier = Modifier.weight(1f),
+                            enabled = listing.phone.isNotBlank(),
+                            textStyle = ButtonLarge,
+                        )
+                        PrimaryButton(
+                            text = strings.contactSeller,
+                            onClick = onContactClick,
+                            modifier = Modifier.weight(1f),
+                            textStyle = ButtonLarge,
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(dimensions.verticalMedium))
                 }

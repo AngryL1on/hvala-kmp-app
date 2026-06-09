@@ -9,12 +9,16 @@ fun UserProfile.toUi(): UIUserProfile = UIUserProfile(
     id = id,
     fullName = fullName,
     email = email,
+    phone = phone,
+    avatarUrl = avatarUrl,
 )
 
 fun UIUserProfile.toDomain(): UserProfile = UserProfile(
     id = id,
     fullName = fullName,
     email = email,
+    phone = phone,
+    avatarUrl = avatarUrl,
 )
 
 fun SellerProfile.toUi(): UISellerProfile = UISellerProfile(

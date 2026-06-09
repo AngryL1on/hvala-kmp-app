@@ -12,4 +12,9 @@ class ProfileRepositoryImpl(
         networkClient.httpClient
         return AppSession.currentProfile()
     }
+
+    override suspend fun updateProfile(profile: UserProfile) {
+        networkClient.httpClient
+        AppSession.updateProfile(profile)
+    }
 }

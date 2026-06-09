@@ -35,6 +35,8 @@ data class ProfileUiState(
 
 sealed interface ProfileIntent : MviIntent {
     data object Load : ProfileIntent
+    data object Refresh : ProfileIntent
+    data class AvatarUpdated(val avatarUrl: String) : ProfileIntent
     data object Reset : ProfileIntent
     data class TabSelected(val tab: ProfileListingsTab) : ProfileIntent
     data class FavoriteToggled(val listingId: String) : ProfileIntent
@@ -69,6 +71,8 @@ class ProfileViewModel(
     override suspend fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             ProfileIntent.Load -> performLoad()
+            ProfileIntent.Refresh -> reloadProfile()
+            is ProfileIntent.AvatarUpdated -> applyAvatarUpdate(intent.avatarUrl)
             ProfileIntent.Reset -> updateState { ProfileUiState() }
             is ProfileIntent.TabSelected -> updateState { current ->
                 if (current.selectedTab == intent.tab) current else current.copy(selectedTab = intent.tab)
@@ -79,6 +83,8 @@ class ProfileViewModel(
 
     fun reset() = onIntent(ProfileIntent.Reset)
     fun load() = onIntent(ProfileIntent.Load)
+    fun refreshProfile() = onIntent(ProfileIntent.Refresh)
+    fun updateAvatar(avatarUrl: String) = onIntent(ProfileIntent.AvatarUpdated(avatarUrl))
     fun onTabSelected(tab: ProfileListingsTab) = onIntent(ProfileIntent.TabSelected(tab))
     fun onListingFavoriteToggle(listingId: String) = onIntent(ProfileIntent.FavoriteToggled(listingId))
 
@@ -98,6 +104,18 @@ class ProfileViewModel(
                 archiveListings = bundle.archiveListings.toListingsUi(),
             )
         }
+    }
+
+    private suspend fun reloadProfile() {
+        val profile = profileRepository.getCurrentProfile()
+        updateState { it.copy(profile = profile.profileToUi()) }
+    }
+
+    private suspend fun applyAvatarUpdate(avatarUrl: String) {
+        val profile = profileRepository.getCurrentProfile()
+        val updated = profile.copy(avatarUrl = avatarUrl)
+        profileRepository.updateProfile(updated)
+        updateState { it.copy(profile = updated.profileToUi()) }
     }
 }
 

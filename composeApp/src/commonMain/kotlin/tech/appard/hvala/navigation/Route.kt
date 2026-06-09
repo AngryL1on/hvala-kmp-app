@@ -13,6 +13,7 @@ sealed interface Route {
     data object Favorites : Route
     data object Profile : Route
     data object Settings : Route
+    data object EditProfile : Route
     data object CreateListing : Route
     data class ListingDetail(val listingId: String) : Route
     data class SellerProfile(val sellerId: String) : Route
@@ -36,6 +37,7 @@ fun Route.requiresAuthentication(): Boolean = when (this) {
     Route.Favorites,
     Route.Profile,
     Route.Settings,
+    Route.EditProfile,
     Route.CreateListing,
     is Route.Chat,
     -> true

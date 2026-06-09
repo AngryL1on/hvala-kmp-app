@@ -117,6 +117,7 @@ private fun ProfileContent(
                         activeListingsCount = state.activeListingsCount,
                         rating = state.rating,
                         memberSince = state.memberSince,
+                        avatarUrl = state.profile?.avatarUrl,
                     )
 
                     ProfileSegmentedTabs(

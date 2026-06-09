@@ -47,7 +47,9 @@ import tech.appard.hvala.shared.feature.messages.presentation.screens.ChatScreen
 import tech.appard.hvala.shared.feature.messages.presentation.screens.MessagesScreen
 import tech.appard.hvala.shared.feature.messages.presentation.viewmodels.MessagesStateHolder
 import tech.appard.hvala.shared.feature.messages.presentation.mapper.resolvedSellerId
+import tech.appard.hvala.shared.feature.profile.presentation.screens.EditProfileScreen
 import tech.appard.hvala.shared.feature.profile.presentation.screens.ProfileScreen
+import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.EditProfileStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.screens.SellerProfileScreen
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileStateHolder
@@ -67,6 +69,7 @@ fun AppNavHost(
     val listingDetailStateHolder = koinInject<ListingDetailStateHolder>()
     val messagesStateHolder = koinInject<MessagesStateHolder>()
     val profileStateHolder = koinInject<ProfileStateHolder>()
+    val editProfileStateHolder = koinInject<EditProfileStateHolder>()
     val sellerProfileStateHolder = koinInject<SellerProfileStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
     val settingsStateHolder = koinInject<SettingsStateHolder>()
@@ -130,6 +133,7 @@ fun AppNavHost(
         -> true
         Route.Profile,
         Route.Settings,
+        Route.EditProfile,
         Route.CreateListing,
         Route.Write,
         Route.Favorites,
@@ -143,6 +147,7 @@ fun AppNavHost(
             Route.Registration -> strings.nav.registration
             Route.Profile -> strings.nav.profileTitle
             Route.Settings -> strings.settings.screenTitle
+            Route.EditProfile -> strings.settings.editProfile
             Route.CreateListing -> strings.nav.createListing
             is Route.ListingDetail -> listingDetailState.listing?.title ?: strings.common.listing
             is Route.SellerProfile -> sellerProfileState.seller?.name ?: strings.common.seller
@@ -155,6 +160,7 @@ fun AppNavHost(
             Route.Auth,
             Route.Registration,
             Route.Settings,
+            Route.EditProfile,
             Route.CreateListing,
             is Route.ListingDetail,
             is Route.SellerProfile,
@@ -165,6 +171,7 @@ fun AppNavHost(
         centerTitle = currentRoute == Route.Registration ||
             currentRoute == Route.Profile ||
             currentRoute == Route.Settings ||
+            currentRoute == Route.EditProfile ||
             currentRoute == Route.CreateListing ||
             currentRoute is Route.ListingDetail ||
             currentRoute is Route.SellerProfile ||
@@ -187,6 +194,7 @@ fun AppNavHost(
     val usesScreenBackground = when (currentRoute) {
         Route.Profile,
         Route.Settings,
+        Route.EditProfile,
         Route.CreateListing,
         is Route.ListingDetail,
         is Route.SellerProfile,
@@ -320,7 +328,18 @@ fun AppNavHost(
                         stateHolder = settingsStateHolder,
                         fullName = profileState.profile?.fullName ?: "",
                         email = profileState.profile?.email ?: "",
+                        phone = profileState.profile?.phone ?: "",
+                        avatarUrl = profileState.profile?.avatarUrl,
+                        onEditProfileClick = { navController.navigateTo(Route.EditProfile) },
+                        onAvatarPicked = profileStateHolder::updateAvatar,
                         onSessionEnd = onSessionEnd,
+                    )
+                    Route.EditProfile -> EditProfileScreen(
+                        stateHolder = editProfileStateHolder,
+                        onSaved = {
+                            profileStateHolder.refreshProfile()
+                            navController.back()
+                        },
                     )
                     Route.CreateListing -> CreateListingScreen(
                         stateHolder = createListingStateHolder,

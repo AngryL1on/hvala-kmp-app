@@ -11,12 +11,16 @@ fun UserProfileDto.toDomain(): UserProfile = UserProfile(
     id = id,
     fullName = fullName,
     email = email,
+    phone = phone,
+    avatarUrl = avatarUrl,
 )
 
 fun UserProfile.toDto(): UserProfileDto = UserProfileDto(
     id = id,
     fullName = fullName,
     email = email,
+    phone = phone,
+    avatarUrl = avatarUrl,
 )
 
 fun AuthCredentialsDto.toDomain(): AuthCredentials = AuthCredentials(

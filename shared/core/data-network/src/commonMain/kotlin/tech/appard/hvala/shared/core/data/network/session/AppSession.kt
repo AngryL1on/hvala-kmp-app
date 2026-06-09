@@ -13,6 +13,10 @@ internal object AppSession {
         isAuthenticated = true
     }
 
+    fun updateProfile(profile: UserProfile) {
+        registeredProfile = profile
+    }
+
     fun clear() {
         registeredProfile = null
         isAuthenticated = false
@@ -22,5 +26,6 @@ internal object AppSession {
         id = "1",
         fullName = "Vadim",
         email = "vadim@example.com",
+        phone = "+382 67 123 456",
     )
 }

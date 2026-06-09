@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import tech.appard.hvala.shared.core.ui.platform.rememberImagePicker
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.shared.core.ui.components.buttons.PrimaryButton
@@ -45,13 +46,15 @@ fun SettingsScreen(
     stateHolder: SettingsStateHolder,
     fullName: String,
     email: String,
+    phone: String,
     modifier: Modifier = Modifier,
     avatarUrl: String? = null,
     onEditProfileClick: () -> Unit = {},
-    onEditAvatarClick: () -> Unit = {},
+    onAvatarPicked: (String) -> Unit = {},
     onSessionEnd: () -> Unit = {},
 ) {
     val state by stateHolder.state.collectAsState()
+    val imagePicker = rememberImagePicker()
 
     LaunchedEffect(stateHolder) {
         stateHolder.effects.collect { effect ->
@@ -66,9 +69,10 @@ fun SettingsScreen(
         state = state,
         fullName = fullName,
         email = email,
+        phone = phone,
         avatarUrl = avatarUrl,
         onEditProfileClick = onEditProfileClick,
-        onEditAvatarClick = onEditAvatarClick,
+        onEditAvatarClick = { imagePicker.pick { uri -> uri?.let(onAvatarPicked) } },
         onMenuItemClick = stateHolder::onMenuItemClick,
         onLogoutClick = stateHolder::onLogoutClick,
         onDeleteAccountClick = stateHolder::onDeleteAccountClick,
@@ -90,6 +94,7 @@ private fun SettingsContent(
     state: SettingsUiState,
     fullName: String,
     email: String,
+    phone: String,
     avatarUrl: String?,
     onEditProfileClick: () -> Unit,
     onEditAvatarClick: () -> Unit,
@@ -202,6 +207,7 @@ private fun SettingsContent(
                 .padding(top = dimensions.verticalLarge),
             fullName = fullName,
             email = email,
+            phone = phone,
             avatarUrl = avatarUrl,
             onEditAvatarClick = onEditAvatarClick,
         )
@@ -238,6 +244,7 @@ private fun SettingsScreenPreview() {
             state = SettingsUiState(language = AppLanguage.RU),
             fullName = "Vadim",
             email = "vadim.lushina@gmail.com",
+            phone = "+382 67 123 456",
             avatarUrl = null,
             onEditProfileClick = {},
             onEditAvatarClick = {},

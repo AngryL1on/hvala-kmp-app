@@ -3,6 +3,7 @@ package tech.appard.hvala.shared.core.i18n
 data class SettingsStrings(
     val screenTitle: String,
     val editProfile: String,
+    val saveChanges: String,
     val notifications: String,
     val language: String,
     val info: String,
@@ -28,6 +29,7 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
     AppLanguage.RU -> SettingsStrings(
         screenTitle = "Настройки",
         editProfile = "Редактировать информацию",
+        saveChanges = "Сохранить",
         notifications = "Уведомления",
         language = "Язык",
         info = "Информация",
@@ -51,6 +53,7 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
     AppLanguage.EN -> SettingsStrings(
         screenTitle = "Settings",
         editProfile = "Edit profile",
+        saveChanges = "Save",
         notifications = "Notifications",
         language = "Language",
         info = "Information",
@@ -74,6 +77,7 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
     AppLanguage.SR -> SettingsStrings(
         screenTitle = "Podešavanja",
         editProfile = "Izmeni informacije",
+        saveChanges = "Sačuvaj",
         notifications = "Obaveštenja",
         language = "Jezik",
         info = "Informacije",
@@ -97,6 +101,7 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
     AppLanguage.CNR -> SettingsStrings(
         screenTitle = "Podešavanja",
         editProfile = "Izmijeni informacije",
+        saveChanges = "Sačuvaj",
         notifications = "Obavještenja",
         language = "Jezik",
         info = "Informacije",
@@ -120,6 +125,7 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
     AppLanguage.HR -> SettingsStrings(
         screenTitle = "Postavke",
         editProfile = "Uredi informacije",
+        saveChanges = "Spremi",
         notifications = "Obavijesti",
         language = "Jezik",
         info = "Informacije",
@@ -143,6 +149,7 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
     AppLanguage.BS -> SettingsStrings(
         screenTitle = "Postavke",
         editProfile = "Uredi informacije",
+        saveChanges = "Sačuvaj",
         notifications = "Obavijesti",
         language = "Jezik",
         info = "Informacije",

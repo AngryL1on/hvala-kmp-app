@@ -16,4 +16,6 @@ interface AuthRepository {
 
 interface ProfileRepository {
     suspend fun getCurrentProfile(): UserProfile
+
+    suspend fun updateProfile(profile: UserProfile)
 }

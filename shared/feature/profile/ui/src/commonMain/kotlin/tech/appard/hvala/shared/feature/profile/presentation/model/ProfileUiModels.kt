@@ -4,6 +4,8 @@ data class UIUserProfile(
     val id: String,
     val fullName: String,
     val email: String,
+    val phone: String = "",
+    val avatarUrl: String = "",
 )
 
 data class UISellerProfile(
