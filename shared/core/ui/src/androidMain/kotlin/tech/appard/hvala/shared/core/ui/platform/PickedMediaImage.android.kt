@@ -1,12 +1,11 @@
 package tech.appard.hvala.shared.core.ui.platform
 
 import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.InsertDriveFile
+import androidx.compose.material.icons.automirrored.outlined.InsertDriveFile
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,11 +19,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tech.appard.hvala.shared.core.ui.model.PickedMedia
 import tech.appard.hvala.shared.core.ui.theme.GrayPlaceholder
-import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 
 @Composable
 actual fun PickedMediaImage(
@@ -42,7 +41,7 @@ actual fun PickedMediaImage(
         }
         imageBitmap = withContext(Dispatchers.IO) {
             runCatching {
-                context.contentResolver.openInputStream(Uri.parse(media.uri))?.use { stream ->
+                context.contentResolver.openInputStream(media.uri.toUri())?.use { stream ->
                     BitmapFactory.decodeStream(stream)?.asImageBitmap()
                 }
             }.getOrNull()
@@ -63,14 +62,13 @@ actual fun PickedMediaImage(
 
 @Composable
 private fun FilePlaceholder(modifier: Modifier = Modifier) {
-    val dimensions = LocalDimensions.current
 
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = Icons.Outlined.InsertDriveFile,
+            imageVector = Icons.AutoMirrored.Outlined.InsertDriveFile,
             contentDescription = null,
             tint = GrayPlaceholder,
             modifier = Modifier.fillMaxSize(fraction = 0.45f),

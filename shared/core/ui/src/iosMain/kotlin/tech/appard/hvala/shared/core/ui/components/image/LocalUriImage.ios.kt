@@ -9,10 +9,10 @@ import androidx.compose.ui.layout.ContentScale
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
-import org.jetbrains.skia.Data
 import org.jetbrains.skia.Image as SkiaImage
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
+import platform.Foundation.dataWithContentsOfURL
 import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.posix.memcpy
@@ -48,7 +48,7 @@ private fun loadImageBitmap(uri: String) = runCatching {
     } ?: return@runCatching null
 
     val pngData = UIImagePNGRepresentation(uiImage) ?: return@runCatching null
-    SkiaImage.makeFromEncoded(Data.makeFromBytes(pngData.toByteArray())).toComposeImageBitmap()
+    SkiaImage.makeFromEncoded(pngData.toByteArray()).toComposeImageBitmap()
 }.getOrNull()
 
 @OptIn(ExperimentalForeignApi::class)

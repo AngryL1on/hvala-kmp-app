@@ -5,3 +5,8 @@ PRODUCT_BUNDLE_IDENTIFIER=tech.appard.hvala.Hvala$(TEAM_ID)
 
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0
+
+// SQLDelight (NativeSqliteDriver) on device/simulator.
+OTHER_LDFLAGS = $(inherited) -lsqlite3
+// UIUtilities lives under SubFrameworks since recent Xcode/iOS SDKs.
+FRAMEWORK_SEARCH_PATHS = $(inherited) $(SDKROOT)/System/Library/SubFrameworks
