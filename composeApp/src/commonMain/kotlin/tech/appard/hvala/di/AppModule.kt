@@ -19,6 +19,9 @@ import tech.appard.hvala.shared.feature.messages.di.messagesFeatureModule
 import tech.appard.hvala.shared.feature.profile.data.di.profileDataModule
 import tech.appard.hvala.shared.feature.profile.domain.di.profileDomainModule
 import tech.appard.hvala.shared.feature.profile.di.profileFeatureModule
+import tech.appard.hvala.shared.feature.settings.data.di.settingsDataModule
+import tech.appard.hvala.shared.feature.settings.domain.di.settingsDomainModule
+import tech.appard.hvala.shared.feature.settings.presentation.di.settingsFeatureModule
 
 val appModule = module {
     singleOf(::NetworkClient)
@@ -31,10 +34,13 @@ val appModule = module {
         listingsDomainModule,
         profileDomainModule,
         messagesDomainModule,
+        settingsDataModule,
+        settingsDomainModule,
         authFeatureModule,
         profileFeatureModule,
         listingsFeatureModule,
         messagesFeatureModule,
         favoritesFeatureModule,
+        settingsFeatureModule,
     )
 }

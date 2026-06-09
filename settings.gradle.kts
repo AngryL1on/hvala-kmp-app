@@ -22,12 +22,15 @@ include(":composeApp")
 // Shared core modules
 include(":shared:core:ui")
 include(":shared:core:mvi")
+include(":shared:core:i18n")
 include(":shared:core:data-network")
 
 // Feature modules
 include(":shared:feature:auth:domain")
 include(":shared:feature:auth:data")
 include(":shared:feature:auth:ui")
+include(":shared:feature:settings:domain")
+include(":shared:feature:settings:data")
 include(":shared:feature:settings:ui")
 
 include(":shared:feature:listings:domain")

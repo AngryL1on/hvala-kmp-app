@@ -17,10 +17,10 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.shared.core.ui.components.buttons.PrimaryButton
@@ -29,78 +29,136 @@ import tech.appard.hvala.shared.core.ui.theme.ButtonLarge
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
-import tech.appard.hvala.shared.feature.settings.presentation.model.SettingsMenuItem
+import tech.appard.hvala.shared.core.i18n.AppLanguage
+import tech.appard.hvala.shared.feature.settings.presentation.components.LanguagePickerDialog
 import tech.appard.hvala.shared.feature.settings.presentation.components.SettingsMenuCard
 import tech.appard.hvala.shared.feature.settings.presentation.components.SettingsProfileHeader
-
-private enum class SettingsConfirmAction {
-    Logout,
-    DeleteAccount,
-}
+import tech.appard.hvala.shared.feature.settings.presentation.model.SettingsMenuItem
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsConfirmAction
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsEffect
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsStateHolder
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsUiState
 
 @Composable
 fun SettingsScreen(
+    stateHolder: SettingsStateHolder,
     fullName: String,
     email: String,
     modifier: Modifier = Modifier,
     avatarUrl: String? = null,
     onEditProfileClick: () -> Unit = {},
     onEditAvatarClick: () -> Unit = {},
-    onMenuItemClick: (SettingsMenuItem) -> Unit = {},
-    onDeleteAccountClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {},
+    onSessionEnd: () -> Unit = {},
+) {
+    val state by stateHolder.state.collectAsState()
+
+    LaunchedEffect(stateHolder) {
+        stateHolder.effects.collect { effect ->
+            when (effect) {
+                SettingsEffect.SessionEndRequested -> onSessionEnd()
+            }
+        }
+    }
+
+    SettingsContent(
+        modifier = modifier,
+        state = state,
+        fullName = fullName,
+        email = email,
+        avatarUrl = avatarUrl,
+        onEditProfileClick = onEditProfileClick,
+        onEditAvatarClick = onEditAvatarClick,
+        onMenuItemClick = stateHolder::onMenuItemClick,
+        onLogoutClick = stateHolder::onLogoutClick,
+        onDeleteAccountClick = stateHolder::onDeleteAccountClick,
+        onConfirmDismiss = stateHolder::onConfirmDismiss,
+        onLogoutConfirmed = stateHolder::onLogoutConfirmed,
+        onDeleteAccountConfirmed = stateHolder::onDeleteAccountConfirmed,
+        onLanguagePickerDismiss = stateHolder::onLanguagePickerDismiss,
+        onLanguageDraftSelected = stateHolder::onLanguageDraftSelected,
+        onLanguageConfirmed = stateHolder::onLanguageConfirmed,
+    )
+}
+
+@Composable
+private fun SettingsContent(
+    state: SettingsUiState,
+    fullName: String,
+    email: String,
+    avatarUrl: String?,
+    onEditProfileClick: () -> Unit,
+    onEditAvatarClick: () -> Unit,
+    onMenuItemClick: (String) -> Unit,
+    onLogoutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
+    onConfirmDismiss: () -> Unit,
+    onLogoutConfirmed: () -> Unit,
+    onDeleteAccountConfirmed: () -> Unit,
+    onLanguagePickerDismiss: () -> Unit,
+    onLanguageDraftSelected: (AppLanguage) -> Unit,
+    onLanguageConfirmed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
-    var confirmAction by remember { mutableStateOf<SettingsConfirmAction?>(null) }
+    val strings = state.strings
 
-    val generalMenuItems = remember {
+    val generalMenuItems = remember(strings) {
         listOf(
-            SettingsMenuItem("notifications", "Уведомления", Icons.Outlined.Notifications),
-            SettingsMenuItem("language", "Язык", Icons.Outlined.Language),
-            SettingsMenuItem("info", "Информация", Icons.Outlined.Info),
-            SettingsMenuItem("contacts", "Контакты", Icons.Outlined.Badge),
-            SettingsMenuItem("help", "Помощь", Icons.AutoMirrored.Outlined.HelpOutline),
+            SettingsMenuItem("notifications", strings.notifications, Icons.Outlined.Notifications),
+            SettingsMenuItem("language", strings.language, Icons.Outlined.Language),
+            SettingsMenuItem("info", strings.info, Icons.Outlined.Info),
+            SettingsMenuItem("contacts", strings.contacts, Icons.Outlined.Badge),
+            SettingsMenuItem("help", strings.help, Icons.AutoMirrored.Outlined.HelpOutline),
         )
     }
-    val deleteAccountItem = remember {
+    val deleteAccountItem = remember(strings) {
         SettingsMenuItem(
             id = "delete_account",
-            title = "Удалить аккаунт",
+            title = strings.deleteAccount,
             icon = Icons.Outlined.DeleteOutline,
             isDestructive = true,
         )
     }
-    val logoutItem = remember {
+    val logoutItem = remember(strings) {
         SettingsMenuItem(
             id = "logout",
-            title = "Выйти",
+            title = strings.logout,
             icon = Icons.AutoMirrored.Outlined.Logout,
             isDestructive = true,
         )
     }
 
-    when (confirmAction) {
+    if (state.showLanguagePicker) {
+        LanguagePickerDialog(
+            title = strings.selectLanguage,
+            languages = AppLanguage.pickerOrder,
+            selectedLanguage = state.draftLanguage,
+            cancelText = strings.cancel,
+            confirmText = strings.ok,
+            onLanguageSelected = onLanguageDraftSelected,
+            onConfirm = onLanguageConfirmed,
+            onDismiss = onLanguagePickerDismiss,
+        )
+    }
+
+    when (state.confirmAction) {
         SettingsConfirmAction.Logout -> HvalaConfirmDialog(
-            title = "Выйти из аккаунта?",
-            message = "Вы уверены, что хотите выйти? Для входа потребуется снова ввести логин и пароль.",
-            confirmText = "Выйти",
+            title = strings.logoutTitle,
+            message = strings.logoutMessage,
+            confirmText = strings.logoutConfirm,
+            dismissText = strings.cancel,
             isDestructive = true,
-            onConfirm = {
-                confirmAction = null
-                onLogoutClick()
-            },
-            onDismiss = { confirmAction = null },
+            onConfirm = onLogoutConfirmed,
+            onDismiss = onConfirmDismiss,
         )
         SettingsConfirmAction.DeleteAccount -> HvalaConfirmDialog(
-            title = "Удалить аккаунт?",
-            message = "Это действие необратимо. Все ваши данные и объявления будут удалены.",
-            confirmText = "Удалить",
+            title = strings.deleteTitle,
+            message = strings.deleteMessage,
+            confirmText = strings.deleteConfirm,
+            dismissText = strings.cancel,
             isDestructive = true,
-            onConfirm = {
-                confirmAction = null
-                onDeleteAccountClick()
-            },
-            onDismiss = { confirmAction = null },
+            onConfirm = onDeleteAccountConfirmed,
+            onDismiss = onConfirmDismiss,
         )
         null -> Unit
     }
@@ -125,7 +183,7 @@ fun SettingsScreen(
         )
 
         PrimaryButton(
-            text = "Редактировать информацию",
+            text = strings.editProfile,
             onClick = onEditProfileClick,
             modifier = Modifier.fillMaxWidth(),
             textStyle = ButtonLarge,
@@ -133,17 +191,17 @@ fun SettingsScreen(
 
         SettingsMenuCard(
             items = generalMenuItems,
-            onItemClick = onMenuItemClick,
+            onItemClick = { item -> onMenuItemClick(item.id) },
         )
 
         SettingsMenuCard(
             items = listOf(deleteAccountItem),
-            onItemClick = { confirmAction = SettingsConfirmAction.DeleteAccount },
+            onItemClick = { onDeleteAccountClick() },
         )
 
         SettingsMenuCard(
             items = listOf(logoutItem),
-            onItemClick = { confirmAction = SettingsConfirmAction.Logout },
+            onItemClick = { onLogoutClick() },
         )
     }
 }
@@ -152,9 +210,22 @@ fun SettingsScreen(
 @Preview
 private fun SettingsScreenPreview() {
     HvalaTheme {
-        SettingsScreen(
+        SettingsContent(
+            state = SettingsUiState(language = AppLanguage.RU),
             fullName = "Vadim",
             email = "vadim.lushina@gmail.com",
+            avatarUrl = null,
+            onEditProfileClick = {},
+            onEditAvatarClick = {},
+            onMenuItemClick = {},
+            onLogoutClick = {},
+            onDeleteAccountClick = {},
+            onConfirmDismiss = {},
+            onLogoutConfirmed = {},
+            onDeleteAccountConfirmed = {},
+            onLanguagePickerDismiss = {},
+            onLanguageDraftSelected = {},
+            onLanguageConfirmed = {},
         )
     }
 }

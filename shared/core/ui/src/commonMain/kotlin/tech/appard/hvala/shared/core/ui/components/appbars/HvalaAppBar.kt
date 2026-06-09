@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
@@ -51,6 +52,7 @@ fun HvalaAppBar(
     onSettingsClick: () -> Unit = {},
     onTitleClick: (() -> Unit)? = null,
 ) {
+    val strings = appStrings().common
     val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = White,
         scrolledContainerColor = White,
@@ -60,7 +62,7 @@ fun HvalaAppBar(
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
+                    contentDescription = strings.settings,
                     tint = PrimaryMain,
                 )
             }
@@ -71,7 +73,7 @@ fun HvalaAppBar(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = strings.back,
                     tint = SecondaryMain,
                 )
             }

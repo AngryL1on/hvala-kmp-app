@@ -50,6 +50,8 @@ import tech.appard.hvala.shared.core.ui.theme.TitleLarge
 import tech.appard.hvala.shared.core.ui.theme.TitleMedium
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.theme.CardBorder
+import tech.appard.hvala.shared.core.i18n.ListingsStrings
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailStateHolder
 import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingDetailUiState
 import tech.appard.hvala.shared.feature.listings.presentation.components.CreateListingMapPlaceholder
@@ -94,6 +96,7 @@ private fun ListingDetailContent(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().listings
 
     Box(
         modifier = modifier
@@ -109,7 +112,7 @@ private fun ListingDetailContent(
             }
             state.listing == null -> {
                 Text(
-                    text = state.error ?: "Listing not found",
+                    text = state.error ?: strings.listingNotFound,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(dimensions.horizontalMedium),
@@ -160,6 +163,8 @@ private fun ListingDetailContent(
                             style = FieldCaption.copy(color = GrayText),
                         )
                         SellerLinkRow(
+                            sellerLabel = strings.seller,
+                            openProfileLabel = strings.openSellerProfile,
                             sellerName = listing.sellerName,
                             onClick = {
                                 if (listing.sellerId.isNotBlank()) {
@@ -172,23 +177,26 @@ private fun ListingDetailContent(
                     AvailabilityBadge(availability = listing.availability)
 
                     ListingDetailInfoCard(
-                        title = "Details",
-                        rows = buildDetailsRows(state),
+                        title = strings.details,
+                        rows = buildDetailsRows(state, strings),
                     )
 
                     CreateListingMapPlaceholder()
 
                     listing.autoDetails?.let { autoDetails ->
                         ListingDetailInfoCard(
-                            title = "Vehicle details",
-                            rows = buildAutoDetailsRows(autoDetails),
+                            title = strings.vehicleDetails,
+                            rows = buildAutoDetailsRows(autoDetails, strings),
                         )
                     }
 
-                    DescriptionSection(description = listing.description)
+                    DescriptionSection(
+                        title = strings.description,
+                        description = listing.description,
+                    )
 
                     PrimaryButton(
-                        text = "Contact seller",
+                        text = strings.contactSeller,
                         onClick = onContactClick,
                         modifier = Modifier.fillMaxWidth(),
                         textStyle = ButtonLarge,
@@ -203,6 +211,8 @@ private fun ListingDetailContent(
 
 @Composable
 private fun SellerLinkRow(
+    sellerLabel: String,
+    openProfileLabel: String,
     sellerName: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -225,7 +235,7 @@ private fun SellerLinkRow(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(dimensions.verticalXXSmall)) {
             Text(
-                text = "Seller",
+                text = sellerLabel,
                 style = FieldCaption.copy(color = GrayText),
             )
             Text(
@@ -235,7 +245,7 @@ private fun SellerLinkRow(
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = "Open seller profile",
+            contentDescription = openProfileLabel,
             tint = SecondaryMain,
         )
     }
@@ -267,6 +277,7 @@ private fun AvailabilityBadge(
 
 @Composable
 private fun DescriptionSection(
+    title: String,
     description: String,
     modifier: Modifier = Modifier,
 ) {
@@ -283,7 +294,7 @@ private fun DescriptionSection(
         verticalArrangement = Arrangement.spacedBy(dimensions.verticalSmall),
     ) {
         Text(
-            text = "Description",
+            text = title,
             style = FieldCaption.copy(color = GrayText),
         )
         Text(
@@ -293,26 +304,27 @@ private fun DescriptionSection(
     }
 }
 
-private fun buildDetailsRows(state: ListingDetailUiState): List<Pair<String, String>> {
+private fun buildDetailsRows(state: ListingDetailUiState, strings: ListingsStrings): List<Pair<String, String>> {
     val listing = state.listing ?: return emptyList()
     return listOf(
-        "Category" to state.categoryTitle,
-        "Phone" to listing.phone,
-        "Country" to state.countryTitle,
-        "Region" to state.regionTitle,
-        "Location" to listing.location,
+        strings.detailCategory to state.categoryTitle,
+        strings.detailPhone to listing.phone,
+        strings.detailCountry to state.countryTitle,
+        strings.detailRegion to state.regionTitle,
+        strings.detailLocation to listing.location,
     )
 }
 
-private fun buildAutoDetailsRows(details: UIListingAutoDetails): List<Pair<String, String>> = listOf(
-    "Body type" to details.bodyType,
-    "Color" to details.color,
-    "Transmission" to details.transmission,
-    "Drivetrain" to details.drivetrain,
-    "Steering wheel" to details.steeringWheel,
-    "Condition" to details.condition,
-    "Number of owners" to details.numberOfOwners,
-)
+private fun buildAutoDetailsRows(details: UIListingAutoDetails, strings: ListingsStrings): List<Pair<String, String>> =
+    listOf(
+        strings.detailBodyType to details.bodyType,
+        strings.detailColor to details.color,
+        strings.detailTransmission to details.transmission,
+        strings.detailDrivetrain to details.drivetrain,
+        strings.detailSteeringWheel to details.steeringWheel,
+        strings.detailCondition to details.condition,
+        strings.detailOwners to details.numberOfOwners,
+    )
 
 private fun formatPriceRub(priceRub: Int): String =
     priceRub.toString().reversed().chunked(3).joinToString(" ").reversed()

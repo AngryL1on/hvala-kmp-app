@@ -39,7 +39,9 @@ import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCat
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCurrency
 import tech.appard.hvala.shared.core.ui.model.MediaPickerMode
 import tech.appard.hvala.shared.core.ui.platform.rememberMediaPickerLauncher
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.listings.presentation.CreateListingStateHolder
+import tech.appard.hvala.shared.feature.listings.presentation.createListingSelectOptions
 import tech.appard.hvala.shared.feature.listings.presentation.CreateListingUiState
 import tech.appard.hvala.shared.feature.listings.presentation.components.CreateListingMapPlaceholder
 import tech.appard.hvala.shared.feature.listings.presentation.components.CreateListingPhotoSection
@@ -115,6 +117,8 @@ private fun CreateListingContent(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().listings
+    val selectOptions = createListingSelectOptions(strings)
     val fieldModifier = Modifier
         .fillMaxWidth()
         .height(dimensions.fieldsDefaultHeight)
@@ -142,13 +146,13 @@ private fun CreateListingContent(
             canAddMore = state.photos.size < CreateListingStateHolder.MAX_PHOTOS,
         )
 
-        SectionTitle("Fill in description")
+        SectionTitle(strings.fillDescription)
 
-        FormField(label = "Title") {
+        FormField(label = strings.title) {
             PrimaryTextField(
                 modifier = fieldModifier,
                 value = state.title,
-                placeholder = "Listing title",
+                placeholder = strings.listingTitle,
                 isMaxQuantityOfCharVisible = false,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -158,7 +162,7 @@ private fun CreateListingContent(
             )
         }
 
-        FormField(label = "Phone") {
+        FormField(label = strings.phone) {
             PhoneTextField(
                 modifier = fieldModifier,
                 value = state.phone,
@@ -170,26 +174,26 @@ private fun CreateListingContent(
 
         HvalaSelectField(
             modifier = Modifier.fillMaxWidth(),
-            label = "Select country",
+            label = strings.selectCountry,
             options = countryOptions,
             selectedOptionId = state.countryId,
-            placeholder = "Country",
+            placeholder = strings.country,
             fieldMinHeight = dimensions.fieldsDefaultHeight,
             onOptionSelected = onCountryChange,
         )
 
         HvalaSelectField(
             modifier = Modifier.fillMaxWidth(),
-            label = "Select region",
+            label = strings.selectRegion,
             options = regionOptions,
             selectedOptionId = state.regionId,
-            placeholder = "Region",
+            placeholder = strings.region,
             enabled = state.countryId != null && regionOptions.isNotEmpty(),
             fieldMinHeight = dimensions.fieldsDefaultHeight,
             onOptionSelected = onRegionChange,
         )
 
-        FormField(label = "Location") {
+        FormField(label = strings.location) {
             PrimaryTextField(
                 modifier = fieldModifier,
                 value = state.location,
@@ -210,7 +214,7 @@ private fun CreateListingContent(
             horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalSmall),
         ) {
             FormField(
-                label = "Price",
+                label = strings.price,
                 modifier = Modifier.weight(1f),
             ) {
                 PrimaryTextField(
@@ -229,7 +233,7 @@ private fun CreateListingContent(
 
             HvalaSelectField(
                 modifier = Modifier.weight(1f),
-                label = "Select currency",
+                label = strings.selectCurrency,
                 options = currencyOptions,
                 selectedOptionId = state.currency.name,
                 fieldMinHeight = dimensions.fieldsDefaultHeight,
@@ -241,8 +245,8 @@ private fun CreateListingContent(
 
         HvalaSelectField(
             modifier = Modifier.fillMaxWidth(),
-            label = "Select availability",
-            options = CreateListingStateHolder.availabilityOptions,
+            label = strings.availability,
+            options = selectOptions.availability,
             selectedOptionId = state.availabilityId,
             fieldMinHeight = dimensions.fieldsDefaultHeight,
             onOptionSelected = onAvailabilityChange,
@@ -250,32 +254,32 @@ private fun CreateListingContent(
 
         HvalaSelectField(
             modifier = Modifier.fillMaxWidth(),
-            label = "Select category",
+            label = strings.selectCategory,
             options = categoryOptions,
             selectedOptionId = state.categoryId,
-            placeholder = "Category",
+            placeholder = strings.category,
             fieldMinHeight = dimensions.fieldsDefaultHeight,
             onOptionSelected = onCategoryChange,
         )
 
         if (state.isAutoCategory) {
-            SectionTitle("Vehicle details")
+            SectionTitle(strings.vehicleDetails)
 
             HvalaSelectField(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Body type",
-                options = CreateListingStateHolder.bodyTypeOptions,
+                label = strings.bodyType,
+                options = selectOptions.bodyType,
                 selectedOptionId = state.bodyTypeId,
-                placeholder = "Body type",
+                placeholder = strings.bodyType,
                 fieldMinHeight = dimensions.fieldsDefaultHeight,
                 onOptionSelected = onBodyTypeChange,
             )
 
-            FormField(label = "Color") {
+            FormField(label = strings.color) {
                 PrimaryTextField(
                     modifier = fieldModifier,
                     value = state.color,
-                    placeholder = "Color",
+                    placeholder = strings.color,
                     isMaxQuantityOfCharVisible = false,
                     onTextChange = onColorChange,
                 )
@@ -283,45 +287,45 @@ private fun CreateListingContent(
 
             HvalaSelectField(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Transmission",
-                options = CreateListingStateHolder.transmissionOptions,
+                label = strings.transmission,
+                options = selectOptions.transmission,
                 selectedOptionId = state.transmissionId,
-                placeholder = "Transmission",
+                placeholder = strings.transmission,
                 fieldMinHeight = dimensions.fieldsDefaultHeight,
                 onOptionSelected = onTransmissionChange,
             )
 
             HvalaSelectField(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Drivetrain",
-                options = CreateListingStateHolder.drivetrainOptions,
+                label = strings.drivetrain,
+                options = selectOptions.drivetrain,
                 selectedOptionId = state.drivetrainId,
-                placeholder = "Drivetrain",
+                placeholder = strings.drivetrain,
                 fieldMinHeight = dimensions.fieldsDefaultHeight,
                 onOptionSelected = onDrivetrainChange,
             )
 
             HvalaSelectField(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Steering wheel",
-                options = CreateListingStateHolder.steeringWheelOptions,
+                label = strings.steeringWheel,
+                options = selectOptions.steeringWheel,
                 selectedOptionId = state.steeringWheelId,
-                placeholder = "Steering wheel",
+                placeholder = strings.steeringWheel,
                 fieldMinHeight = dimensions.fieldsDefaultHeight,
                 onOptionSelected = onSteeringWheelChange,
             )
 
             HvalaSelectField(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Condition",
-                options = CreateListingStateHolder.conditionOptions,
+                label = strings.condition,
+                options = selectOptions.condition,
                 selectedOptionId = state.conditionId,
-                placeholder = "Condition",
+                placeholder = strings.condition,
                 fieldMinHeight = dimensions.fieldsDefaultHeight,
                 onOptionSelected = onConditionChange,
             )
 
-            FormField(label = "Number of owners") {
+            FormField(label = strings.numberOfOwners) {
                 PrimaryTextField(
                     modifier = fieldModifier,
                     value = state.numberOfOwners,
@@ -333,7 +337,7 @@ private fun CreateListingContent(
             }
         }
 
-        FormField(label = "Description") {
+        FormField(label = strings.description) {
             PrimaryTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -360,7 +364,7 @@ private fun CreateListingContent(
         }
 
         PrimaryButton(
-            text = "Submit",
+            text = strings.submit,
             onClick = onSubmit,
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.isSubmitting,

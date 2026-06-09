@@ -19,10 +19,10 @@ data class ListingsFilters(
     val categoryId: String? = null,
 )
 
-enum class ListingSortOrder(val title: String) {
-    NewestFirst("Сначала новые"),
-    PriceAsc("Цена ↑"),
-    PriceDesc("Цена ↓"),
+enum class ListingSortOrder {
+    NewestFirst,
+    PriceAsc,
+    PriceDesc,
 }
 
 fun List<Listing>.filteredBy(

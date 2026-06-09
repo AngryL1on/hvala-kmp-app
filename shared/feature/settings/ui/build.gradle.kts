@@ -28,7 +28,12 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(compose.materialIconsExtended)
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.io.insert.koin.core)
             implementation(projects.shared.core.ui)
+            implementation(projects.shared.core.mvi)
+            implementation(projects.shared.feature.settings.domain)
+            implementation(projects.shared.core.i18n)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

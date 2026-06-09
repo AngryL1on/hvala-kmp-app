@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.model.PickedMedia
 import tech.appard.hvala.shared.core.ui.platform.PickedMediaImage
 import tech.appard.hvala.shared.core.ui.theme.CardBorder
@@ -39,6 +40,7 @@ fun CreateListingPhotoSection(
     canAddMore: Boolean = true,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().listings
     val photoSize = dimensions.settingsAvatarSize
     val shape = RoundedCornerShape(dimensions.defaultCornerRadius)
 
@@ -47,7 +49,7 @@ fun CreateListingPhotoSection(
         verticalArrangement = Arrangement.spacedBy(dimensions.verticalSmall),
     ) {
         Text(
-            text = "Select photos",
+            text = strings.selectPhotos,
             style = FieldTitle.copy(color = InputText),
         )
 
@@ -71,7 +73,7 @@ fun CreateListingPhotoSection(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add photo",
+                            contentDescription = strings.addPhoto,
                             tint = GrayPlaceholder,
                             modifier = Modifier.size(dimensions.iconDefaultSize),
                         )

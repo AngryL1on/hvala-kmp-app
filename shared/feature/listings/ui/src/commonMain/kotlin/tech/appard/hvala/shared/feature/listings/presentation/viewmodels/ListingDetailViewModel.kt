@@ -1,6 +1,8 @@
 package tech.appard.hvala.shared.feature.listings.presentation.viewmodels
 
+import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.listings.domain.GetCatalogDefaultsUseCase
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 import tech.appard.hvala.shared.feature.listings.domain.GetListingByIdUseCase
 import tech.appard.hvala.shared.core.mvi.MviEffect
 import tech.appard.hvala.shared.core.mvi.MviIntent
@@ -32,6 +34,7 @@ sealed interface ListingDetailEffect : MviEffect
 class ListingDetailViewModel(
     private val getListingByIdUseCase: GetListingByIdUseCase,
     private val getCatalogDefaultsUseCase: GetCatalogDefaultsUseCase,
+    private val localeRepository: LocaleRepository,
 ) : MviViewModel<ListingDetailIntent, ListingDetailUiState, ListingDetailEffect>(ListingDetailUiState()) {
 
     override suspend fun handleIntent(intent: ListingDetailIntent) {
@@ -67,7 +70,11 @@ class ListingDetailViewModel(
         val listing = getListingByIdUseCase(listingId)
         if (listing == null) {
             updateState {
-                it.copy(isLoading = false, listing = null, error = "Listing not found")
+                it.copy(
+                    isLoading = false,
+                    listing = null,
+                    error = localeRepository.getLanguage().strings().listings.listingNotFound,
+                )
             }
             return
         }
@@ -88,17 +95,26 @@ class ListingDetailViewModel(
         }
     }
 
-    private fun resolveCategoryTitle(categoryId: String): String =
-        getCatalogDefaultsUseCase.categories().find { it.id == categoryId }?.title.orEmpty()
+    private fun resolveCategoryTitle(categoryId: String): String {
+        val strings = localeRepository.getLanguage().strings().listings
+        val fallback = getCatalogDefaultsUseCase.categories().find { it.id == categoryId }?.title.orEmpty()
+        return strings.categoryTitle(categoryId, fallback)
+    }
 
-    private fun resolveCountryTitle(countryId: String): String =
-        getCatalogDefaultsUseCase.countries().find { it.id == countryId }?.title.orEmpty()
+    private fun resolveCountryTitle(countryId: String): String {
+        val strings = localeRepository.getLanguage().strings().listings
+        val fallback = getCatalogDefaultsUseCase.countries().find { it.id == countryId }?.title.orEmpty()
+        return strings.countryTitle(countryId, fallback)
+    }
 
-    private fun resolveRegionTitle(countryId: String, regionId: String): String =
-        getCatalogDefaultsUseCase.regionsByCountry()[countryId]
+    private fun resolveRegionTitle(countryId: String, regionId: String): String {
+        val strings = localeRepository.getLanguage().strings().listings
+        val fallback = getCatalogDefaultsUseCase.regionsByCountry()[countryId]
             ?.find { it.id == regionId }
             ?.title
             .orEmpty()
+        return strings.regionTitle(regionId, fallback)
+    }
 }
 
 typealias ListingDetailStateHolder = ListingDetailViewModel

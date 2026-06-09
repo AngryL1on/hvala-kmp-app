@@ -9,6 +9,6 @@ import tech.appard.hvala.shared.feature.listings.domain.repository.ListingsRepos
 
 val listingsDataModule = module {
     single { ListingsJsonDataSource() }
-    single<ListingsRepository> { JsonListingsRepository(get()) }
+    single<ListingsRepository> { JsonListingsRepository(get(), get()) }
     single<CatalogRepository> { JsonCatalogRepository(get()) }
 }

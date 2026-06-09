@@ -1,5 +1,8 @@
 package tech.appard.hvala.shared.feature.messages.data.repository
 
+import tech.appard.hvala.shared.core.i18n.PreviewMessage
+import tech.appard.hvala.shared.core.i18n.formatLastMessagePreview
+import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.listings.domain.repository.ListingsRepository
 import tech.appard.hvala.shared.feature.messages.data.mapper.toDomain
 import tech.appard.hvala.shared.feature.messages.data.model.ConversationFileDto
@@ -9,6 +12,7 @@ import tech.appard.hvala.shared.feature.messages.domain.model.ChatThread
 import tech.appard.hvala.shared.feature.messages.domain.model.PickedMedia
 import tech.appard.hvala.shared.feature.messages.domain.repository.MessagesRepository
 import tech.appard.hvala.shared.feature.profile.domain.repository.SellerRepository
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 private class ConversationState(
     var thread: ChatThread,
@@ -19,6 +23,7 @@ internal class JsonMessagesRepository(
     private val dataSource: MessagesJsonDataSource,
     private val listingsRepository: ListingsRepository,
     private val sellerRepository: SellerRepository,
+    private val localeRepository: LocaleRepository,
 ) : MessagesRepository {
     private val conversations = linkedMapOf<String, ConversationState>()
 
@@ -75,6 +80,8 @@ internal class JsonMessagesRepository(
 
         val listing = listingsRepository.getListingById(listingId) ?: return null
         val threadId = "listing-$listingId"
+        val messagesStrings = localeRepository.getLanguage().strings().messages
+        val commonStrings = localeRepository.getLanguage().strings().common
 
         if (conversations[threadId] == null) {
             conversations[threadId] = ConversationState(
@@ -93,13 +100,13 @@ internal class JsonMessagesRepository(
                 messages = mutableListOf(
                     ChatMessage(
                         id = "$threadId-divider-today",
-                        text = "Today",
+                        text = commonStrings.today,
                         isOutgoing = false,
                         isDateDivider = true,
                     ),
                     ChatMessage(
                         id = "$threadId-msg-0",
-                        text = "Hello! I'm interested in \"${listing.title}\".",
+                        text = messagesStrings.chatOpener(listing.title),
                         isOutgoing = true,
                     ),
                 ),
@@ -122,17 +129,16 @@ internal class JsonMessagesRepository(
             messages = messages.map { it.toDomain() }.toMutableList(),
         )
 
-    private fun ChatThread.withPreview(messages: List<ChatMessage>): ChatThread =
-        copy(lastMessagePreview = formatLastMessagePreview(messages))
-
-    private fun formatLastMessagePreview(messages: List<ChatMessage>): String {
-        val lastMessage = messages.lastOrNull { !it.isDateDivider } ?: return "Нет сообщений"
-        val preview = if (lastMessage.text.length > 72) {
-            lastMessage.text.take(69) + "..."
-        } else {
-            lastMessage.text
+    private fun ChatThread.withPreview(messages: List<ChatMessage>): ChatThread {
+        val messagesStrings = localeRepository.getLanguage().strings().messages
+        val previewMessages = messages.map { message ->
+            PreviewMessage(
+                text = message.text,
+                isOutgoing = message.isOutgoing,
+                isDateDivider = message.isDateDivider,
+            )
         }
-        return if (lastMessage.isOutgoing) "Вы: $preview" else preview
+        return copy(lastMessagePreview = formatLastMessagePreview(previewMessages, messagesStrings))
     }
 
     private fun avatarColorFor(key: String): Long {

@@ -29,6 +29,7 @@ import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileUiState
 import tech.appard.hvala.shared.feature.profile.presentation.components.ProfileHeaderCard
@@ -62,6 +63,7 @@ private fun SellerProfileContent(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().profile
 
     Box(
         modifier = modifier
@@ -77,7 +79,7 @@ private fun SellerProfileContent(
             }
             state.seller == null -> {
                 Text(
-                    text = state.error ?: "Seller not found",
+                    text = state.error ?: strings.sellerNotFound,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(dimensions.horizontalMedium),
@@ -108,7 +110,7 @@ private fun SellerProfileContent(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "No active listings",
+                                text = strings.noActiveListings,
                                 style = BodyMedium.copy(color = GrayText),
                             )
                         }

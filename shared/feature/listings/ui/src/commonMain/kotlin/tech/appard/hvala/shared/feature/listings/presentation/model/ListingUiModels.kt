@@ -56,8 +56,8 @@ data class UIListingsFilters(
     val categoryId: String? = null,
 )
 
-enum class UIListingSortOrder(val title: String) {
-    NewestFirst("Сначала новые"),
-    PriceAsc("Цена ↑"),
-    PriceDesc("Цена ↓"),
+enum class UIListingSortOrder {
+    NewestFirst,
+    PriceAsc,
+    PriceDesc,
 }

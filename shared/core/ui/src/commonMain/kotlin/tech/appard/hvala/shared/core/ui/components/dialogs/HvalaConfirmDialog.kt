@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
 import tech.appard.hvala.shared.core.ui.theme.Error
 import tech.appard.hvala.shared.core.ui.theme.FieldTitle
@@ -21,7 +22,7 @@ fun HvalaConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    dismissText: String = "Отмена",
+    dismissText: String = appStrings().common.cancel,
     isDestructive: Boolean = false,
 ) {
     AlertDialog(

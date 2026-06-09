@@ -26,6 +26,7 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.TabContainerBackground
 import tech.appard.hvala.shared.core.ui.theme.TabSelectedBackground
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.profile.presentation.model.ProfileListingsTab
 
 @Composable
@@ -35,6 +36,7 @@ fun ProfileSegmentedTabs(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().profile
 
     Row(
         modifier = modifier
@@ -45,13 +47,13 @@ fun ProfileSegmentedTabs(
         horizontalArrangement = Arrangement.spacedBy(dimensions.horizontalXXSmall),
     ) {
         ProfileSegmentedTab(
-            text = "Активные",
+            text = strings.activeTab,
             isSelected = selectedTab == ProfileListingsTab.Active,
             onClick = { onTabSelected(ProfileListingsTab.Active) },
             modifier = Modifier.weight(1f),
         )
         ProfileSegmentedTab(
-            text = "Архив",
+            text = strings.archiveTab,
             isSelected = selectedTab == ProfileListingsTab.Archive,
             onClick = { onTabSelected(ProfileListingsTab.Archive) },
             modifier = Modifier.weight(1f),

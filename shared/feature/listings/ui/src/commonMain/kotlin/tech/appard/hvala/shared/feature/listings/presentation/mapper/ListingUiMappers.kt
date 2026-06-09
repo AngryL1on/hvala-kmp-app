@@ -1,5 +1,8 @@
 package tech.appard.hvala.shared.feature.listings.presentation.mapper
 
+import tech.appard.hvala.shared.core.i18n.AppLanguage
+import tech.appard.hvala.shared.core.i18n.ListingSortOrderId
+import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.listings.domain.model.Listing
 import tech.appard.hvala.shared.feature.listings.domain.model.ListingAutoDetails
 import tech.appard.hvala.shared.feature.listings.domain.model.ListingCategory
@@ -80,11 +83,25 @@ fun UIListingAutoDetails.toDomain(): ListingAutoDetails = ListingAutoDetails(
     numberOfOwners = numberOfOwners,
 )
 
-fun ListingCategory.toUi(): UIListingCategory = UIListingCategory(id = id, title = title)
+fun ListingCategory.toUi(language: AppLanguage): UIListingCategory {
+    val strings = language.strings().listings
+    return UIListingCategory(
+        id = id,
+        title = strings.categoryTitle(id, fallback = title),
+    )
+}
 
 fun UIListingCategory.toDomain(): ListingCategory = ListingCategory(id = id, title = title)
 
-fun LocationOption.toUi(): UILocationOption = UILocationOption(id = id, title = title)
+fun LocationOption.toUi(language: AppLanguage, countryId: String? = null): UILocationOption {
+    val strings = language.strings().listings
+    val localizedTitle = when {
+        countryId != null -> strings.regionTitle(id, fallback = title)
+        id in listOf("ru", "rs") -> strings.countryTitle(id, fallback = title)
+        else -> title
+    }
+    return UILocationOption(id = id, title = localizedTitle)
+}
 
 fun UILocationOption.toDomain(): LocationOption = LocationOption(id = id, title = title)
 
@@ -130,9 +147,20 @@ fun UIListingSortOrder.toDomain(): ListingSortOrder = when (this) {
 
 fun List<Listing>.toListingsUi(): List<UIListing> = map { it.toUi() }
 
-fun List<ListingCategory>.toCategoriesUi(): List<UIListingCategory> = map { it.toUi() }
+fun List<ListingCategory>.toCategoriesUi(language: AppLanguage): List<UIListingCategory> =
+    map { it.toUi(language) }
 
-fun List<LocationOption>.toLocationsUi(): List<UILocationOption> = map { it.toUi() }
+fun List<LocationOption>.toLocationsUi(language: AppLanguage, countryId: String? = null): List<UILocationOption> =
+    map { it.toUi(language, countryId) }
+
+fun Map<String, List<LocationOption>>.toRegionsByCountryUi(language: AppLanguage): Map<String, List<UILocationOption>> =
+    mapValues { (countryId, regions) -> regions.toLocationsUi(language, countryId) }
+
+fun UIListingSortOrder.toSortOrderId(): ListingSortOrderId = when (this) {
+    UIListingSortOrder.NewestFirst -> ListingSortOrderId.NewestFirst
+    UIListingSortOrder.PriceAsc -> ListingSortOrderId.PriceAsc
+    UIListingSortOrder.PriceDesc -> ListingSortOrderId.PriceDesc
+}
 
 fun List<UIListing>.sortedByUi(
     sortOrder: UIListingSortOrder,

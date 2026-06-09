@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.theme.FieldCaption
 import tech.appard.hvala.shared.core.ui.theme.GrayPlaceholder
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
@@ -48,13 +49,6 @@ private data class BottomNavTabConfig(
     val icon: ImageVector,
 )
 
-private val sideTabs = listOf(
-    BottomNavTabConfig(BottomNavItem.Listings, "Объявления", Icons.Outlined.ShoppingCart),
-    BottomNavTabConfig(BottomNavItem.Write, "Написать", Icons.Outlined.ChatBubbleOutline),
-    BottomNavTabConfig(BottomNavItem.Favorites, "Избранное", Icons.Outlined.StarBorder),
-    BottomNavTabConfig(BottomNavItem.Profile, "Профиль", Icons.Outlined.PersonOutline),
-)
-
 @Composable
 fun HvalaBottomNavBar(
     selectedItem: BottomNavItem,
@@ -62,6 +56,15 @@ fun HvalaBottomNavBar(
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val strings = appStrings().nav
+    val sideTabs = remember(strings) {
+        listOf(
+            BottomNavTabConfig(BottomNavItem.Listings, strings.listings, Icons.Outlined.ShoppingCart),
+            BottomNavTabConfig(BottomNavItem.Write, strings.write, Icons.Outlined.ChatBubbleOutline),
+            BottomNavTabConfig(BottomNavItem.Favorites, strings.favorites, Icons.Outlined.StarBorder),
+            BottomNavTabConfig(BottomNavItem.Profile, strings.profile, Icons.Outlined.PersonOutline),
+        )
+    }
     val dimensions = LocalDimensions.current
     val barShape = RoundedCornerShape(
         topStart = dimensions.defaultCornerRadius,
@@ -109,6 +112,7 @@ fun HvalaBottomNavBar(
                         modifier = Modifier.weight(1f),
                     )
                     BottomNavAddSlot(
+                        addLabel = strings.add,
                         onClick = onAddClick,
                         modifier = Modifier.weight(1f),
                     )
@@ -128,6 +132,7 @@ fun HvalaBottomNavBar(
             }
 
             BottomNavAddButton(
+                addLabel = strings.add,
                 onClick = onAddClick,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -180,6 +185,7 @@ private fun BottomNavTab(
 
 @Composable
 private fun BottomNavAddSlot(
+    addLabel: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -196,7 +202,7 @@ private fun BottomNavAddSlot(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Добавить",
+            text = addLabel,
             style = FieldCaption.copy(color = GrayPlaceholder),
         )
     }
@@ -204,6 +210,7 @@ private fun BottomNavAddSlot(
 
 @Composable
 private fun BottomNavAddButton(
+    addLabel: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -241,7 +248,7 @@ private fun BottomNavAddButton(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Добавить",
+                    contentDescription = addLabel,
                     tint = SecondaryMain,
                     modifier = Modifier.size(dimensions.iconDefaultSize),
                 )

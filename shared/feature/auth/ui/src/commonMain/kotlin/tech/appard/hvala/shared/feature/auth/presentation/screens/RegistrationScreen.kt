@@ -41,6 +41,7 @@ import tech.appard.hvala.shared.core.ui.theme.InputText
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.auth.presentation.AuthStateHolder
 import tech.appard.hvala.shared.feature.auth.presentation.RegistrationUiState
 
@@ -78,6 +79,7 @@ private fun RegistrationContent(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().auth
     val fieldModifier = Modifier
         .fillMaxWidth()
         .height(dimensions.fieldsDefaultHeight)
@@ -92,11 +94,11 @@ private fun RegistrationContent(
     ) {
         Spacer(modifier = Modifier.height(dimensions.verticalMedium))
 
-        RegistrationField(label = "Как вас зовут?") {
+        RegistrationField(label = strings.fullNameLabel) {
             PrimaryTextField(
                 modifier = fieldModifier,
                 value = state.fullName,
-                placeholder = "Иван Иванов",
+                placeholder = strings.fullNamePlaceholder,
                 isMaxQuantityOfCharVisible = false,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -106,7 +108,7 @@ private fun RegistrationContent(
             )
         }
 
-        RegistrationField(label = "Ваш email") {
+        RegistrationField(label = strings.emailLabel) {
             PrimaryTextField(
                 modifier = fieldModifier,
                 value = state.email,
@@ -120,11 +122,11 @@ private fun RegistrationContent(
             )
         }
 
-        RegistrationField(label = "Ваш телефон") {
+        RegistrationField(label = strings.phoneLabel) {
             PhoneTextField(
                 modifier = fieldModifier,
                 value = state.phone,
-                placeholder = "+7 (999) 000-00-00",
+                placeholder = strings.phonePlaceholder,
                 isMaxQuantityOfCharVisible = false,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Phone,
@@ -134,11 +136,11 @@ private fun RegistrationContent(
             )
         }
 
-        RegistrationField(label = "Придумайте пароль") {
+        RegistrationField(label = strings.passwordLabel) {
             PasswordTextField(
                 modifier = fieldModifier,
                 value = state.password,
-                placeholder = "Password",
+                placeholder = strings.password,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Next,
@@ -147,11 +149,11 @@ private fun RegistrationContent(
             )
         }
 
-        RegistrationField(label = "Повторите пароль") {
+        RegistrationField(label = strings.confirmPasswordLabel) {
             PasswordTextField(
                 modifier = fieldModifier,
                 value = state.confirmPassword,
-                placeholder = "Password",
+                placeholder = strings.password,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done,
@@ -169,7 +171,7 @@ private fun RegistrationContent(
         }
 
         PrimaryButton(
-            text = "Sign up",
+            text = strings.signUp,
             onClick = onSignUp,
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.isLoading,
@@ -211,6 +213,7 @@ private fun RegistrationTermsRow(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val strings = appStrings().auth
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -232,7 +235,7 @@ private fun RegistrationTermsRow(
             ),
         )
         Text(
-            text = "Я принимаю пользовательское соглашение Hvala",
+            text = strings.termsPrefix,
             style = BodyMedium.copy(color = GrayText),
         )
     }

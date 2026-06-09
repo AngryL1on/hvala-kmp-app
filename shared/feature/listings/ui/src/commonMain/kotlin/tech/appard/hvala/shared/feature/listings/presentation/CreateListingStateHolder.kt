@@ -7,16 +7,27 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import tech.appard.hvala.shared.core.i18n.ListingsStrings
+import tech.appard.hvala.shared.core.i18n.availabilityOptions
+import tech.appard.hvala.shared.core.i18n.bodyTypeOptions
+import tech.appard.hvala.shared.core.i18n.conditionOptions
+import tech.appard.hvala.shared.core.i18n.drivetrainOptions
+import tech.appard.hvala.shared.core.i18n.steeringWheelOptions
+import tech.appard.hvala.shared.core.i18n.strings
+import tech.appard.hvala.shared.core.i18n.transmissionOptions
+import tech.appard.hvala.shared.core.ui.components.fields.SelectOption
 import tech.appard.hvala.shared.core.ui.model.PickedMedia
 import tech.appard.hvala.shared.feature.listings.domain.GetCatalogDefaultsUseCase
-import tech.appard.hvala.shared.core.ui.components.fields.SelectOption
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toCategoriesUi
+import tech.appard.hvala.shared.feature.listings.presentation.mapper.toRegionsByCountryUi
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toLocationsUi
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCategory
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCurrency
 import tech.appard.hvala.shared.feature.listings.presentation.model.UILocationOption
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val DEFAULT_AVAILABILITY_ID = "available"
@@ -54,24 +65,61 @@ data class CreateListingUiState(
         get() = countryId?.let { regionsByCountry[it] }.orEmpty()
 }
 
+data class CreateListingSelectOptions(
+    val availability: List<SelectOption>,
+    val bodyType: List<SelectOption>,
+    val transmission: List<SelectOption>,
+    val drivetrain: List<SelectOption>,
+    val steeringWheel: List<SelectOption>,
+    val condition: List<SelectOption>,
+)
+
+fun createListingSelectOptions(strings: ListingsStrings): CreateListingSelectOptions =
+    CreateListingSelectOptions(
+        availability = strings.availabilityOptions().map { SelectOption(it.id, it.label) },
+        bodyType = strings.bodyTypeOptions().map { SelectOption(it.id, it.label) },
+        transmission = strings.transmissionOptions().map { SelectOption(it.id, it.label) },
+        drivetrain = strings.drivetrainOptions().map { SelectOption(it.id, it.label) },
+        steeringWheel = strings.steeringWheelOptions().map { SelectOption(it.id, it.label) },
+        condition = strings.conditionOptions().map { SelectOption(it.id, it.label) },
+    )
+
 class CreateListingStateHolder(
     private val getCatalogDefaultsUseCase: GetCatalogDefaultsUseCase,
+    private val localeRepository: LocaleRepository,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val _state = MutableStateFlow(CreateListingUiState())
     val state: StateFlow<CreateListingUiState> = _state.asStateFlow()
 
+    init {
+        scope.launch {
+            localeRepository.languageFlow.collectLatest { language ->
+                getCatalogDefaultsUseCase()
+                _state.update {
+                    it.copy(
+                        categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(language),
+                        countries = getCatalogDefaultsUseCase.countries().toLocationsUi(language),
+                        regionsByCountry = getCatalogDefaultsUseCase.regionsByCountry()
+                            .toRegionsByCountryUi(language),
+                    )
+                }
+            }
+        }
+    }
+
     fun load() {
         if (_state.value.categories.isNotEmpty()) return
         scope.launch {
+            val language = localeRepository.getLanguage()
             getCatalogDefaultsUseCase()
             _state.update {
                 it.copy(
-                    categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(),
-                    countries = getCatalogDefaultsUseCase.countries().toLocationsUi(),
+                    categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(language),
+                    countries = getCatalogDefaultsUseCase.countries().toLocationsUi(language),
                     regionsByCountry = getCatalogDefaultsUseCase.regionsByCountry()
-                        .mapValues { (_, regions) -> regions.toLocationsUi() },
+                        .toRegionsByCountryUi(language),
                 )
             }
         }
@@ -143,59 +191,26 @@ class CreateListingStateHolder(
         _state.update(block)
     }
 
-    private fun validate(state: CreateListingUiState): String? = when {
-        state.title.isBlank() -> "Enter a title"
-        state.phone.filter(Char::isDigit).length < 10 -> "Enter a valid phone number"
-        state.countryId == null -> "Select a country"
-        state.regionId == null -> "Select a region"
-        state.location.isBlank() -> "Enter a location"
-        state.price.isBlank() -> "Enter a price"
-        state.categoryId == null -> "Select a category"
-        state.photos.isEmpty() -> "Add at least one photo"
-        state.isAutoCategory && state.bodyTypeId == null -> "Select a body type"
-        state.isAutoCategory && state.transmissionId == null -> "Select a transmission"
-        else -> null
+    private fun validate(state: CreateListingUiState): String? {
+        val strings = localeRepository.getLanguage().strings().listings
+        return when {
+            state.title.isBlank() -> strings.errorTitleRequired
+            state.phone.filter(Char::isDigit).length < 10 -> strings.errorPhoneInvalid
+            state.countryId == null -> strings.errorCountryRequired
+            state.regionId == null -> strings.errorRegionRequired
+            state.location.isBlank() -> strings.errorLocationRequired
+            state.price.isBlank() -> strings.errorPriceRequired
+            state.categoryId == null -> strings.errorCategoryRequired
+            state.photos.isEmpty() -> strings.errorPhotoRequired
+            state.isAutoCategory && state.bodyTypeId == null -> strings.errorBodyTypeRequired
+            state.isAutoCategory && state.transmissionId == null -> strings.errorTransmissionRequired
+            else -> null
+        }
     }
 
     companion object {
         const val AUTO_CATEGORY_ID = DEFAULT_AUTO_CATEGORY_ID
         const val AVAILABILITY_AVAILABLE = DEFAULT_AVAILABILITY_ID
         const val MAX_PHOTOS = 8
-
-        val availabilityOptions: List<SelectOption> = listOf(
-            SelectOption(id = "available", label = "Available"),
-            SelectOption(id = "reserved", label = "Reserved"),
-            SelectOption(id = "sold", label = "Sold"),
-        )
-
-        val bodyTypeOptions: List<SelectOption> = listOf(
-            SelectOption(id = "sedan", label = "Sedan"),
-            SelectOption(id = "suv", label = "SUV"),
-            SelectOption(id = "hatchback", label = "Hatchback"),
-            SelectOption(id = "coupe", label = "Coupe"),
-            SelectOption(id = "wagon", label = "Wagon"),
-        )
-
-        val transmissionOptions: List<SelectOption> = listOf(
-            SelectOption(id = "manual", label = "Manual"),
-            SelectOption(id = "automatic", label = "Automatic"),
-        )
-
-        val drivetrainOptions: List<SelectOption> = listOf(
-            SelectOption(id = "fwd", label = "FWD"),
-            SelectOption(id = "rwd", label = "RWD"),
-            SelectOption(id = "awd", label = "AWD"),
-        )
-
-        val steeringWheelOptions: List<SelectOption> = listOf(
-            SelectOption(id = "left", label = "Left"),
-            SelectOption(id = "right", label = "Right"),
-        )
-
-        val conditionOptions: List<SelectOption> = listOf(
-            SelectOption(id = "new", label = "New"),
-            SelectOption(id = "used", label = "Used"),
-            SelectOption(id = "parts", label = "For parts"),
-        )
     }
 }

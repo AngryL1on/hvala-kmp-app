@@ -25,6 +25,8 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.json)
             implementation(projects.shared.feature.auth.domain)
+            implementation(projects.shared.feature.settings.domain)
+            implementation(projects.shared.core.i18n)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)

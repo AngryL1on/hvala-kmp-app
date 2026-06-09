@@ -24,6 +24,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import tech.appard.hvala.shared.core.i18n.appStrings
+import tech.appard.hvala.shared.core.i18n.sortOrderTitle
 import tech.appard.hvala.shared.core.ui.components.buttons.PrimaryButton
 import tech.appard.hvala.shared.core.ui.components.buttons.SecondaryOutlineButton
 import tech.appard.hvala.shared.core.ui.components.fields.HvalaSelectField
@@ -36,6 +38,7 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
 import tech.appard.hvala.shared.core.ui.theme.TitleLarge
 import tech.appard.hvala.shared.core.ui.theme.White
+import tech.appard.hvala.shared.feature.listings.presentation.mapper.toSortOrderId
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCategory
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCurrency
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingSortOrder
@@ -53,12 +56,15 @@ fun FilterSettingsSheet(
     onDraftChange: (UIListingsFilters) -> Unit,
     onReset: () -> Unit,
     onApply: () -> Unit,
-    title: String = "Filter Settings",
+    title: String? = null,
     sortOrder: UIListingSortOrder? = null,
     onSortOrderChange: ((UIListingSortOrder) -> Unit)? = null,
 ) {
     if (!visible) return
 
+    val strings = appStrings().listings
+    val common = appStrings().common
+    val sheetTitle = title ?: strings.filterTitle
     val dimensions = LocalDimensions.current
     val fieldHeight = dimensions.fieldsDefaultHeight
     val currencyOptions = UIListingCurrency.entries.map {
@@ -74,7 +80,7 @@ fun FilterSettingsSheet(
         SelectOption(id = it.id, label = it.title)
     }
     val sortOptions = UIListingSortOrder.entries.map {
-        SelectOption(id = it.name, label = it.title)
+        SelectOption(id = it.name, label = strings.sortOrderTitle(it.toSortOrderId()))
     }
 
     Dialog(
@@ -97,7 +103,7 @@ fun FilterSettingsSheet(
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = title,
+                        text = sheetTitle,
                         style = TitleLarge.copy(color = PrimaryMain),
                         modifier = Modifier.align(Alignment.Center),
                     )
@@ -107,7 +113,7 @@ fun FilterSettingsSheet(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Закрыть",
+                            contentDescription = common.close,
                             tint = GrayText,
                         )
                     }
@@ -116,7 +122,7 @@ fun FilterSettingsSheet(
                 if (sortOrder != null && onSortOrderChange != null) {
                     HvalaSelectField(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "Sort by",
+                        label = strings.sortBy,
                         options = sortOptions,
                         selectedOptionId = sortOrder.name,
                         onOptionSelected = { id ->
@@ -133,7 +139,7 @@ fun FilterSettingsSheet(
                 ) {
                     HvalaSelectField(
                         modifier = Modifier.weight(0.9f),
-                        label = "Select currency",
+                        label = strings.selectCurrency,
                         options = currencyOptions,
                         selectedOptionId = draftFilters.currency.name,
                         onOptionSelected = { id ->
@@ -151,7 +157,7 @@ fun FilterSettingsSheet(
                         verticalArrangement = Arrangement.spacedBy(dimensions.verticalXXSmall),
                     ) {
                         Text(
-                            text = "Price range",
+                            text = strings.priceRange,
                             style = FieldTitle.copy(color = GrayText),
                         )
                         Row(
@@ -163,7 +169,7 @@ fun FilterSettingsSheet(
                                     .weight(1f)
                                     .height(fieldHeight),
                                 value = draftFilters.minPrice,
-                                placeholder = "Min",
+                                placeholder = strings.min,
                                 isOnlyNumbers = true,
                                 isMaxQuantityOfCharVisible = false,
                                 keyboardOptions = KeyboardOptions(
@@ -183,7 +189,7 @@ fun FilterSettingsSheet(
                                     .weight(1f)
                                     .height(fieldHeight),
                                 value = draftFilters.maxPrice,
-                                placeholder = "Max",
+                                placeholder = strings.max,
                                 isOnlyNumbers = true,
                                 isMaxQuantityOfCharVisible = false,
                                 keyboardOptions = KeyboardOptions(
@@ -200,10 +206,10 @@ fun FilterSettingsSheet(
 
                 HvalaSelectField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Select Location",
+                    label = strings.selectLocation,
                     options = countryOptions,
                     selectedOptionId = draftFilters.countryId,
-                    placeholder = "Страна",
+                    placeholder = strings.country,
                     onOptionSelected = { countryId ->
                         onDraftChange(
                             draftFilters.copy(
@@ -220,7 +226,7 @@ fun FilterSettingsSheet(
                     label = "",
                     options = regionOptions,
                     selectedOptionId = draftFilters.regionId,
-                    placeholder = "Регион",
+                    placeholder = strings.region,
                     enabled = draftFilters.countryId != null && regionOptions.isNotEmpty(),
                     onOptionSelected = { regionId ->
                         onDraftChange(draftFilters.copy(regionId = regionId))
@@ -230,10 +236,10 @@ fun FilterSettingsSheet(
 
                 HvalaSelectField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Select category",
+                    label = strings.selectCategory,
                     options = categoryOptions,
                     selectedOptionId = draftFilters.categoryId,
-                    placeholder = "Категория",
+                    placeholder = strings.category,
                     onOptionSelected = { categoryId ->
                         onDraftChange(draftFilters.copy(categoryId = categoryId))
                     },
@@ -241,13 +247,13 @@ fun FilterSettingsSheet(
                 )
 
                 SecondaryOutlineButton(
-                    text = "Reset Filters",
+                    text = strings.resetFilters,
                     onClick = onReset,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 PrimaryButton(
-                    text = "Apply",
+                    text = strings.apply,
                     onClick = onApply,
                     modifier = Modifier
                         .fillMaxWidth()

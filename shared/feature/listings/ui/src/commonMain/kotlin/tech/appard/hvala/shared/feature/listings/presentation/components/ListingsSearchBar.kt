@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.components.fields.PrimaryTextField
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
@@ -22,12 +23,13 @@ fun ListingsSearchBar(
     onSearchClick: () -> Unit = {},
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings()
 
     PrimaryTextField(
         modifier = modifier,
         value = query,
         onTextChange = onQueryChange,
-        placeholder = "Search",
+        placeholder = strings.listings.searchPlaceholder,
         fieldMinHeight = dimensions.searchBarHeight,
         contentPadding = PaddingValues(
             horizontal = dimensions.horizontalXSmall,
@@ -40,7 +42,7 @@ fun ListingsSearchBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.FilterAlt,
-                    contentDescription = "Фильтр",
+                    contentDescription = strings.listings.filter,
                     tint = PrimaryMain,
                     modifier = Modifier.size(dimensions.iconDefaultSize),
                 )
@@ -53,7 +55,7 @@ fun ListingsSearchBar(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Search,
-                    contentDescription = "Поиск",
+                    contentDescription = strings.common.search,
                     tint = PrimaryMain,
                     modifier = Modifier.size(dimensions.iconDefaultSize),
                 )

@@ -39,6 +39,7 @@ import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.White
 import tech.appard.hvala.shared.core.ui.utils.rememberNavigationBarBottomPadding
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsStateHolder
 import tech.appard.hvala.shared.feature.listings.presentation.viewmodels.ListingsUiState
 import tech.appard.hvala.shared.feature.listings.presentation.components.ListingsFilterSheet
@@ -192,7 +193,7 @@ private fun ListingsContent(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.PersonOutline,
-                    contentDescription = "Войти",
+                    contentDescription = appStrings().listings.login,
                     tint = White,
                     modifier = Modifier.size(dimensions.iconDefaultSize),
                 )

@@ -31,6 +31,7 @@ import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesStateHolder
 import tech.appard.hvala.shared.feature.favorites.presentation.viewmodels.FavoritesUiState
 import tech.appard.hvala.shared.feature.favorites.presentation.components.FavoritesToolbar
@@ -77,6 +78,7 @@ private fun FavoritesContent(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings()
 
     Box(
         modifier = modifier
@@ -92,7 +94,7 @@ private fun FavoritesContent(
             }
             !state.hasAnyFavorites -> {
                 Text(
-                    text = "В избранном пока ничего нет",
+                    text = strings.favorites.empty,
                     style = BodyMedium.copy(color = GrayText),
                     modifier = Modifier.align(Alignment.Center),
                 )
@@ -113,7 +115,7 @@ private fun FavoritesContent(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "Ничего не найдено по фильтрам",
+                                text = strings.favorites.noFilterResults,
                                 style = BodyMedium.copy(color = GrayText),
                             )
                         }
@@ -157,7 +159,7 @@ private fun FavoritesContent(
             onDraftChange = onDraftFiltersChange,
             onReset = onFilterReset,
             onApply = onFilterApply,
-            title = "Filter Settings",
+            title = strings.listings.filterTitle,
             sortOrder = state.draftSortOrder,
             onSortOrderChange = onDraftSortOrderChange,
         )

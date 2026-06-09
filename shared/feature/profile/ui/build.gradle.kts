@@ -34,6 +34,8 @@ kotlin {
             implementation(projects.shared.feature.listings.ui)
             implementation(projects.shared.feature.listings.domain)
             implementation(projects.shared.feature.profile.domain)
+            implementation(projects.shared.core.i18n)
+            implementation(projects.shared.feature.settings.domain)
             implementation(projects.shared.core.mvi)
             implementation(libs.kotlinx.coroutines.core)
         }

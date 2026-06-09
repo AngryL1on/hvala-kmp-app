@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.listings.data.mapper.toDomain
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainCategories
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainCountries
@@ -15,9 +16,11 @@ import tech.appard.hvala.shared.feature.listings.domain.model.ListingCategory
 import tech.appard.hvala.shared.feature.listings.domain.model.LocationOption
 import tech.appard.hvala.shared.feature.listings.domain.repository.CatalogRepository
 import tech.appard.hvala.shared.feature.listings.domain.repository.ListingsRepository
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 internal class JsonListingsRepository(
     private val dataSource: ListingsJsonDataSource,
+    private val localeRepository: LocaleRepository,
 ) : ListingsRepository {
     private val _listings = MutableStateFlow<List<Listing>>(emptyList())
     override val listings: StateFlow<List<Listing>> = _listings.asStateFlow()
@@ -59,17 +62,14 @@ internal class JsonListingsRepository(
     }
 
     private fun enrichListing(listing: Listing): Listing {
+        val strings = localeRepository.getLanguage().strings().listings
         val sellerName = listing.sellerName.ifBlank { "Alex M." }
         return listing.copy(
             sellerName = sellerName,
             phone = listing.phone.ifBlank { "+382 67 123 456" },
-            description = listing.description.ifBlank {
-                "Well-maintained item in excellent condition. " +
-                    "Available for viewing by appointment. " +
-                    "Price is negotiable for serious buyers."
-            },
-            availability = listing.availability.ifBlank { "Available" },
-            postedAt = listing.postedAt.ifBlank { "2 days ago" },
+            description = listing.description.ifBlank { strings.defaultDescription },
+            availability = listing.availability.ifBlank { strings.defaultAvailability },
+            postedAt = listing.postedAt.ifBlank { strings.defaultPostedAt },
         )
     }
 }

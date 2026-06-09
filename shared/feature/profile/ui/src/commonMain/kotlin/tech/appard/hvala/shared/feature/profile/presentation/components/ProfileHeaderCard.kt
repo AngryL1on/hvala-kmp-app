@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconPlaceholder
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconVariant
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
@@ -52,6 +53,7 @@ fun ProfileHeaderCard(
     onReviewsClick: () -> Unit = {},
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().profile
 
     Row(
         modifier = modifier
@@ -78,11 +80,12 @@ fun ProfileHeaderCard(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "$activeListingsCount активных объявления",
+                text = strings.activeListingsCount(activeListingsCount),
                 style = BodyMedium.copy(color = GrayText),
             )
             ProfileRatingRow(
                 rating = rating,
+                reviewsLabel = strings.reviews,
                 onReviewsClick = onReviewsClick,
             )
             Text(
@@ -98,6 +101,7 @@ fun ProfileHeaderCard(
 @Composable
 private fun ProfileRatingRow(
     rating: Float,
+    reviewsLabel: String,
     onReviewsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -114,7 +118,7 @@ private fun ProfileRatingRow(
         )
         ProfileStarRating(rating = rating)
         Text(
-            text = "Отзывы",
+            text = reviewsLabel,
             style = LinkMedium.copy(color = GrayText),
             modifier = Modifier.clickable(
                 interactionSource = remember { MutableInteractionSource() },

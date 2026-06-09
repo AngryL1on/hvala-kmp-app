@@ -11,6 +11,7 @@ import tech.appard.hvala.shared.core.mvi.MviIntent
 import tech.appard.hvala.shared.core.mvi.MviState
 import tech.appard.hvala.shared.core.mvi.MviViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.sortedByUi
+import tech.appard.hvala.shared.feature.listings.presentation.mapper.toRegionsByCountryUi
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toCategoriesUi
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toDomain
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toListingsUi
@@ -20,6 +21,7 @@ import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCat
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingSortOrder
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingsFilters
 import tech.appard.hvala.shared.feature.listings.presentation.model.UILocationOption
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 data class FavoritesUiState(
     val allListings: List<UIListing> = emptyList(),
@@ -60,9 +62,23 @@ class FavoritesViewModel(
     private val observeListingsUseCase: ObserveListingsUseCase,
     private val getCatalogDefaultsUseCase: GetCatalogDefaultsUseCase,
     private val toggleListingFavoriteUseCase: ToggleListingFavoriteUseCase,
+    private val localeRepository: LocaleRepository,
 ) : MviViewModel<FavoritesIntent, FavoritesUiState, FavoritesEffect>(FavoritesUiState()) {
 
     init {
+        viewModelScope.launch {
+            localeRepository.languageFlow.collectLatest { language ->
+                getCatalogDefaultsUseCase()
+                updateState { current ->
+                    current.copy(
+                        categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(language),
+                        countries = getCatalogDefaultsUseCase.countries().toLocationsUi(language),
+                        regionsByCountry = getCatalogDefaultsUseCase.regionsByCountry()
+                            .toRegionsByCountryUi(language),
+                    )
+                }
+            }
+        }
         viewModelScope.launch {
             observeListingsUseCase.listingsFlow.collectLatest { allListings ->
                 val favorites = allListings.filter { it.isFavorite }.toListingsUi()
@@ -127,13 +143,14 @@ class FavoritesViewModel(
         updateState { it.copy(isLoading = true) }
         getCatalogDefaultsUseCase()
         observeListingsUseCase()
+        val language = localeRepository.getLanguage()
         updateState {
             it.copy(
                 isLoading = false,
-                categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(),
-                countries = getCatalogDefaultsUseCase.countries().toLocationsUi(),
+                categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(language),
+                countries = getCatalogDefaultsUseCase.countries().toLocationsUi(language),
                 regionsByCountry = getCatalogDefaultsUseCase.regionsByCountry()
-                    .mapValues { (_, regions) -> regions.toLocationsUi() },
+                    .toRegionsByCountryUi(language),
             )
         }
     }

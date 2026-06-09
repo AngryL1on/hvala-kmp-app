@@ -30,6 +30,8 @@ kotlin {
             implementation(libs.io.insert.koin.core)
             implementation(projects.shared.core.ui)
             implementation(projects.shared.feature.auth.domain)
+            implementation(projects.shared.core.i18n)
+            implementation(projects.shared.feature.settings.domain)
             implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {

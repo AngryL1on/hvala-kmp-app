@@ -143,13 +143,3 @@ class MessagesViewModel(
 }
 
 typealias MessagesStateHolder = MessagesViewModel
-
-internal fun formatLastMessagePreview(messages: List<UIChatMessage>): String {
-    val lastMessage = messages.lastOrNull { !it.isDateDivider } ?: return "Нет сообщений"
-    val preview = if (lastMessage.text.length > 72) {
-        lastMessage.text.take(69) + "..."
-    } else {
-        lastMessage.text
-    }
-    return if (lastMessage.isOutgoing) "Вы: $preview" else preview
-}

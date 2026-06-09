@@ -37,6 +37,7 @@ import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LinkMedium
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.auth.presentation.AuthStateHolder
 
 @Composable
@@ -77,6 +78,7 @@ private fun AuthContent(
     onSignUpClick: () -> Unit = {},
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().auth
 
     Column(
         modifier = modifier
@@ -108,11 +110,11 @@ private fun AuthContent(
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = "Don't have an account? ",
+                text = strings.noAccount,
                 style = BodyMedium.copy(color = GrayText),
             )
             Text(
-                text = "Sign up",
+                text = strings.signUp,
                 style = LinkMedium.copy(color = SecondaryMain),
                 modifier = Modifier.clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -137,6 +139,7 @@ private fun AuthFormBlock(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().auth
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -169,6 +172,7 @@ private fun AuthFormBlock(
         AuthLoginButton(
             isLoading = isLoading,
             onClick = onSignIn,
+            loginText = strings.login,
         )
     }
 }
@@ -179,10 +183,11 @@ private fun AuthEmailField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val strings = appStrings().auth
     PrimaryTextField(
         modifier = modifier,
         value = value,
-        placeholder = "Email",
+        placeholder = strings.email,
         isMaxQuantityOfCharVisible = false,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
@@ -198,10 +203,11 @@ private fun AuthPasswordField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val strings = appStrings().auth
     PasswordTextField(
         modifier = modifier,
         value = value,
-        placeholder = "Password",
+        placeholder = strings.password,
         onTextChange = onValueChange,
     )
 }
@@ -213,6 +219,7 @@ private fun AuthForgotPasswordAndErrorRow(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().auth
 
     Row(
         modifier = modifier
@@ -234,7 +241,7 @@ private fun AuthForgotPasswordAndErrorRow(
         }
 
         Text(
-            text = "Forgot password?",
+            text = strings.forgotPassword,
             style = LinkMedium.copy(color = SecondaryMain),
             modifier = Modifier.clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -249,10 +256,11 @@ private fun AuthForgotPasswordAndErrorRow(
 private fun AuthLoginButton(
     isLoading: Boolean,
     onClick: () -> Unit,
+    loginText: String,
     modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
-        text = "Login",
+        text = loginText,
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         enabled = !isLoading,

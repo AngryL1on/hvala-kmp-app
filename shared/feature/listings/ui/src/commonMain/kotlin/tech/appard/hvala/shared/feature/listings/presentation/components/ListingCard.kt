@@ -41,6 +41,7 @@ import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
 import tech.appard.hvala.shared.core.ui.theme.TitleMedium
 import tech.appard.hvala.shared.core.ui.theme.White
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListing
 
 @Composable
@@ -122,6 +123,7 @@ private fun ListingCardImage(
     interactive: Boolean = true,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().listings
     val favoriteBackground = if (listing.isFavorite) {
         SecondaryMain
     } else {
@@ -166,7 +168,7 @@ private fun ListingCardImage(
         ) {
             Icon(
                 imageVector = favoriteIcon,
-                contentDescription = if (listing.isFavorite) "Убрать из избранного" else "Добавить в избранное",
+                contentDescription = if (listing.isFavorite) strings.removeFromFavorites else strings.addToFavorites,
                 tint = favoriteIconTint,
                 modifier = Modifier.size(dimensions.iconDefaultSize - 4.dp),
             )

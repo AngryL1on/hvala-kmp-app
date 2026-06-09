@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.auth.domain.model.AuthCredentials
 import tech.appard.hvala.shared.feature.auth.domain.model.RegistrationData
 import tech.appard.hvala.shared.feature.auth.domain.repository.AuthRepository
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 data class AuthUiState(
     val login: String = "",
@@ -32,6 +34,7 @@ data class RegistrationUiState(
 
 class AuthStateHolder(
     private val authRepository: AuthRepository,
+    private val localeRepository: LocaleRepository,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -110,7 +113,8 @@ class AuthStateHolder(
                 _state.update { it.copy(isLoading = false, error = null) }
                 onSuccess()
             } else {
-                _state.update { it.copy(isLoading = false, error = "Invalid credentials") }
+                val authStrings = localeRepository.getLanguage().strings().auth
+                _state.update { it.copy(isLoading = false, error = authStrings.invalidCredentials) }
             }
         }
     }
@@ -140,20 +144,24 @@ class AuthStateHolder(
                 _registrationState.update { it.copy(isLoading = false, error = null) }
                 onSuccess()
             } else {
+                val authStrings = localeRepository.getLanguage().strings().auth
                 _registrationState.update {
-                    it.copy(isLoading = false, error = "Не удалось зарегистрироваться")
+                    it.copy(isLoading = false, error = authStrings.registrationFailed)
                 }
             }
         }
     }
 
-    private fun validateRegistration(state: RegistrationUiState): String? = when {
-        state.fullName.isBlank() -> "Укажите имя"
-        !state.email.contains("@") -> "Укажите корректный email"
-        state.phone.filter(Char::isDigit).length < 10 -> "Укажите корректный телефон"
-        state.password.length < 4 -> "Пароль должен быть не короче 4 символов"
-        state.password != state.confirmPassword -> "Пароли не совпадают"
-        !state.isTermsAccepted -> "Примите пользовательское соглашение"
-        else -> null
+    private fun validateRegistration(state: RegistrationUiState): String? {
+        val authStrings = localeRepository.getLanguage().strings().auth
+        return when {
+            state.fullName.isBlank() -> authStrings.errorNameRequired
+            !state.email.contains("@") -> authStrings.errorEmailInvalid
+            state.phone.filter(Char::isDigit).length < 10 -> authStrings.errorPhoneInvalid
+            state.password.length < 4 -> authStrings.errorPasswordTooShort
+            state.password != state.confirmPassword -> authStrings.errorPasswordMismatch
+            !state.isTermsAccepted -> authStrings.errorTermsRequired
+            else -> null
+        }
     }
 }

@@ -52,7 +52,9 @@ import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileS
 import tech.appard.hvala.shared.feature.profile.presentation.screens.SellerProfileScreen
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileStateHolder
 import tech.appard.hvala.shared.feature.listings.domain.ToggleListingFavoriteUseCase
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.settings.presentation.screens.SettingsScreen
+import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsStateHolder
 
 @Composable
 fun AppNavHost(
@@ -67,6 +69,7 @@ fun AppNavHost(
     val profileStateHolder = koinInject<ProfileStateHolder>()
     val sellerProfileStateHolder = koinInject<SellerProfileStateHolder>()
     val favoritesStateHolder = koinInject<FavoritesStateHolder>()
+    val settingsStateHolder = koinInject<SettingsStateHolder>()
     val toggleListingFavoriteUseCase = koinInject<ToggleListingFavoriteUseCase>()
     val profileState by profileStateHolder.state.collectAsState()
     val sellerProfileState by sellerProfileStateHolder.state.collectAsState()
@@ -74,6 +77,7 @@ fun AppNavHost(
     val listingDetailState by listingDetailStateHolder.state.collectAsState()
     val chatState by messagesStateHolder.chatState.collectAsState()
     val isAuthenticated by authStateHolder.isAuthenticated.collectAsState()
+    val strings = appStrings()
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentRoute
     val currentScreen = navController.currentScreen
@@ -136,15 +140,15 @@ fun AppNavHost(
 
     val appBarState = rememberHvalaAppBarState(
         title = when (currentRoute) {
-            Route.Registration -> "Регистрация в Hvala"
-            Route.Profile -> "Профиль"
-            Route.Settings -> "Настройки"
-            Route.CreateListing -> "Add Listing"
-            is Route.ListingDetail -> listingDetailState.listing?.title ?: "Listing"
-            is Route.SellerProfile -> sellerProfileState.seller?.name ?: "Seller"
-            Route.Write -> "Сообщения"
-            Route.Favorites -> "Избранное"
-            is Route.Chat -> chatState.thread?.participantName ?: "Чат"
+            Route.Registration -> strings.nav.registration
+            Route.Profile -> strings.nav.profileTitle
+            Route.Settings -> strings.settings.screenTitle
+            Route.CreateListing -> strings.nav.createListing
+            is Route.ListingDetail -> listingDetailState.listing?.title ?: strings.common.listing
+            is Route.SellerProfile -> sellerProfileState.seller?.name ?: strings.common.seller
+            Route.Write -> strings.nav.messages
+            Route.Favorites -> strings.nav.favoritesTitle
+            is Route.Chat -> chatState.thread?.participantName ?: strings.common.chat
             else -> null
         },
         showBackButton = when (currentRoute) {
@@ -313,10 +317,10 @@ fun AppNavHost(
                         onListingClick = onListingClick,
                     )
                     Route.Settings -> SettingsScreen(
+                        stateHolder = settingsStateHolder,
                         fullName = profileState.profile?.fullName ?: "",
                         email = profileState.profile?.email ?: "",
-                        onDeleteAccountClick = onSessionEnd,
-                        onLogoutClick = onSessionEnd,
+                        onSessionEnd = onSessionEnd,
                     )
                     Route.CreateListing -> CreateListingScreen(
                         stateHolder = createListingStateHolder,

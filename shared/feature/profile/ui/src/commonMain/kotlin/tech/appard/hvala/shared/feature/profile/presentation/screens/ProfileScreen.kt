@@ -33,6 +33,7 @@ import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileStateHolder
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ProfileUiState
 import tech.appard.hvala.shared.feature.profile.presentation.components.ProfileHeaderCard
@@ -158,6 +159,7 @@ private fun ProfileListingsPage(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().profile
 
     if (listings.isEmpty()) {
         Box(
@@ -165,7 +167,7 @@ private fun ProfileListingsPage(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = if (isArchive) "Архив пуст" else "Нет объявлений",
+                text = if (isArchive) strings.archiveEmpty else strings.listingsEmpty,
                 style = BodyMedium.copy(color = GrayText),
             )
         }
@@ -192,8 +194,9 @@ private fun ProfileListingsPage(
     }
 }
 
+@Composable
 private fun formatProfileName(fullName: String?): String {
-    if (fullName.isNullOrBlank()) return "Пользователь"
+    if (fullName.isNullOrBlank()) return appStrings().common.defaultUserName
     val parts = fullName.trim().split("\\s+".toRegex())
     return when {
         parts.size >= 2 -> "${parts[0]} ${parts[1].firstOrNull()?.uppercaseChar() ?: ""}."

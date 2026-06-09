@@ -1,25 +1,18 @@
 package tech.appard.hvala.shared.feature.messages.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.outlined.AttachFile
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.input.ImeAction
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.components.fields.PrimaryTextField
-import tech.appard.hvala.shared.core.ui.theme.GrayPlaceholder
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
-import tech.appard.hvala.shared.core.ui.theme.SecondaryMain
-import tech.appard.hvala.shared.core.ui.theme.White
+import tech.appard.hvala.shared.core.ui.theme.PrimaryMain
 
 @Composable
 fun ChatInputBar(
@@ -30,22 +23,18 @@ fun ChatInputBar(
     onAttachClick: () -> Unit = {},
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().messages
 
     PrimaryTextField(
         modifier = modifier,
         value = value,
         onTextChange = onValueChange,
-        placeholder = "Сообщение",
-        fieldMinHeight = dimensions.chatInputHeight,
+        placeholder = strings.messagePlaceholder,
+        fieldMinHeight = dimensions.fieldsDefaultHeight,
         contentPadding = PaddingValues(
             horizontal = dimensions.horizontalXSmall,
             vertical = dimensions.verticalXSmall,
         ),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-        keyboardActions = KeyboardActions(
-            onSend = { onSendClick() },
-        ),
-        isMaxQuantityOfCharVisible = false,
         leadingContent = {
             IconButton(
                 onClick = onAttachClick,
@@ -53,8 +42,8 @@ fun ChatInputBar(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.AttachFile,
-                    contentDescription = "Вложение",
-                    tint = GrayPlaceholder,
+                    contentDescription = strings.attachment,
+                    tint = PrimaryMain,
                     modifier = Modifier.size(dimensions.iconDefaultSize),
                 )
             }
@@ -62,15 +51,12 @@ fun ChatInputBar(
         trailingContent = {
             IconButton(
                 onClick = onSendClick,
-                modifier = Modifier
-                    .size(dimensions.iconButtonDefaultSize)
-                    .clip(CircleShape)
-                    .background(SecondaryMain),
+                modifier = Modifier.size(dimensions.iconButtonDefaultSize),
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = "Отправить",
-                    tint = White,
+                    imageVector = Icons.Outlined.Send,
+                    contentDescription = strings.send,
+                    tint = PrimaryMain,
                     modifier = Modifier.size(dimensions.iconDefaultSize),
                 )
             }

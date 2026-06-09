@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListing
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconPlaceholder
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconVariant
@@ -51,6 +52,7 @@ fun ListingDetailPhotoPager(
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().listings
     val shape = RoundedCornerShape(dimensions.defaultCornerRadius)
     val photoCount = listing.totalImages.coerceAtLeast(1)
     val pagerState = rememberPagerState(
@@ -108,7 +110,7 @@ fun ListingDetailPhotoPager(
         ) {
             Icon(
                 imageVector = favoriteIcon,
-                contentDescription = if (listing.isFavorite) "Remove from favorites" else "Add to favorites",
+                contentDescription = if (listing.isFavorite) strings.removeFromFavorites else strings.addToFavorites,
                 tint = favoriteIconTint,
                 modifier = Modifier.size(dimensions.iconDefaultSize - 4.dp),
             )

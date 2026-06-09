@@ -12,7 +12,9 @@ import tech.appard.hvala.shared.core.mvi.MviViewModel
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toListingsUi
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListing
 import tech.appard.hvala.shared.feature.profile.presentation.mapper.toUi
+import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.feature.profile.presentation.model.UISellerProfile
+import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
 
 data class SellerProfileUiState(
     val seller: UISellerProfile? = null,
@@ -33,6 +35,7 @@ class SellerProfileViewModel(
     private val getSellerProfileUseCase: GetSellerProfileUseCase,
     private val observeListingsUseCase: ObserveListingsUseCase,
     private val toggleListingFavoriteUseCase: ToggleListingFavoriteUseCase,
+    private val localeRepository: LocaleRepository,
 ) : MviViewModel<SellerProfileIntent, SellerProfileUiState, SellerProfileEffect>(SellerProfileUiState()) {
 
     private var currentSellerId: String? = null
@@ -70,7 +73,14 @@ class SellerProfileViewModel(
     private suspend fun reloadSeller(sellerId: String) {
         val bundle = getSellerProfileUseCase(sellerId)
         if (bundle == null) {
-            updateState { it.copy(isLoading = false, seller = null, listings = emptyList(), error = "Seller not found") }
+            updateState {
+                it.copy(
+                    isLoading = false,
+                    seller = null,
+                    listings = emptyList(),
+                    error = localeRepository.getLanguage().strings().profile.sellerNotFound,
+                )
+            }
             return
         }
         updateState {

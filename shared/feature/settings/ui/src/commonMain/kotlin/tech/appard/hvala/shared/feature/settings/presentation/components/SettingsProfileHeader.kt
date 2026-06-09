@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import tech.appard.hvala.shared.core.i18n.appStrings
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconPlaceholder
 import tech.appard.hvala.shared.core.ui.components.logo.HvalaAppIconVariant
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
@@ -42,6 +43,7 @@ fun SettingsProfileHeader(
     onEditAvatarClick: () -> Unit = {},
 ) {
     val dimensions = LocalDimensions.current
+    val strings = appStrings().common
 
     Column(
         modifier = modifier,
@@ -90,7 +92,7 @@ fun SettingsProfileHeader(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Edit,
-                    contentDescription = "Edit avatar",
+                    contentDescription = strings.editAvatar,
                     tint = White,
                     modifier = Modifier.size(dimensions.iconDefaultSize - 4.dp),
                 )
