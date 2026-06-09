@@ -10,7 +10,10 @@ import tech.appard.hvala.shared.core.mvi.MviIntent
 import tech.appard.hvala.shared.core.mvi.MviState
 import tech.appard.hvala.shared.core.mvi.MviViewModel
 import tech.appard.hvala.shared.feature.settings.domain.SetAppLanguageUseCase
+import tech.appard.hvala.shared.feature.settings.domain.SetNotificationPreferencesUseCase
+import tech.appard.hvala.shared.feature.settings.domain.model.NotificationPreferences
 import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
+import tech.appard.hvala.shared.feature.settings.domain.repository.NotificationPreferencesRepository
 
 enum class SettingsConfirmAction {
     Logout,
@@ -21,6 +24,9 @@ data class SettingsUiState(
     val language: AppLanguage = AppLanguage.default,
     val showLanguagePicker: Boolean = false,
     val draftLanguage: AppLanguage = AppLanguage.default,
+    val showNotificationSettings: Boolean = false,
+    val notificationPreferences: NotificationPreferences = NotificationPreferences(),
+    val draftNotificationPreferences: NotificationPreferences = NotificationPreferences(),
     val confirmAction: SettingsConfirmAction? = null,
 ) : MviState {
     val strings: SettingsStrings
@@ -32,6 +38,10 @@ sealed interface SettingsIntent : MviIntent {
     data object LanguagePickerDismissed : SettingsIntent
     data class LanguageDraftSelected(val language: AppLanguage) : SettingsIntent
     data object LanguageConfirmed : SettingsIntent
+    data object NotificationSettingsDismissed : SettingsIntent
+    data class NotificationsEnabledChanged(val enabled: Boolean) : SettingsIntent
+    data class NotificationSoundChanged(val enabled: Boolean) : SettingsIntent
+    data object NotificationSettingsConfirmed : SettingsIntent
     data object LogoutRequested : SettingsIntent
     data object DeleteAccountRequested : SettingsIntent
     data object ConfirmDismissed : SettingsIntent
@@ -45,7 +55,9 @@ sealed interface SettingsEffect : MviEffect {
 
 class SettingsViewModel(
     private val localeRepository: LocaleRepository,
+    private val notificationPreferencesRepository: NotificationPreferencesRepository,
     private val setAppLanguageUseCase: SetAppLanguageUseCase,
+    private val setNotificationPreferencesUseCase: SetNotificationPreferencesUseCase,
 ) : MviViewModel<SettingsIntent, SettingsUiState, SettingsEffect>(SettingsUiState()) {
 
     init {
@@ -63,17 +75,40 @@ class SettingsViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            notificationPreferencesRepository.preferencesFlow.collectLatest { preferences ->
+                updateState { current ->
+                    current.copy(
+                        notificationPreferences = preferences,
+                        draftNotificationPreferences = if (current.showNotificationSettings) {
+                            current.draftNotificationPreferences
+                        } else {
+                            preferences
+                        },
+                    )
+                }
+            }
+        }
     }
 
     override suspend fun handleIntent(intent: SettingsIntent) {
         when (intent) {
-            is SettingsIntent.MenuItemClicked -> {
-                if (intent.id == "language") {
+            is SettingsIntent.MenuItemClicked -> when (intent.id) {
+                "language" -> {
                     val currentLanguage = currentState().language
                     updateState {
                         it.copy(
                             showLanguagePicker = true,
                             draftLanguage = currentLanguage,
+                        )
+                    }
+                }
+                "notifications" -> {
+                    val currentPreferences = currentState().notificationPreferences
+                    updateState {
+                        it.copy(
+                            showNotificationSettings = true,
+                            draftNotificationPreferences = currentPreferences,
                         )
                     }
                 }
@@ -96,6 +131,43 @@ class SettingsViewModel(
                     it.copy(
                         showLanguagePicker = false,
                         draftLanguage = draftLanguage,
+                    )
+                }
+            }
+            SettingsIntent.NotificationSettingsDismissed -> {
+                updateState {
+                    it.copy(
+                        showNotificationSettings = false,
+                        draftNotificationPreferences = it.notificationPreferences,
+                    )
+                }
+            }
+            is SettingsIntent.NotificationsEnabledChanged -> {
+                updateState { current ->
+                    current.copy(
+                        draftNotificationPreferences = current.draftNotificationPreferences.copy(
+                            notificationsEnabled = intent.enabled,
+                        ),
+                    )
+                }
+            }
+            is SettingsIntent.NotificationSoundChanged -> {
+                updateState { current ->
+                    current.copy(
+                        draftNotificationPreferences = current.draftNotificationPreferences.copy(
+                            soundEnabled = intent.enabled,
+                        ),
+                    )
+                }
+            }
+            SettingsIntent.NotificationSettingsConfirmed -> {
+                val draft = currentState().draftNotificationPreferences
+                setNotificationPreferencesUseCase(draft)
+                updateState {
+                    it.copy(
+                        showNotificationSettings = false,
+                        notificationPreferences = draft,
+                        draftNotificationPreferences = draft,
                     )
                 }
             }
@@ -124,6 +196,12 @@ class SettingsViewModel(
     fun onLanguageDraftSelected(language: AppLanguage) =
         onIntent(SettingsIntent.LanguageDraftSelected(language))
     fun onLanguageConfirmed() = onIntent(SettingsIntent.LanguageConfirmed)
+    fun onNotificationSettingsDismiss() = onIntent(SettingsIntent.NotificationSettingsDismissed)
+    fun onNotificationsEnabledChanged(enabled: Boolean) =
+        onIntent(SettingsIntent.NotificationsEnabledChanged(enabled))
+    fun onNotificationSoundChanged(enabled: Boolean) =
+        onIntent(SettingsIntent.NotificationSoundChanged(enabled))
+    fun onNotificationSettingsConfirmed() = onIntent(SettingsIntent.NotificationSettingsConfirmed)
     fun onLogoutClick() = onIntent(SettingsIntent.LogoutRequested)
     fun onDeleteAccountClick() = onIntent(SettingsIntent.DeleteAccountRequested)
     fun onConfirmDismiss() = onIntent(SettingsIntent.ConfirmDismissed)

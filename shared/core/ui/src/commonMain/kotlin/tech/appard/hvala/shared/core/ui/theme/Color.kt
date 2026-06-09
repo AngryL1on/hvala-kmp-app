@@ -13,6 +13,7 @@ val InputBorder = PrimaryMain
 val InputBackground = White
 val Error = Color(0xFFE53935)
 val ScreenBackground = Color(0xFFF5F5F5)
+val SwitchTrackOff = Color(0xFFF2F2F2)
 val CardBorder = Color(0xFFE0E0E0)
 val TabContainerBackground = White.copy()
 val TabSelectedBackground = Color(0xFFE0E0E0)

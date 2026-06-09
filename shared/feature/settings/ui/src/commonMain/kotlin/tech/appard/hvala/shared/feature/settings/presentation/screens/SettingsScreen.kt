@@ -31,6 +31,7 @@ import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
 import tech.appard.hvala.shared.core.i18n.AppLanguage
 import tech.appard.hvala.shared.feature.settings.presentation.components.LanguagePickerDialog
+import tech.appard.hvala.shared.feature.settings.presentation.components.NotificationSettingsDialog
 import tech.appard.hvala.shared.feature.settings.presentation.components.SettingsMenuCard
 import tech.appard.hvala.shared.feature.settings.presentation.components.SettingsProfileHeader
 import tech.appard.hvala.shared.feature.settings.presentation.model.SettingsMenuItem
@@ -77,6 +78,10 @@ fun SettingsScreen(
         onLanguagePickerDismiss = stateHolder::onLanguagePickerDismiss,
         onLanguageDraftSelected = stateHolder::onLanguageDraftSelected,
         onLanguageConfirmed = stateHolder::onLanguageConfirmed,
+        onNotificationSettingsDismiss = stateHolder::onNotificationSettingsDismiss,
+        onNotificationsEnabledChanged = stateHolder::onNotificationsEnabledChanged,
+        onNotificationSoundChanged = stateHolder::onNotificationSoundChanged,
+        onNotificationSettingsConfirmed = stateHolder::onNotificationSettingsConfirmed,
     )
 }
 
@@ -97,6 +102,10 @@ private fun SettingsContent(
     onLanguagePickerDismiss: () -> Unit,
     onLanguageDraftSelected: (AppLanguage) -> Unit,
     onLanguageConfirmed: () -> Unit,
+    onNotificationSettingsDismiss: () -> Unit,
+    onNotificationsEnabledChanged: (Boolean) -> Unit,
+    onNotificationSoundChanged: (Boolean) -> Unit,
+    onNotificationSettingsConfirmed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -125,6 +134,21 @@ private fun SettingsContent(
             title = strings.logout,
             icon = Icons.AutoMirrored.Outlined.Logout,
             isDestructive = true,
+        )
+    }
+
+    if (state.showNotificationSettings) {
+        NotificationSettingsDialog(
+            title = strings.notificationsTitle,
+            notificationsLabel = strings.notificationsToggle,
+            soundLabel = strings.notificationsSoundToggle,
+            cancelText = strings.cancel,
+            confirmText = strings.ok,
+            preferences = state.draftNotificationPreferences,
+            onNotificationsChanged = onNotificationsEnabledChanged,
+            onSoundChanged = onNotificationSoundChanged,
+            onConfirm = onNotificationSettingsConfirmed,
+            onDismiss = onNotificationSettingsDismiss,
         )
     }
 
@@ -226,6 +250,10 @@ private fun SettingsScreenPreview() {
             onLanguagePickerDismiss = {},
             onLanguageDraftSelected = {},
             onLanguageConfirmed = {},
+            onNotificationSettingsDismiss = {},
+            onNotificationsEnabledChanged = {},
+            onNotificationSoundChanged = {},
+            onNotificationSettingsConfirmed = {},
         )
     }
 }

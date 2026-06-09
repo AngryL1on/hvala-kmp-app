@@ -76,6 +76,11 @@ data class Dimensions(
     val settingsAvatarSize: Dp = 120.dp,
     val logoSize: Dp = 160.dp,
     val listingsLogoSize: Dp = 132.dp,
+    val switchTrackWidth: Dp = 51.dp,
+    val switchTrackHeight: Dp = 31.dp,
+    val switchThumbSize: Dp = 27.dp,
+    val switchThumbPadding: Dp = 2.dp,
+    val switchThumbElevation: Dp = 2.dp,
 )
 
 val LocalDimensions = compositionLocalOf { Dimensions() }

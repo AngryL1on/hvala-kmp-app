@@ -19,6 +19,9 @@ data class SettingsStrings(
     val cancel: String,
     val selectLanguage: String,
     val ok: String,
+    val notificationsTitle: String,
+    val notificationsToggle: String,
+    val notificationsSoundToggle: String,
 )
 
 internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
@@ -41,6 +44,9 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
         cancel = "Отмена",
         selectLanguage = "Выберите язык",
         ok = "OK",
+        notificationsTitle = "Включить уведомления?",
+        notificationsToggle = "Включить/выключить уведомления",
+        notificationsSoundToggle = "Включить/выключить звук",
     )
     AppLanguage.EN -> SettingsStrings(
         screenTitle = "Settings",
@@ -61,6 +67,9 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
         cancel = "Cancel",
         selectLanguage = "Select language",
         ok = "OK",
+        notificationsTitle = "Enable notifications?",
+        notificationsToggle = "Turn notifications on/off",
+        notificationsSoundToggle = "Turn sound on/off",
     )
     AppLanguage.SR -> SettingsStrings(
         screenTitle = "Podešavanja",
@@ -81,6 +90,9 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
         cancel = "Otkaži",
         selectLanguage = "Izaberite jezik",
         ok = "OK",
+        notificationsTitle = "Omogući obaveštenja?",
+        notificationsToggle = "Uključi/isključi obaveštenja",
+        notificationsSoundToggle = "Uključi/isključi zvuk",
     )
     AppLanguage.CNR -> SettingsStrings(
         screenTitle = "Podešavanja",
@@ -101,6 +113,9 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
         cancel = "Otkaži",
         selectLanguage = "Izaberite jezik",
         ok = "OK",
+        notificationsTitle = "Omogućiti obavještenja?",
+        notificationsToggle = "Uključi/isključi obavještenja",
+        notificationsSoundToggle = "Uključi/isključi zvuk",
     )
     AppLanguage.HR -> SettingsStrings(
         screenTitle = "Postavke",
@@ -121,6 +136,9 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
         cancel = "Odustani",
         selectLanguage = "Odaberite jezik",
         ok = "OK",
+        notificationsTitle = "Omogućiti obavijesti?",
+        notificationsToggle = "Uključi/isključi obavijesti",
+        notificationsSoundToggle = "Uključi/isključi zvuk",
     )
     AppLanguage.BS -> SettingsStrings(
         screenTitle = "Postavke",
@@ -141,5 +159,8 @@ internal fun AppLanguage.settingsStrings(): SettingsStrings = when (this) {
         cancel = "Otkaži",
         selectLanguage = "Izaberite jezik",
         ok = "OK",
+        notificationsTitle = "Omogućiti obavijesti?",
+        notificationsToggle = "Uključi/isključi obavijesti",
+        notificationsSoundToggle = "Uključi/isključi zvuk",
     )
 }
