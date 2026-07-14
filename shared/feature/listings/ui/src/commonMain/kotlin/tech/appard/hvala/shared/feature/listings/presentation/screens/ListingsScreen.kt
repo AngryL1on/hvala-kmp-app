@@ -33,6 +33,7 @@ import tech.appard.hvala.shared.feature.listings.presentation.components.Listing
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListing
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCategory
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingsFilters
+import tech.appard.hvala.shared.core.ui.components.refresh.HvalaPullToRefreshBox
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
@@ -73,6 +74,7 @@ fun ListingsScreen(
         onDraftFiltersChange = viewModel::onDraftFiltersChange,
         onFilterReset = viewModel::onFilterReset,
         onFilterApply = viewModel::onFilterApply,
+        onRefresh = viewModel::refresh,
     )
 }
 
@@ -88,6 +90,7 @@ private fun ListingsContent(
     onDraftFiltersChange: (UIListingsFilters) -> Unit,
     onFilterReset: () -> Unit,
     onFilterApply: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     showGuestLoginButton: Boolean = false,
     onLoginClick: () -> Unit = {},
@@ -134,11 +137,16 @@ private fun ListingsContent(
                     CircularProgressIndicator(color = SecondaryMain)
                 }
             } else {
-                LazyVerticalGrid(
+                HvalaPullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = onRefresh,
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f),
-                    state = gridState,
+                ) {
+                    LazyVerticalGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        state = gridState,
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(
                         start = dimensions.horizontalMedium,
@@ -159,6 +167,7 @@ private fun ListingsContent(
                             onClick = { onListingClick(listing.id) },
                         )
                     }
+                }
                 }
             }
         }
@@ -234,6 +243,7 @@ private fun ListingsScreenPreview() {
             onDraftFiltersChange = {},
             onFilterReset = {},
             onFilterApply = {},
+            onRefresh = {},
         )
     }
 }

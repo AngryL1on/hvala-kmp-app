@@ -10,6 +10,8 @@ interface ListingsRepository {
 
     suspend fun ensureLoaded()
 
+    suspend fun refresh()
+
     fun getListingById(id: String): Listing?
 
     fun getListingsByIds(ids: List<String>): List<Listing>

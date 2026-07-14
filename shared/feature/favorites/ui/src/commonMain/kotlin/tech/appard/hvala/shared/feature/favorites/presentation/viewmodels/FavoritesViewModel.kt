@@ -27,6 +27,7 @@ data class FavoritesUiState(
     val allListings: List<UIListing> = emptyList(),
     val listings: List<UIListing> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isFilterSheetVisible: Boolean = false,
     val appliedFilters: UIListingsFilters = UIListingsFilters(),
     val draftFilters: UIListingsFilters = UIListingsFilters(),
@@ -45,6 +46,7 @@ data class FavoritesUiState(
 
 sealed interface FavoritesIntent : MviIntent {
     data object Load : FavoritesIntent
+    data object Refresh : FavoritesIntent
     data object Reset : FavoritesIntent
     data class FavoriteToggled(val listingId: String) : FavoritesIntent
     data class SortOrderChanged(val sortOrder: UIListingSortOrder) : FavoritesIntent
@@ -101,6 +103,7 @@ class FavoritesViewModel(
     override suspend fun handleIntent(intent: FavoritesIntent) {
         when (intent) {
             FavoritesIntent.Load -> performLoad()
+            FavoritesIntent.Refresh -> performRefresh()
             FavoritesIntent.Reset -> updateState { FavoritesUiState() }
             is FavoritesIntent.FavoriteToggled -> toggleListingFavoriteUseCase(intent.listingId)
             is FavoritesIntent.SortOrderChanged -> updateState { current ->
@@ -131,6 +134,7 @@ class FavoritesViewModel(
 
     fun reset() = onIntent(FavoritesIntent.Reset)
     fun load() = onIntent(FavoritesIntent.Load)
+    fun refresh() = onIntent(FavoritesIntent.Refresh)
     fun onListingFavoriteToggle(listingId: String) = onIntent(FavoritesIntent.FavoriteToggled(listingId))
     fun onSortOrderChange(sortOrder: UIListingSortOrder) = onIntent(FavoritesIntent.SortOrderChanged(sortOrder))
     fun onFilterClick() = onIntent(FavoritesIntent.FilterClicked)
@@ -155,6 +159,13 @@ class FavoritesViewModel(
                     .toRegionsByCountryUi(language),
             )
         }
+    }
+
+    private suspend fun performRefresh() {
+        if (currentState().isRefreshing) return
+        updateState { it.copy(isRefreshing = true) }
+        observeListingsUseCase.refresh()
+        updateState { it.copy(isRefreshing = false) }
     }
 
     private fun applyDisplayOptions(

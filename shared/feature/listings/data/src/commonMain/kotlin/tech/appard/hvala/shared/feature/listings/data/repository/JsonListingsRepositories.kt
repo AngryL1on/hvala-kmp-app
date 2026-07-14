@@ -51,6 +51,11 @@ internal class JsonListingsRepository(
         _listings.value = database.loadAllListings()
     }
 
+    override suspend fun refresh() {
+        ensureLoaded()
+        _listings.value = database.loadAllListings()
+    }
+
     override fun getListingById(id: String): Listing? =
         _listings.value.find { it.id == id }
 

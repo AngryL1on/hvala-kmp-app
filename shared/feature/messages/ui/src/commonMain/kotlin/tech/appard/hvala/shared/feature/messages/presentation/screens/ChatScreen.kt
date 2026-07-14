@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import tech.appard.hvala.shared.feature.messages.presentation.model.UIChatMessage
 import tech.appard.hvala.shared.feature.messages.presentation.model.UIChatThread
 import tech.appard.hvala.shared.feature.messages.presentation.mapper.resolvedListingId
+import tech.appard.hvala.shared.core.ui.components.refresh.HvalaPullToRefreshBox
 import tech.appard.hvala.shared.core.ui.model.MediaPickerMode
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
@@ -71,6 +72,7 @@ fun ChatScreen(
         onSendClick = viewModel::sendMessage,
         onListingClick = onListingClick,
         onAttachClick = { filePicker.launch(maxItems = 5) },
+        onRefresh = { viewModel.refreshChat(threadId) },
     )
 }
 
@@ -81,6 +83,7 @@ private fun ChatContent(
     onSendClick: () -> Unit,
     onListingClick: (String) -> Unit,
     onAttachClick: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -154,30 +157,37 @@ private fun ChatContent(
                 )
             }
 
-            LazyColumn(
+            HvalaPullToRefreshBox(
+                isRefreshing = state.isRefreshing,
+                onRefresh = onRefresh,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
-                    .nestedScroll(dismissKeyboardOnUserScroll),
-                state = listState,
-                contentPadding = PaddingValues(
-                    top = if (hasListingCard) 0.dp else dimensions.verticalMedium,
-                    bottom = dimensions.verticalSmall,
-                ),
-                verticalArrangement = Arrangement.spacedBy(dimensions.verticalXXSmall),
+                    .fillMaxWidth(),
             ) {
-                items(
-                    items = state.messages,
-                    key = { it.id },
-                ) { message ->
-                    ChatMessageItem(
-                        message = message,
-                        modifier = Modifier.clickable(
-                            interactionSource = remember(message.id) { MutableInteractionSource() },
-                            indication = null,
-                            onClick = dismissKeyboard,
-                        ),
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(dismissKeyboardOnUserScroll),
+                    state = listState,
+                    contentPadding = PaddingValues(
+                        top = if (hasListingCard) 0.dp else dimensions.verticalMedium,
+                        bottom = dimensions.verticalSmall,
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(dimensions.verticalXXSmall),
+                ) {
+                    items(
+                        items = state.messages,
+                        key = { it.id },
+                    ) { message ->
+                        ChatMessageItem(
+                            message = message,
+                            modifier = Modifier.clickable(
+                                interactionSource = remember(message.id) { MutableInteractionSource() },
+                                indication = null,
+                                onClick = dismissKeyboard,
+                            ),
+                        )
+                    }
                 }
             }
 
@@ -236,6 +246,7 @@ private fun ChatScreenPreview() {
             onSendClick = {},
             onListingClick = {},
             onAttachClick = {},
+            onRefresh = {},
         )
     }
 }

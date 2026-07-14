@@ -28,6 +28,7 @@ data class ListingsUiState(
     val allListings: List<UIListing> = emptyList(),
     val listings: List<UIListing> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isFilterSheetVisible: Boolean = false,
     val appliedFilters: UIListingsFilters = UIListingsFilters(),
     val draftFilters: UIListingsFilters = UIListingsFilters(),
@@ -40,6 +41,7 @@ data class ListingsUiState(
 
 sealed interface ListingsIntent : MviIntent {
     data object Load : ListingsIntent
+    data object Refresh : ListingsIntent
     data class SearchQueryChanged(val query: String) : ListingsIntent
     data class CategorySelected(val categoryId: String) : ListingsIntent
     data class FavoriteToggled(val listingId: String) : ListingsIntent
@@ -94,6 +96,7 @@ class ListingsViewModel(
     override suspend fun handleIntent(intent: ListingsIntent) {
         when (intent) {
             ListingsIntent.Load -> performLoad()
+            ListingsIntent.Refresh -> performRefresh()
             is ListingsIntent.SearchQueryChanged -> applySearchQueryChange(intent.query)
             is ListingsIntent.CategorySelected -> applyCategorySelected(intent.categoryId)
             is ListingsIntent.FavoriteToggled -> toggleListingFavoriteUseCase(intent.listingId)
@@ -108,6 +111,8 @@ class ListingsViewModel(
     }
 
     fun load() = onIntent(ListingsIntent.Load)
+
+    fun refresh() = onIntent(ListingsIntent.Refresh)
 
     fun onSearchQueryChange(query: String) = onIntent(ListingsIntent.SearchQueryChanged(query))
 
@@ -141,6 +146,13 @@ class ListingsViewModel(
                     .toRegionsByCountryUi(language),
             )
         }
+    }
+
+    private suspend fun performRefresh() {
+        if (currentState().isRefreshing) return
+        updateState { it.copy(isRefreshing = true) }
+        observeListingsUseCase.refresh()
+        updateState { it.copy(isRefreshing = false) }
     }
 
     private fun applySearchQueryChange(query: String) {

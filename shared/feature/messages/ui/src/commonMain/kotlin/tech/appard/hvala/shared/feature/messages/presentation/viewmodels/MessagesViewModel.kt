@@ -33,6 +33,7 @@ data class ChatUiState(
     val inputText: String = "",
     val pendingAttachments: List<PickedMedia> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
 ) : MviState
 
 sealed interface MessagesIntent : MviIntent {
@@ -86,6 +87,20 @@ class MessagesViewModel(
                 messages = messages,
                 inputText = "",
                 pendingAttachments = emptyList(),
+            )
+        }
+    }
+
+    fun refreshChat(threadId: String) {
+        viewModelScope.launch {
+            if (_chatState.value.isRefreshing) return@launch
+            _chatState.value = _chatState.value.copy(isRefreshing = true)
+            val thread = getChatThreadUseCase(threadId)?.toUi()
+            val messages = getChatMessagesUseCase(threadId).toMessagesUi()
+            _chatState.value = _chatState.value.copy(
+                isRefreshing = false,
+                thread = thread ?: _chatState.value.thread,
+                messages = messages,
             )
         }
     }

@@ -23,6 +23,10 @@ class ObserveListingsUseCase(
         return listingsRepository.getGridListings()
             .withFavoriteStateVisible(authRepository.isAuthenticated())
     }
+
+    suspend fun refresh() {
+        listingsRepository.refresh()
+    }
 }
 
 class GetListingByIdUseCase(

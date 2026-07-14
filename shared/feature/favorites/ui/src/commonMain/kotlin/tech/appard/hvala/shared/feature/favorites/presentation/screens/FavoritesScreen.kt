@@ -25,6 +25,7 @@ import tech.appard.hvala.shared.feature.listings.presentation.components.Listing
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListing
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingSortOrder
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingsFilters
+import tech.appard.hvala.shared.core.ui.components.refresh.HvalaPullToRefreshBox
 import tech.appard.hvala.shared.core.ui.theme.BodyMedium
 import tech.appard.hvala.shared.core.ui.theme.GrayText
 import tech.appard.hvala.shared.core.ui.theme.HvalaTheme
@@ -60,6 +61,7 @@ fun FavoritesScreen(
         onDraftSortOrderChange = viewModel::onDraftSortOrderChange,
         onFilterReset = viewModel::onFilterReset,
         onFilterApply = viewModel::onFilterApply,
+        onRefresh = viewModel::refresh,
     )
 }
 
@@ -75,6 +77,7 @@ private fun FavoritesContent(
     onDraftSortOrderChange: (UIListingSortOrder) -> Unit,
     onFilterReset: () -> Unit,
     onFilterApply: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val dimensions = LocalDimensions.current
@@ -93,11 +96,17 @@ private fun FavoritesContent(
                 )
             }
             !state.hasAnyFavorites -> {
-                Text(
-                    text = strings.favorites.empty,
-                    style = BodyMedium.copy(color = GrayText),
-                    modifier = Modifier.align(Alignment.Center),
-                )
+                HvalaPullToRefreshBox(
+                    isRefreshing = state.isRefreshing,
+                    onRefresh = onRefresh,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    Text(
+                        text = strings.favorites.empty,
+                        style = BodyMedium.copy(color = GrayText),
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
             }
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -107,41 +116,42 @@ private fun FavoritesContent(
                         onFilterClick = onFilterClick,
                     )
 
-                    if (state.listings.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentAlignment = Alignment.Center,
-                        ) {
+                    HvalaPullToRefreshBox(
+                        isRefreshing = state.isRefreshing,
+                        onRefresh = onRefresh,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                    ) {
+                        if (state.listings.isEmpty()) {
                             Text(
                                 text = strings.favorites.noFilterResults,
                                 style = BodyMedium.copy(color = GrayText),
+                                modifier = Modifier.align(Alignment.Center),
                             )
-                        }
-                    } else {
-                        LazyVerticalGrid(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f)
-                                .padding(horizontal = dimensions.horizontalMedium),
-                            columns = GridCells.Fixed(2),
-                            contentPadding = PaddingValues(
-                                top = dimensions.verticalMedium,
-                                bottom = dimensions.verticalLarge,
-                            ),
-                            horizontalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
-                            verticalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
-                        ) {
-                            items(
-                                items = state.listings,
-                                key = { it.id },
-                            ) { listing ->
-                                ListingCard(
-                                    listing = listing,
-                                    onFavoriteClick = { onListingFavoriteToggle(listing.id) },
-                                    onClick = { onListingClick(listing.id) },
-                                )
+                        } else {
+                            LazyVerticalGrid(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = dimensions.horizontalMedium),
+                                columns = GridCells.Fixed(2),
+                                contentPadding = PaddingValues(
+                                    top = dimensions.verticalMedium,
+                                    bottom = dimensions.verticalLarge,
+                                ),
+                                horizontalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
+                                verticalArrangement = Arrangement.spacedBy(dimensions.listingGridSpacing),
+                            ) {
+                                items(
+                                    items = state.listings,
+                                    key = { it.id },
+                                ) { listing ->
+                                    ListingCard(
+                                        listing = listing,
+                                        onFavoriteClick = { onListingFavoriteToggle(listing.id) },
+                                        onClick = { onListingClick(listing.id) },
+                                    )
+                                }
                             }
                         }
                     }
@@ -202,6 +212,7 @@ private fun FavoritesScreenPreview() {
             onDraftSortOrderChange = {},
             onFilterReset = {},
             onFilterApply = {},
+            onRefresh = {},
         )
     }
 }
