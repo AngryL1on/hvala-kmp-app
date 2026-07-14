@@ -15,6 +15,9 @@ data class AppStrings(
     val favorites: FavoritesStrings,
     val settings: SettingsStrings,
     val privacyPolicy: PrivacyPolicyStrings,
+    val information: InformationStrings,
+    val contacts: ContactsStrings,
+    val help: HelpStrings,
 )
 
 fun AppLanguage.strings(): AppStrings = AppStrings(
@@ -28,6 +31,9 @@ fun AppLanguage.strings(): AppStrings = AppStrings(
     favorites = favoritesStrings(),
     settings = settingsStrings(),
     privacyPolicy = privacyPolicyStrings(),
+    information = informationStrings(),
+    contacts = contactsStrings(),
+    help = helpStrings(),
 )
 
 val LocalAppLanguage = staticCompositionLocalOf { AppLanguage.default }

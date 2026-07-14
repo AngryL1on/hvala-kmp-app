@@ -12,6 +12,7 @@ kotlin {
         namespace = "tech.appard.hvala.shared.feature.settings"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+        androidResources.enable = true
         withJava()
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
@@ -42,5 +43,10 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "tech.appard.hvala.shared.feature.settings.ui.resources"
 }
 

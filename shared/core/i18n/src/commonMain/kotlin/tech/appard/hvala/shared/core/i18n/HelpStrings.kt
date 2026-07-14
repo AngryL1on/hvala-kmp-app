@@ -1,0 +1,145 @@
+package tech.appard.hvala.shared.core.i18n
+
+data class HelpFaqItem(
+    val question: String,
+    val answer: String,
+)
+
+data class HelpStrings(
+    val screenTitle: String,
+    val searchQuestion: String,
+    val enterQuestion: String,
+    val supportTitle: String,
+    val supportDescription: String,
+    val sendSupport: String,
+    val faqItems: List<HelpFaqItem>,
+)
+
+internal fun AppLanguage.helpStrings(): HelpStrings = when (this) {
+    AppLanguage.RU -> HelpStrings(
+        screenTitle = "Помощь",
+        searchQuestion = "Поиск по вопросам",
+        enterQuestion = "Введите ваш вопрос",
+        supportTitle = "Служба поддержки",
+        supportDescription = "Если вы не нашли решение своей проблемы, напишите в службу поддрежки – мы ответим.",
+        sendSupport = "Отправить запрос",
+        faqItems = listOf(
+            HelpFaqItem("Как опубликовать объявление?", "Для использования данной услуги необходимо войти в свой аккаунт. В случае отсутствия авторизации, пожалуйста, зарегистрируйтесь. После успешного входа в аккаунт откроется возможность размещения объявлений. На главной странице с объявлениями обнаружите кнопку \"Создать объявление\" в виде знака \"плюс\", которая направит вас на страницу создания объявления. Следуйте инструкциям, и ваше объявление будет успешно опубликовано."),
+            HelpFaqItem("Как удалить объявление?", "Для пользования данной услугой, пожалуйста, перейдите в \"личный кабинет\", который находится в нижней части навигационного меню. Здесь вы обнаружите все ваши объявления, рядом с каждым из них будет значок \"три точки\". Нажав на этот значок, у вас появится возможность либо удалить объявление, либо внести изменения."),
+            HelpFaqItem("Что делать, если забыли пароль?", "Если вы забыли пароль от своей учетной записи, не переживайте. Перейдите в раздел авторизации, где вы увидите опцию \"Забыли пароль?\". По её нажатию вы будете перенаправлены на страницу восстановления пароля. Введите адрес электронной почты, привязанный к вашему аккаунту. На этот адрес будет отправлена инструкция по последующему восстановлению пароля."),
+            HelpFaqItem("Как изменить язык приложения?", "Для изменения языка приложения у вас есть три варианта: \n1) На главной странице \n2) На странице авторизации \n3) На странице профиля"),
+            HelpFaqItem("Как поделиться объявлением?", "Для того, чтобы поделиться объявлением, вам необходимо найти интересующее вас объявление и нажать на значок \"поделиться\" в виде стрелки, который находится в правом верхнем углу объявления. После этого вы сможете поделиться объявлением в социальных сетях или отправить ссылку на объявление в сообщении."),
+            HelpFaqItem("Как связаться с продавцом?", "Для установки контакта с продавцом, вам следует найти интересующее вас объявление и выбрать опцию \"Написать\". После этого вы будете автоматически перенаправлены на страницу чата, где сможете отправить сообщение продавцу."),
+            HelpFaqItem("Для чего нужен ChatHelper на странице с чатами?", "ChatHelper - это служба поддержки, которая помогает вам в решении возникших проблем. Если у вас возникли вопросы, связанные с работой приложения, вы можете обратиться к ChatHelper, который поможет вам в решении проблемы."),
+            HelpFaqItem("Как пользоваться фильтрами для поиска объявлений?", "Для использования фильтров, вам необходимо нажать на значок \"фильтр\", который расположен под поиском. После этого вы сможете выбрать необходимые параметры для поиска объявлений. После выбора параметров нажмите на кнопку \"Применить\", и вам будут показаны объявления, соответствующие вашим критериям."),
+            HelpFaqItem("Как изменить данные в профиле?", "Для изменения данных в профиле, вам необходимо перейти в \"личный кабинет\", который находится в нижней части навигационного меню. Здесь вы обнаружите все ваши данные, которые вы можете изменить. После внесения изменений не забудьте нажать на кнопку \"Сохранить\"."),
+            HelpFaqItem("Как посмотреть рейтинг продавца?", "Для просмотра рейтинга продавца, вам необходимо найти интересующее вас объявление и нажать на имя продавца. После этого вы будете перенаправлены на страницу профиля продавца, где вы сможете увидеть его рейтинг и отзывы о нем."),
+            HelpFaqItem("Мои данные надежно защищены?", "Да, ваши данные надежно защищены. Мы используем самые современные технологии для защиты ваших данных. Все данные, которые вы предоставляете, хранятся в зашифрованном виде"),
+        ),
+    )
+    AppLanguage.EN -> HelpStrings(
+        screenTitle = "Help",
+        searchQuestion = "Search for Questions",
+        enterQuestion = "Enter your question",
+        supportTitle = "Customer Support",
+        supportDescription = "If you haven't found a solution to your problem, reach out to customer support – we will respond.",
+        sendSupport = "Submit Request",
+        faqItems = listOf(
+            HelpFaqItem("How to publish an advertisement?", "To use this service, you need to log in to your account. In case of absence of authorization, please register. After successful login to your account, the option to place advertisements will be available. On the main page with advertisements, you will find the button \"Create Advertisement\" in the form of a \"plus\" sign, which will redirect you to the advertisement creation page. Follow the instructions, and your advertisement will be successfully published."),
+            HelpFaqItem("How to delete an advertisement?", "To use this service, please go to the \"personal cabinet\" located at the bottom of the navigation menu. Here you will find all your advertisements, next to each of them there will be a \"three dots\" icon. By clicking on this icon, you will have the option to either delete the advertisement or make changes."),
+            HelpFaqItem("What to do if you forgot your password?", "If you forgot the password for your account, don't worry. Go to the authorization section, where you will see the option \"Forgot Password?\". By clicking on it, you will be redirected to the password recovery page. Enter the email address associated with your account. An instruction for further password recovery will be sent to this email address."),
+            HelpFaqItem("How to change the application language?", "To change the application language, you have three options: \n1) On the main page \n2) On the authorization page \n3) On the profile page"),
+            HelpFaqItem("How to share an advertisement?", "To share an advertisement, you need to find the advertisement of interest and click on the \"share\" icon in the form of an arrow, located in the upper right corner of the advertisement. After that, you can share the advertisement on social networks or send the advertisement link in a message."),
+            HelpFaqItem("How to contact the seller?", "To contact the seller, you should find the advertisement of interest and select the option \"Write\". After that, you will be automatically redirected to the chat page, where you can send a message to the seller."),
+            HelpFaqItem("What is ChatHelper for on the chat page?", "ChatHelper is a support service that helps you solve any issues that may arise. If you have questions related to the application's functionality, you can turn to ChatHelper, which will assist you in resolving the issue."),
+            HelpFaqItem("How to use filters to search for advertisements?", "To use filters, click on the \"filter\" icon located below the search bar. After that, you can select the necessary parameters for searching advertisements. After choosing the parameters, click the \"Apply\" button, and advertisements matching your criteria will be displayed."),
+            HelpFaqItem("How to change data in the profile?", "To change data in the profile, you need to go to the \"personal cabinet\", located at the bottom of the navigation menu. Here you will find all your data that you can modify. After making changes, don't forget to click the \"Save\" button."),
+            HelpFaqItem("How to view the seller's rating?", "To view the seller's rating, find the advertisement of interest and click on the seller's name. After that, you will be redirected to the seller's profile page, where you can see their rating and reviews."),
+            HelpFaqItem("Are my data securely protected?", "Yes, your data is securely protected. We use the most advanced technologies to safeguard your information. All data you provide is stored in encrypted form and is inaccessible to third parties. We guarantee the complete security of your data."),
+        ),
+    )
+    AppLanguage.SR -> HelpStrings(
+        screenTitle = "Pomoć",
+        searchQuestion = "Pretraga po pitanjima",
+        enterQuestion = "Unesite svoje pitanje",
+        supportTitle = "Korisnička podrška",
+        supportDescription = "Ako niste pronašli rešenje za svoj problem, obratite se korisničkoj podršci - odgovorićemo.",
+        sendSupport = "Pošalji upit",
+        faqItems = listOf(
+            HelpFaqItem("Kako objaviti oglas?", "Da biste koristili ovu uslugu, morate se prijaviti na svoj nalog. U slučaju nedostatka autorizacije, molimo vas da se registrujete. Nakon uspešne prijave na svoj nalog, pojaviće se mogućnost postavljanja oglasa. Na glavnoj stranici sa oglasima pronaći ćete dugme \"Kreiraj oglas\" u obliku znaka \"plus\", koje će vas preusmeriti na stranicu za kreiranje oglasa. Pratite uputstva i vaš oglas će uspešno biti objavljen."),
+            HelpFaqItem("Kako izbrisati oglas?", "Da biste koristili ovu uslugu, molimo vas da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje oglase, pored svakog od njih će biti ikona \"tri tačke\". Klikom na ovu ikonu, pojaviće se opcija da ili obrišete oglas ili napravite izmene."),
+            HelpFaqItem("Šta ako zaboravite lozinku?", "Ako ste zaboravili lozinku za svoj nalog, ne brinite. Idite na deo za autorizaciju gde ćete videti opciju \"Zaboravljena lozinka?\". Klikom na nju bićete preusmereni na stranicu za oporavak lozinke. Unesite e-adresu koja je povezana sa vašim nalogom. Na tu adresu će vam stići uputstvo za dalji oporavak lozinke."),
+            HelpFaqItem("Kako promeniti jezik aplikacije?", "Za promenu jezika aplikacije imate tri opcije: \n1) Na glavnoj stranici \n2) Na stranici autorizacije \n3) Na stranici profila"),
+            HelpFaqItem("Kako podeliti oglas?", "Da biste podelili oglas, potrebno je pronaći oglas koji vas zanima i kliknuti na ikonu \"podeli\" u obliku strelice, koja se nalazi u gornjem desnom uglu oglasa. Nakon toga možete podeliti oglas na društvenim mrežama ili poslati link oglasa u poruci."),
+            HelpFaqItem("Kako stupiti u kontakt sa prodavcem?", "Da biste stupili u kontakt sa prodavcem, treba pronaći oglas koji vas zanima i izabrati opciju \"Napiši\". Nakon toga ćete automatski biti preusmereni na stranicu za razmenu poruka, gde možete poslati poruku prodavcu."),
+            HelpFaqItem("Za šta služi ChatHelper na stranici sa razgovorima?", "ChatHelper je servis podrške koji vam pomaže u rešavanju eventualnih problema. Ako imate pitanja vezana za rad aplikacije, možete se obratiti ChatHelperu koji će vam pomoći u rešavanju problema."),
+            HelpFaqItem("Kako koristiti filtere za pretragu oglasa?", "Da biste koristili filtere, kliknite na ikonu \"filter\" koja se nalazi ispod polja za pretragu. Nakon toga možete odabrati potrebne parametre za pretragu oglasa. Kada odaberete parametre, kliknite na dugme \"Primeni\" i prikazaće vam se oglasi koji odgovaraju vašim kriterijumima."),
+            HelpFaqItem("Kako promeniti podatke u profilu?", "Da biste promenili podatke u profilu, treba da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje podatke koje možete izmeniti. Nakon unosa izmena, ne zaboravite da kliknete na dugme \"Sačuvaj\"."),
+            HelpFaqItem("Kako pogledati ocenu prodavca?", "Da biste videli ocenu prodavca, pronađite oglas koji vas zanima i kliknite na ime prodavca. Nakon toga bićete preusmereni na stranicu profila prodavca, gde možete videti njegovu ocenu i recenzije."),
+            HelpFaqItem("Da li su moji podaci sigurno zaštićeni?", "Da, vaši podaci su sigurno zaštićeni. Koristimo najmodernije tehnologije radi zaštite vaših podataka. Svi podaci koje pružate čuvaju se u šifrovanom obliku i nisu dostupni trećim licima. Garantujemo potpunu bezbednost vaših podataka."),
+        ),
+    )
+    AppLanguage.CNR -> HelpStrings(
+        screenTitle = "Pomoć",
+        searchQuestion = "Pretraga po pitanjima",
+        enterQuestion = "Unesite svoje pitanje",
+        supportTitle = "Korisnička podrška",
+        supportDescription = "Ako niste pronašli rešenje za svoj problem, obratite se korisničkoj podršci - odgovorićemo.",
+        sendSupport = "Pošalji upit",
+        faqItems = listOf(
+            HelpFaqItem("Kako objaviti oglas?", "Da biste koristili ovu uslugu, morate se prijaviti na svoj nalog. U slučaju nedostatka autorizacije, molimo vas da se registrujete. Nakon uspešne prijave na svoj nalog, pojaviće se mogućnost postavljanja oglasa. Na glavnoj stranici sa oglasima pronaći ćete dugme \"Kreiraj oglas\" u obliku znaka \"plus\", koje će vas preusmeriti na stranicu za kreiranje oglasa. Pratite uputstva i vaš oglas će uspešno biti objavljen."),
+            HelpFaqItem("Kako izbrisati oglas?", "Da biste koristili ovu uslugu, molimo vas da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje oglase, pored svakog od njih će biti ikona \"tri tačke\". Klikom na ovu ikonu, pojaviće se opcija da ili obrišete oglas ili napravite izmene."),
+            HelpFaqItem("Šta ako zaboravite lozinku?", "Ako ste zaboravili lozinku za svoj nalog, ne brinite. Idite na deo za autorizaciju gde ćete videti opciju \"Zaboravljena lozinka?\". Klikom na nju bićete preusmereni na stranicu za oporavak lozinke. Unesite e-adresu koja je povezana sa vašim nalogom. Na tu adresu će vam stići uputstvo za dalji oporavak lozinke."),
+            HelpFaqItem("Kako promeniti jezik aplikacije?", "Za promenu jezika aplikacije imate tri opcije: \n1) Na glavnoj stranici \n2) Na stranici autorizacije \n3) Na stranici profila"),
+            HelpFaqItem("Kako podeliti oglas?", "Da biste podelili oglas, potrebno je pronaći oglas koji vas zanima i kliknuti na ikonu \"podeli\" u obliku strelice, koja se nalazi u gornjem desnom uglu oglasa. Nakon toga možete podeliti oglas na društvenim mrežama ili poslati link oglasa u poruci."),
+            HelpFaqItem("Kako stupiti u kontakt sa prodavcem?", "Da biste stupili u kontakt sa prodavcem, treba pronaći oglas koji vas zanima i izabrati opciju \"Napiši\". Nakon toga ćete automatski biti preusmereni na stranicu za razmenu poruka, gde možete poslati poruku prodavcu."),
+            HelpFaqItem("Za šta služi ChatHelper na stranici sa razgovorima?", "ChatHelper je servis podrške koji vam pomaže u rešavanju eventualnih problema. Ako imate pitanja vezana za rad aplikacije, možete se obratiti ChatHelperu koji će vam pomoći u rešavanju problema."),
+            HelpFaqItem("Kako koristiti filtere za pretragu oglasa?", "Da biste koristili filtere, kliknite na ikonu \"filter\" koja se nalazi ispod polja za pretragu. Nakon toga možete odabrati potrebne parametre za pretragu oglasa. Kada odaberete parametre, kliknite na dugme \"Primeni\" i prikazaće vam se oglasi koji odgovaraju vašim kriterijumima."),
+            HelpFaqItem("Kako promeniti podatke u profilu?", "Da biste promenili podatke u profilu, treba da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje podatke koje možete izmeniti. Nakon unosa izmena, ne zaboravite da kliknete na dugme \"Sačuvaj\"."),
+            HelpFaqItem("Kako pogledati ocenu prodavca?", "Da biste videli ocenu prodavca, pronađite oglas koji vas zanima i kliknite na ime prodavca. Nakon toga bićete preusmereni na stranicu profila prodavca, gde možete videti njegovu ocenu i recenzije."),
+            HelpFaqItem("Da li su moji podaci sigurno zaštićeni?", "Da, vaši podaci su sigurno zaštićeni. Koristimo najmodernije tehnologije radi zaštite vaših podataka. Svi podaci koje pružate čuvaju se u šifrovanom obliku i nisu dostupni trećim licima. Garantujemo potpunu bezbednost vaših podataka."),
+        ),
+    )
+    AppLanguage.BS -> HelpStrings(
+        screenTitle = "Pomoć",
+        searchQuestion = "Pretraga po pitanjima",
+        enterQuestion = "Unesite svoje pitanje",
+        supportTitle = "Korisnička podrška",
+        supportDescription = "Ako niste pronašli rešenje za svoj problem, obratite se korisničkoj podršci - odgovorićemo.",
+        sendSupport = "Pošalji upit",
+        faqItems = listOf(
+            HelpFaqItem("Kako objaviti oglas?", "Da biste koristili ovu uslugu, morate se prijaviti na svoj nalog. U slučaju nedostatka autorizacije, molimo vas da se registrujete. Nakon uspešne prijave na svoj nalog, pojaviće se mogućnost postavljanja oglasa. Na glavnoj stranici sa oglasima pronaći ćete dugme \"Kreiraj oglas\" u obliku znaka \"plus\", koje će vas preusmeriti na stranicu za kreiranje oglasa. Pratite uputstva i vaš oglas će uspešno biti objavljen."),
+            HelpFaqItem("Kako izbrisati oglas?", "Da biste koristili ovu uslugu, molimo vas da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje oglase, pored svakog od njih će biti ikona \"tri tačke\". Klikom na ovu ikonu, pojaviće se opcija da ili obrišete oglas ili napravite izmene."),
+            HelpFaqItem("Šta ako zaboravite lozinku?", "Ako ste zaboravili lozinku za svoj nalog, ne brinite. Idite na deo za autorizaciju gde ćete videti opciju \"Zaboravljena lozinka?\". Klikom na nju bićete preusmereni na stranicu za oporavak lozinke. Unesite e-adresu koja je povezana sa vašim nalogom. Na tu adresu će vam stići uputstvo za dalji oporavak lozinke."),
+            HelpFaqItem("Kako promeniti jezik aplikacije?", "Za promenu jezika aplikacije imate tri opcije: \n1) Na glavnoj stranici \n2) Na stranici autorizacije \n3) Na stranici profila"),
+            HelpFaqItem("Kako podeliti oglas?", "Da biste podelili oglas, potrebno je pronaći oglas koji vas zanima i kliknuti na ikonu \"podeli\" u obliku strelice, koja se nalazi u gornjem desnom uglu oglasa. Nakon toga možete podeliti oglas na društvenim mrežama ili poslati link oglasa u poruci."),
+            HelpFaqItem("Kako stupiti u kontakt sa prodavcem?", "Da biste stupili u kontakt sa prodavcem, treba pronaći oglas koji vas zanima i izabrati opciju \"Napiši\". Nakon toga ćete automatski biti preusmereni na stranicu za razmenu poruka, gde možete poslati poruku prodavcu."),
+            HelpFaqItem("Za šta služi ChatHelper na stranici sa razgovorima?", "ChatHelper je servis podrške koji vam pomaže u rešavanju eventualnih problema. Ako imate pitanja vezana za rad aplikacije, možete se obratiti ChatHelperu koji će vam pomoći u rešavanju problema."),
+            HelpFaqItem("Kako koristiti filtere za pretragu oglasa?", "Da biste koristili filtere, kliknite na ikonu \"filter\" koja se nalazi ispod polja za pretragu. Nakon toga možete odabrati potrebne parametre za pretragu oglasa. Kada odaberete parametre, kliknite na dugme \"Primeni\" i prikazaće vam se oglasi koji odgovaraju vašim kriterijumima."),
+            HelpFaqItem("Kako promeniti podatke u profilu?", "Da biste promenili podatke u profilu, treba da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje podatke koje možete izmeniti. Nakon unosa izmena, ne zaboravite da kliknete na dugme \"Sačuvaj\"."),
+            HelpFaqItem("Kako pogledati ocenu prodavca?", "Da biste videli ocenu prodavca, pronađite oglas koji vas zanima i kliknite na ime prodavca. Nakon toga bićete preusmereni na stranicu profila prodavca, gde možete videti njegovu ocenu i recenzije."),
+            HelpFaqItem("Da li su moji podaci sigurno zaštićeni?", "Da, vaši podaci su sigurno zaštićeni. Koristimo najmodernije tehnologije radi zaštite vaših podataka. Svi podaci koje pružate čuvaju se u šifrovanom obliku i nisu dostupni trećim licima. Garantujemo potpunu bezbednost vaših podataka."),
+        ),
+    )
+    AppLanguage.HR -> HelpStrings(
+        screenTitle = "Pomoć",
+        searchQuestion = "Pretraga po pitanjima",
+        enterQuestion = "Unesite svoje pitanje",
+        supportTitle = "Korisnička podrška",
+        supportDescription = "Ako niste pronašli rešenje za svoj problem, obratite se korisničkoj podršci - odgovorićemo.",
+        sendSupport = "Pošalji upit",
+        faqItems = listOf(
+            HelpFaqItem("Kako objaviti oglas?", "Da biste koristili ovu uslugu, morate se prijaviti na svoj nalog. U slučaju nedostatka autorizacije, molimo vas da se registrujete. Nakon uspešne prijave na svoj nalog, pojaviće se mogućnost postavljanja oglasa. Na glavnoj stranici sa oglasima pronaći ćete dugme \"Kreiraj oglas\" u obliku znaka \"plus\", koje će vas preusmeriti na stranicu za kreiranje oglasa. Pratite uputstva i vaš oglas će uspešno biti objavljen."),
+            HelpFaqItem("Kako izbrisati oglas?", "Da biste koristili ovu uslugu, molimo vas da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje oglase, pored svakog od njih će biti ikona \"tri tačke\". Klikom na ovu ikonu, pojaviće se opcija da ili obrišete oglas ili napravite izmene."),
+            HelpFaqItem("Šta ako zaboravite lozinku?", "Ako ste zaboravili lozinku za svoj nalog, ne brinite. Idite na deo za autorizaciju gde ćete videti opciju \"Zaboravljena lozinka?\". Klikom na nju bićete preusmereni na stranicu za oporavak lozinke. Unesite e-adresu koja je povezana sa vašim nalogom. Na tu adresu će vam stići uputstvo za dalji oporavak lozinke."),
+            HelpFaqItem("Kako promeniti jezik aplikacije?", "Za promenu jezika aplikacije imate tri opcije: \n1) Na glavnoj stranici \n2) Na stranici autorizacije \n3) Na stranici profila"),
+            HelpFaqItem("Kako podeliti oglas?", "Da biste podelili oglas, potrebno je pronaći oglas koji vas zanima i kliknuti na ikonu \"podeli\" u obliku strelice, koja se nalazi u gornjem desnom uglu oglasa. Nakon toga možete podeliti oglas na društvenim mrežama ili poslati link oglasa u poruci."),
+            HelpFaqItem("Kako stupiti u kontakt sa prodavcem?", "Da biste stupili u kontakt sa prodavcem, treba pronaći oglas koji vas zanima i izabrati opciju \"Napiši\". Nakon toga ćete automatski biti preusmereni na stranicu za razmenu poruka, gde možete poslati poruku prodavcu."),
+            HelpFaqItem("Za šta služi ChatHelper na stranici sa razgovorima?", "ChatHelper je servis podrške koji vam pomaže u rešavanju eventualnih problema. Ako imate pitanja vezana za rad aplikacije, možete se obratiti ChatHelperu koji će vam pomoći u rešavanju problema."),
+            HelpFaqItem("Kako koristiti filtere za pretragu oglasa?", "Da biste koristili filtere, kliknite na ikonu \"filter\" koja se nalazi ispod polja za pretragu. Nakon toga možete odabrati potrebne parametre za pretragu oglasa. Kada odaberete parametre, kliknite na dugme \"Primeni\" i prikazaće vam se oglasi koji odgovaraju vašim kriterijumima."),
+            HelpFaqItem("Kako promeniti podatke u profilu?", "Da biste promenili podatke u profilu, treba da odete na \"lični kabinet\" koji se nalazi na dnu navigacionog menija. Tu ćete pronaći sve svoje podatke koje možete izmeniti. Nakon unosa izmena, ne zaboravite da kliknete na dugme \"Sačuvaj\"."),
+            HelpFaqItem("Kako pogledati ocenu prodavca?", "Da biste videli ocenu prodavca, pronađite oglas koji vas zanima i kliknite na ime prodavca. Nakon toga bićete preusmereni na stranicu profila prodavca, gde možete videti njegovu ocenu i recenzije."),
+            HelpFaqItem("Da li su moji podaci sigurno zaštićeni?", "Da, vaši podaci su sigurno zaštićeni. Koristimo najmodernije tehnologije radi zaštite vaših podataka. Svi podaci koje pružate čuvaju se u šifrovanom obliku i nisu dostupni trećim licima. Garantujemo potpunu bezbednost vaših podataka."),
+        ),
+    )
+}

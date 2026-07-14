@@ -57,6 +57,9 @@ import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsV
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileViewModel
 import tech.appard.hvala.shared.feature.listings.domain.ToggleListingFavoriteUseCase
 import tech.appard.hvala.shared.core.i18n.appStrings
+import tech.appard.hvala.shared.feature.settings.presentation.screens.ContactsScreen
+import tech.appard.hvala.shared.feature.settings.presentation.screens.HelpScreen
+import tech.appard.hvala.shared.feature.settings.presentation.screens.InformationScreen
 import tech.appard.hvala.shared.feature.settings.presentation.screens.PrivacyPolicyScreen
 import tech.appard.hvala.shared.feature.settings.presentation.screens.SettingsScreen
 import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsViewModel
@@ -140,7 +143,10 @@ fun AppNavHost(
     val showAppBar = when (currentRoute) {
         Route.Auth,
         Route.Registration,
+        Route.Information,
         Route.PrivacyPolicy,
+        Route.Contacts,
+        Route.Help,
         is Route.ListingDetail,
         is Route.SellerProfile,
         is Route.Reviews,
@@ -159,7 +165,10 @@ fun AppNavHost(
     val appBarState = rememberHvalaAppBarState(
         title = when (currentRoute) {
             Route.Registration -> strings.nav.registration
+            Route.Information -> strings.information.screenTitle
             Route.PrivacyPolicy -> strings.privacyPolicy.screenTitle
+            Route.Contacts -> strings.contacts.screenTitle
+            Route.Help -> strings.help.screenTitle
             Route.Profile -> strings.nav.profileTitle
             Route.Settings -> strings.settings.screenTitle
             Route.EditProfile -> strings.settings.editProfile
@@ -175,7 +184,10 @@ fun AppNavHost(
         showBackButton = when (currentRoute) {
             Route.Auth,
             Route.Registration,
+            Route.Information,
             Route.PrivacyPolicy,
+            Route.Contacts,
+            Route.Help,
             Route.Settings,
             Route.EditProfile,
             Route.CreateListing,
@@ -187,7 +199,10 @@ fun AppNavHost(
             else -> false
         },
         centerTitle = currentRoute == Route.Registration ||
+            currentRoute == Route.Information ||
             currentRoute == Route.PrivacyPolicy ||
+            currentRoute == Route.Contacts ||
+            currentRoute == Route.Help ||
             currentRoute == Route.Profile ||
             currentRoute == Route.Settings ||
             currentRoute == Route.EditProfile ||
@@ -214,7 +229,10 @@ fun AppNavHost(
     val usesScreenBackground = when (currentRoute) {
         Route.Profile,
         Route.Settings,
+        Route.Information,
         Route.PrivacyPolicy,
+        Route.Contacts,
+        Route.Help,
         Route.EditProfile,
         Route.CreateListing,
         is Route.ListingDetail,
@@ -324,6 +342,9 @@ fun AppNavHost(
                         onTermsClick = { navController.navigateTo(Route.PrivacyPolicy) },
                     )
                     Route.PrivacyPolicy -> PrivacyPolicyScreen()
+                    Route.Information -> InformationScreen()
+                    Route.Contacts -> ContactsScreen()
+                    Route.Help -> HelpScreen()
                     Route.Listings -> ListingsScreen(
                         viewModel = listingsViewModel,
                         showGuestLoginButton = !isAuthenticated,
@@ -361,7 +382,10 @@ fun AppNavHost(
                         onEditProfileClick = { navController.navigateTo(Route.EditProfile) },
                         onAvatarPicked = profileViewModel::updateAvatar,
                         onSessionEnd = onSessionEnd,
+                        onInformationClick = { navController.navigateTo(Route.Information) },
                         onPrivacyPolicyClick = { navController.navigateTo(Route.PrivacyPolicy) },
+                        onContactsClick = { navController.navigateTo(Route.Contacts) },
+                        onHelpClick = { navController.navigateTo(Route.Help) },
                     )
                     Route.EditProfile -> EditProfileScreen(
                         viewModel = editProfileViewModel,

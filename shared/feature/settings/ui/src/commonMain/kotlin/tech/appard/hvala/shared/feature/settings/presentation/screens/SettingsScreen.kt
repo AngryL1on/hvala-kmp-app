@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Notifications
@@ -52,7 +53,10 @@ fun SettingsScreen(
     onEditProfileClick: () -> Unit = {},
     onAvatarPicked: (String) -> Unit = {},
     onSessionEnd: () -> Unit = {},
+    onInformationClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
+    onContactsClick: () -> Unit = {},
+    onHelpClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     val imagePicker = rememberImagePicker()
@@ -61,7 +65,10 @@ fun SettingsScreen(
         viewModel.effects.collect { effect ->
             when (effect) {
                 SettingsEffect.SessionEndRequested -> onSessionEnd()
+                SettingsEffect.InformationRequested -> onInformationClick()
                 SettingsEffect.PrivacyPolicyRequested -> onPrivacyPolicyClick()
+                SettingsEffect.ContactsRequested -> onContactsClick()
+                SettingsEffect.HelpRequested -> onHelpClick()
             }
         }
     }
@@ -123,6 +130,7 @@ private fun SettingsContent(
             SettingsMenuItem("notifications", strings.notifications, Icons.Outlined.Notifications),
             SettingsMenuItem("language", strings.language, Icons.Outlined.Language),
             SettingsMenuItem("info", strings.info, Icons.Outlined.Info),
+            SettingsMenuItem("privacy_policy", strings.privacyPolicy, Icons.Outlined.Description),
             SettingsMenuItem("contacts", strings.contacts, Icons.Outlined.Badge),
             SettingsMenuItem("help", strings.help, Icons.AutoMirrored.Outlined.HelpOutline),
         )
