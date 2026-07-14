@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import tech.appard.hvala.shared.core.ui.components.buttons.PrimaryButton
+import tech.appard.hvala.shared.core.ui.components.dialogs.HvalaConfirmDialog
 import tech.appard.hvala.shared.core.ui.components.fields.HvalaSelectField
 import tech.appard.hvala.shared.core.ui.components.fields.PhoneTextField
 import tech.appard.hvala.shared.core.ui.components.fields.PrimaryTextField
@@ -53,6 +54,7 @@ fun CreateListingScreen(
     onSubmitted: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
+    val strings = appStrings().listings
     val photoPicker = rememberMediaPickerLauncher(
         mode = MediaPickerMode.Images,
         onResult = viewModel::onPhotosPicked,
@@ -88,8 +90,20 @@ fun CreateListingScreen(
                 photoPicker.launch(remaining)
             }
         },
+        onPhotoRemove = viewModel::onPhotoRemove,
         onSubmit = { viewModel.submit(onSubmitted) },
     )
+
+    if (state.showExitConfirmation) {
+        HvalaConfirmDialog(
+            title = strings.exitConfirmTitle,
+            message = strings.exitConfirmMessage,
+            confirmText = strings.exit,
+            isDestructive = true,
+            onConfirm = viewModel::confirmExit,
+            onDismiss = viewModel::dismissExitConfirmation,
+        )
+    }
 }
 
 @Composable
@@ -113,6 +127,7 @@ private fun CreateListingContent(
     onNumberOfOwnersChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onAddPhotoClick: () -> Unit,
+    onPhotoRemove: (String) -> Unit,
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -144,6 +159,7 @@ private fun CreateListingContent(
             photos = state.photos,
             onAddPhotoClick = onAddPhotoClick,
             canAddMore = state.photos.size < CreateListingViewModel.MAX_PHOTOS,
+            onPhotoRemove = onPhotoRemove,
         )
 
         SectionTitle(strings.fillDescription)
@@ -197,7 +213,7 @@ private fun CreateListingContent(
             PrimaryTextField(
                 modifier = fieldModifier,
                 value = state.location,
-                placeholder = "Address",
+                placeholder = strings.location,
                 isMaxQuantityOfCharVisible = false,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -337,13 +353,15 @@ private fun CreateListingContent(
             }
         }
 
+        SectionTitle(strings.additionalInfo)
+
         FormField(label = strings.description) {
             PrimaryTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensions.verticalXXXLarge * 2),
                 value = state.description,
-                placeholder = "Describe your listing",
+                placeholder = strings.description,
                 minLines = 4,
                 maxLines = 6,
                 singleLine = false,
@@ -438,6 +456,7 @@ private fun CreateListingScreenPreview() {
             onNumberOfOwnersChange = {},
             onDescriptionChange = {},
             onAddPhotoClick = {},
+            onPhotoRemove = {},
             onSubmit = {},
         )
     }

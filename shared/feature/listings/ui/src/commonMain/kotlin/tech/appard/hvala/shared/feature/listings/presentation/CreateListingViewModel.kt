@@ -3,7 +3,6 @@ package tech.appard.hvala.shared.feature.listings.presentation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,15 +19,17 @@ import tech.appard.hvala.shared.core.i18n.strings
 import tech.appard.hvala.shared.core.i18n.transmissionOptions
 import tech.appard.hvala.shared.core.ui.components.fields.SelectOption
 import tech.appard.hvala.shared.core.ui.model.PickedMedia
+import tech.appard.hvala.shared.feature.auth.domain.GetCurrentProfileUseCase
+import tech.appard.hvala.shared.feature.listings.domain.CreateListingUseCase
 import tech.appard.hvala.shared.feature.listings.domain.GetCatalogDefaultsUseCase
+import tech.appard.hvala.shared.feature.listings.domain.model.CreateListingDraft
+import tech.appard.hvala.shared.feature.listings.domain.model.ListingAutoDetails
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toCategoriesUi
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toRegionsByCountryUi
 import tech.appard.hvala.shared.feature.listings.presentation.mapper.toLocationsUi
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCategory
 import tech.appard.hvala.shared.feature.listings.presentation.model.UIListingCurrency
 import tech.appard.hvala.shared.feature.listings.presentation.model.UILocationOption
-import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
-import kotlin.time.Duration.Companion.milliseconds
 
 private const val DEFAULT_AVAILABILITY_ID = "available"
 private const val DEFAULT_AUTO_CATEGORY_ID = "auto"
@@ -38,7 +39,7 @@ data class CreateListingUiState(
     val phone: String = "",
     val countryId: String? = null,
     val regionId: String? = null,
-    val location: String = "18 Stjepana Mitrova Ljubiše, Budva, Montenegro",
+    val location: String = "",
     val price: String = "",
     val currency: UIListingCurrency = UIListingCurrency.USD,
     val availabilityId: String = DEFAULT_AVAILABILITY_ID,
@@ -54,6 +55,7 @@ data class CreateListingUiState(
     val photos: List<PickedMedia> = emptyList(),
     val isSubmitting: Boolean = false,
     val error: String? = null,
+    val showExitConfirmation: Boolean = false,
     val categories: List<UIListingCategory> = emptyList(),
     val countries: List<UILocationOption> = emptyList(),
     val regionsByCountry: Map<String, List<UILocationOption>> = emptyMap(),
@@ -63,6 +65,24 @@ data class CreateListingUiState(
 
     val availableRegions: List<UILocationOption>
         get() = countryId?.let { regionsByCountry[it] }.orEmpty()
+
+    val hasUnsavedChanges: Boolean
+        get() = title.isNotBlank() ||
+            phone.isNotBlank() ||
+            countryId != null ||
+            regionId != null ||
+            location.isNotBlank() ||
+            price.isNotBlank() ||
+            categoryId != null ||
+            description.isNotBlank() ||
+            photos.isNotEmpty() ||
+            bodyTypeId != null ||
+            color.isNotBlank() ||
+            transmissionId != null ||
+            drivetrainId != null ||
+            steeringWheelId != null ||
+            conditionId != null ||
+            numberOfOwners.isNotBlank()
 }
 
 data class CreateListingSelectOptions(
@@ -86,12 +106,16 @@ fun createListingSelectOptions(strings: ListingsStrings): CreateListingSelectOpt
 
 class CreateListingViewModel(
     private val getCatalogDefaultsUseCase: GetCatalogDefaultsUseCase,
-    private val localeRepository: LocaleRepository,
+    private val createListingUseCase: CreateListingUseCase,
+    private val getCurrentProfileUseCase: GetCurrentProfileUseCase,
+    private val localeRepository: tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val _state = MutableStateFlow(CreateListingUiState())
     val state: StateFlow<CreateListingUiState> = _state.asStateFlow()
+
+    private var pendingBackAction: (() -> Unit)? = null
 
     init {
         scope.launch {
@@ -110,16 +134,18 @@ class CreateListingViewModel(
     }
 
     fun load() {
-        if (_state.value.categories.isNotEmpty()) return
+        if (_state.value.categories.isNotEmpty() && _state.value.phone.isNotBlank()) return
         scope.launch {
             val language = localeRepository.getLanguage()
             getCatalogDefaultsUseCase()
-            _state.update {
-                it.copy(
+            val profile = runCatching { getCurrentProfileUseCase() }.getOrNull()
+            _state.update { current ->
+                current.copy(
                     categories = getCatalogDefaultsUseCase.categories().toCategoriesUi(language),
                     countries = getCatalogDefaultsUseCase.countries().toLocationsUi(language),
                     regionsByCountry = getCatalogDefaultsUseCase.regionsByCountry()
                         .toRegionsByCountryUi(language),
+                    phone = current.phone.ifBlank { profile?.phone.orEmpty() },
                 )
             }
         }
@@ -169,11 +195,41 @@ class CreateListingViewModel(
         }
     }
 
+    fun onPhotoRemove(uri: String) {
+        _state.update { current ->
+            current.copy(
+                photos = current.photos.filterNot { it.uri == uri },
+                error = null,
+            )
+        }
+    }
+
+    fun onBackRequested(onConfirmed: () -> Unit) {
+        if (!_state.value.hasUnsavedChanges) {
+            onConfirmed()
+            return
+        }
+        pendingBackAction = onConfirmed
+        _state.update { it.copy(showExitConfirmation = true) }
+    }
+
+    fun dismissExitConfirmation() {
+        pendingBackAction = null
+        _state.update { it.copy(showExitConfirmation = false) }
+    }
+
+    fun confirmExit() {
+        pendingBackAction?.invoke()
+        pendingBackAction = null
+        reset()
+    }
+
     fun submit(onSuccess: () -> Unit) {
         val snapshot = _state.value
         if (snapshot.isSubmitting) return
 
-        val validationError = validate(snapshot)
+        val strings = localeRepository.getLanguage().strings().listings
+        val validationError = validate(snapshot, strings)
         if (validationError != null) {
             _state.update { it.copy(error = validationError) }
             return
@@ -181,36 +237,97 @@ class CreateListingViewModel(
 
         scope.launch {
             _state.update { it.copy(isSubmitting = true, error = null) }
-            delay(600.milliseconds)
-            _state.update { it.copy(isSubmitting = false) }
-            onSuccess()
+            runCatching {
+                createListingUseCase(snapshot.toDraft(strings))
+            }.onSuccess {
+                reset()
+                onSuccess()
+            }.onFailure {
+                _state.update { state ->
+                    state.copy(
+                        isSubmitting = false,
+                        error = strings.errorSubmitFailed,
+                    )
+                }
+            }
         }
+    }
+
+    private fun reset() {
+        _state.value = CreateListingUiState(
+            categories = _state.value.categories,
+            countries = _state.value.countries,
+            regionsByCountry = _state.value.regionsByCountry,
+        )
+        load()
     }
 
     private fun updateField(block: (CreateListingUiState) -> CreateListingUiState) {
         _state.update(block)
     }
 
-    private fun validate(state: CreateListingUiState): String? {
-        val strings = localeRepository.getLanguage().strings().listings
-        return when {
-            state.title.isBlank() -> strings.errorTitleRequired
-            state.phone.filter(Char::isDigit).length < 10 -> strings.errorPhoneInvalid
-            state.countryId == null -> strings.errorCountryRequired
-            state.regionId == null -> strings.errorRegionRequired
-            state.location.isBlank() -> strings.errorLocationRequired
-            state.price.isBlank() -> strings.errorPriceRequired
-            state.categoryId == null -> strings.errorCategoryRequired
-            state.photos.isEmpty() -> strings.errorPhotoRequired
-            state.isAutoCategory && state.bodyTypeId == null -> strings.errorBodyTypeRequired
-            state.isAutoCategory && state.transmissionId == null -> strings.errorTransmissionRequired
-            else -> null
+    private fun validate(state: CreateListingUiState, strings: ListingsStrings): String? = when {
+        state.title.isBlank() -> strings.errorTitleRequired
+        state.phone.filter(Char::isDigit).length < 10 -> strings.errorPhoneInvalid
+        state.countryId == null -> strings.errorCountryRequired
+        state.regionId == null -> strings.errorRegionRequired
+        state.location.isBlank() -> strings.errorLocationRequired
+        state.price.isBlank() -> strings.errorPriceRequired
+        state.categoryId == null -> strings.errorCategoryRequired
+        state.photos.isEmpty() -> strings.errorPhotoRequired
+        state.photos.size > MAX_PHOTOS -> strings.errorPhotoLimit
+        state.isAutoCategory && state.bodyTypeId == null -> strings.errorBodyTypeRequired
+        state.isAutoCategory && state.transmissionId == null -> strings.errorTransmissionRequired
+        else -> null
+    }
+
+    private fun CreateListingUiState.toDraft(strings: ListingsStrings): CreateListingDraft {
+        val selectOptions = createListingSelectOptions(strings)
+        val availabilityLabel = selectOptions.availability
+            .firstOrNull { it.id == availabilityId }
+            ?.label
+            ?: strings.optionAvailable
+
+        val autoDetails = if (isAutoCategory) {
+            ListingAutoDetails(
+                bodyType = selectOptions.bodyType.firstOrNull { it.id == bodyTypeId }?.label.orEmpty(),
+                color = color,
+                transmission = selectOptions.transmission.firstOrNull { it.id == transmissionId }?.label.orEmpty(),
+                drivetrain = selectOptions.drivetrain.firstOrNull { it.id == drivetrainId }?.label.orEmpty(),
+                steeringWheel = selectOptions.steeringWheel.firstOrNull { it.id == steeringWheelId }?.label.orEmpty(),
+                condition = selectOptions.condition.firstOrNull { it.id == conditionId }?.label.orEmpty(),
+                numberOfOwners = numberOfOwners,
+            )
+        } else {
+            null
         }
+
+        return CreateListingDraft(
+            title = title.trim(),
+            phone = phone.trim(),
+            countryId = countryId.orEmpty(),
+            regionId = regionId.orEmpty(),
+            location = location.trim(),
+            price = price.toInt(),
+            currency = currency.toDomain(),
+            availabilityLabel = availabilityLabel,
+            categoryId = categoryId.orEmpty(),
+            description = description.trim(),
+            photoUris = photos.map { it.uri },
+            autoDetails = autoDetails,
+            sellerId = "",
+            sellerName = "",
+        )
     }
 
     companion object {
         const val AUTO_CATEGORY_ID = DEFAULT_AUTO_CATEGORY_ID
         const val AVAILABILITY_AVAILABLE = DEFAULT_AVAILABILITY_ID
-        const val MAX_PHOTOS = 8
+        const val MAX_PHOTOS = 5
     }
+}
+
+private fun UIListingCurrency.toDomain() = when (this) {
+    UIListingCurrency.USD -> tech.appard.hvala.shared.feature.listings.domain.model.ListingCurrency.USD
+    UIListingCurrency.RUB -> tech.appard.hvala.shared.feature.listings.domain.model.ListingCurrency.RUB
 }

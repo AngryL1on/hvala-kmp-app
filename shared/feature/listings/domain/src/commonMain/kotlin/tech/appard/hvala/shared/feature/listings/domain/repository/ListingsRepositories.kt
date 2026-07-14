@@ -1,6 +1,7 @@
 package tech.appard.hvala.shared.feature.listings.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
+import tech.appard.hvala.shared.feature.listings.domain.model.CreateListingDraft
 import tech.appard.hvala.shared.feature.listings.domain.model.Listing
 import tech.appard.hvala.shared.feature.listings.domain.model.ListingCategory
 import tech.appard.hvala.shared.feature.listings.domain.model.LocationOption
@@ -25,6 +26,8 @@ interface ListingsRepository {
     fun getArchiveProfileListings(): List<Listing>
 
     suspend fun toggleFavorite(listingId: String)
+
+    suspend fun createListing(draft: CreateListingDraft): Listing
 }
 
 interface CatalogRepository {

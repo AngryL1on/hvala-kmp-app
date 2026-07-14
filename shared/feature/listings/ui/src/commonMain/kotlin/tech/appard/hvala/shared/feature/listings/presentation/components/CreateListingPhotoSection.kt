@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -31,6 +35,7 @@ import tech.appard.hvala.shared.core.ui.theme.GrayPlaceholder
 import tech.appard.hvala.shared.core.ui.theme.InputText
 import tech.appard.hvala.shared.core.ui.theme.LocalDimensions
 import tech.appard.hvala.shared.core.ui.theme.ScreenBackground
+import tech.appard.hvala.shared.core.ui.theme.White
 
 @Composable
 fun CreateListingPhotoSection(
@@ -38,6 +43,7 @@ fun CreateListingPhotoSection(
     onAddPhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
     canAddMore: Boolean = true,
+    onPhotoRemove: (String) -> Unit = {},
 ) {
     val dimensions = LocalDimensions.current
     val strings = appStrings().listings
@@ -88,13 +94,29 @@ fun CreateListingPhotoSection(
                         .clip(shape)
                         .background(ScreenBackground)
                         .border(width = 1.dp, color = CardBorder, shape = shape),
-                    contentAlignment = Alignment.Center,
                 ) {
                     PickedMediaImage(
                         media = photo,
                         modifier = Modifier.fillMaxSize(),
                         contentDescription = photo.name,
                     )
+
+                    IconButton(
+                        onClick = { onPhotoRemove(photo.uri) },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(2.dp)
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .background(White.copy(alpha = 0.92f)),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = strings.deletePhoto,
+                            tint = GrayPlaceholder,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
                 }
             }
         }

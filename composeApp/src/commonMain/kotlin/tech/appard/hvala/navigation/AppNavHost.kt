@@ -270,7 +270,14 @@ fun AppNavHost(
             ) {
                 HvalaAppBar(
                     state = appBarState,
-                    onBackClick = { navController.back() },
+                    onBackClick = {
+                        when (currentRoute) {
+                            Route.CreateListing -> createListingViewModel.onBackRequested {
+                                navController.back()
+                            }
+                            else -> navController.back()
+                        }
+                    },
                     onTitleClick = chatTitleClick,
                     onSettingsClick = {
                         if (currentRoute == Route.Profile) {
@@ -295,7 +302,11 @@ fun AppNavHost(
                         }
                     },
                     onAddClick = {
-                        navController.navigateFromFab()
+                        if (!isAuthenticated) {
+                            navController.navigateTo(Route.Auth)
+                        } else {
+                            navController.navigateFromFab()
+                        }
                     },
                 )
             }

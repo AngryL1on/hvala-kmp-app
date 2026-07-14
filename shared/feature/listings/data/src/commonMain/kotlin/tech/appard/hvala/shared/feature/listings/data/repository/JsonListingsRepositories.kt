@@ -16,9 +16,11 @@ import tech.appard.hvala.shared.feature.listings.data.model.toDomainCountries
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainListings
 import tech.appard.hvala.shared.feature.listings.data.model.toDomainRegionsByCountry
 import tech.appard.hvala.shared.feature.listings.data.source.ListingsJsonDataSource
+import tech.appard.hvala.shared.feature.listings.domain.model.CreateListingDraft
 import tech.appard.hvala.shared.feature.listings.domain.model.Listing
 import tech.appard.hvala.shared.feature.listings.domain.model.ListingCategory
 import tech.appard.hvala.shared.feature.listings.domain.model.LocationOption
+import tech.appard.hvala.shared.feature.listings.domain.pricePair
 import tech.appard.hvala.shared.feature.listings.domain.repository.CatalogRepository
 import tech.appard.hvala.shared.feature.listings.domain.repository.ListingsRepository
 import tech.appard.hvala.shared.feature.settings.domain.repository.LocaleRepository
@@ -84,6 +86,37 @@ internal class JsonListingsRepository(
             }
         }
         _listings.value = database.loadAllListings()
+    }
+
+    override suspend fun createListing(draft: CreateListingDraft): Listing {
+        ensureLoaded()
+        val (priceUsd, priceRub) = pricePair(draft.price, draft.currency)
+        val listing = Listing(
+            id = "listing-${kotlin.time.Clock.System.now().toEpochMilliseconds()}",
+            title = draft.title,
+            priceUsd = priceUsd,
+            priceRub = priceRub,
+            location = draft.location,
+            categoryId = draft.categoryId,
+            countryId = draft.countryId,
+            regionId = draft.regionId,
+            imageUrl = draft.photoUris.firstOrNull(),
+            totalImages = draft.photoUris.size.coerceAtLeast(1),
+            currentImage = 1,
+            isFavorite = false,
+            phone = draft.phone,
+            description = draft.description,
+            availability = draft.availabilityLabel,
+            autoDetails = draft.autoDetails,
+            sellerId = draft.sellerId,
+            sellerName = draft.sellerName,
+            postedAt = localeRepository.getLanguage().strings().common.today,
+        )
+        database.transaction {
+            database.insertListing(listing)
+        }
+        _listings.value = database.loadAllListings()
+        return listing
     }
 
     private fun enrichListing(listing: Listing): Listing {

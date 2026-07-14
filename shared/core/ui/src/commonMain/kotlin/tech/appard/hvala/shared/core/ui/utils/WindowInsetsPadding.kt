@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 @Composable
-fun rememberNavigationBarBottomPadding(min: Dp = 28.dp): Dp {
+fun rememberNavigationBarBottomPadding(min: Dp = 64.dp): Dp {
     val navigationBottom = WindowInsets.navigationBars
         .asPaddingValues()
         .calculateBottomPadding()
