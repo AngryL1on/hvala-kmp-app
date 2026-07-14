@@ -51,6 +51,7 @@ sealed interface SettingsIntent : MviIntent {
 
 sealed interface SettingsEffect : MviEffect {
     data object SessionEndRequested : SettingsEffect
+    data object PrivacyPolicyRequested : SettingsEffect
 }
 
 class SettingsViewModel(
@@ -112,6 +113,7 @@ class SettingsViewModel(
                         )
                     }
                 }
+                "info" -> sendEffect(SettingsEffect.PrivacyPolicyRequested)
             }
             SettingsIntent.LanguagePickerDismissed -> {
                 updateState {

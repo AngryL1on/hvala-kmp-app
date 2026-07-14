@@ -14,6 +14,7 @@ sealed interface Route {
     data object Profile : Route
     data object Settings : Route
     data object EditProfile : Route
+    data object PrivacyPolicy : Route
     data object CreateListing : Route
     data class ListingDetail(val listingId: String) : Route
     data class SellerProfile(val sellerId: String) : Route

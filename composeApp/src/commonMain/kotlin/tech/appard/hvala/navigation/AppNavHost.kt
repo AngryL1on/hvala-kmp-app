@@ -57,6 +57,7 @@ import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.ReviewsV
 import tech.appard.hvala.shared.feature.profile.presentation.viewmodels.SellerProfileViewModel
 import tech.appard.hvala.shared.feature.listings.domain.ToggleListingFavoriteUseCase
 import tech.appard.hvala.shared.core.i18n.appStrings
+import tech.appard.hvala.shared.feature.settings.presentation.screens.PrivacyPolicyScreen
 import tech.appard.hvala.shared.feature.settings.presentation.screens.SettingsScreen
 import tech.appard.hvala.shared.feature.settings.presentation.viewmodels.SettingsViewModel
 
@@ -139,6 +140,7 @@ fun AppNavHost(
     val showAppBar = when (currentRoute) {
         Route.Auth,
         Route.Registration,
+        Route.PrivacyPolicy,
         is Route.ListingDetail,
         is Route.SellerProfile,
         is Route.Reviews,
@@ -157,6 +159,7 @@ fun AppNavHost(
     val appBarState = rememberHvalaAppBarState(
         title = when (currentRoute) {
             Route.Registration -> strings.nav.registration
+            Route.PrivacyPolicy -> strings.privacyPolicy.screenTitle
             Route.Profile -> strings.nav.profileTitle
             Route.Settings -> strings.settings.screenTitle
             Route.EditProfile -> strings.settings.editProfile
@@ -172,6 +175,7 @@ fun AppNavHost(
         showBackButton = when (currentRoute) {
             Route.Auth,
             Route.Registration,
+            Route.PrivacyPolicy,
             Route.Settings,
             Route.EditProfile,
             Route.CreateListing,
@@ -183,6 +187,7 @@ fun AppNavHost(
             else -> false
         },
         centerTitle = currentRoute == Route.Registration ||
+            currentRoute == Route.PrivacyPolicy ||
             currentRoute == Route.Profile ||
             currentRoute == Route.Settings ||
             currentRoute == Route.EditProfile ||
@@ -209,6 +214,7 @@ fun AppNavHost(
     val usesScreenBackground = when (currentRoute) {
         Route.Profile,
         Route.Settings,
+        Route.PrivacyPolicy,
         Route.EditProfile,
         Route.CreateListing,
         is Route.ListingDetail,
@@ -315,7 +321,9 @@ fun AppNavHost(
                             profileViewModel.reset()
                             navController.navigateToRoot(Route.Listings)
                         },
+                        onTermsClick = { navController.navigateTo(Route.PrivacyPolicy) },
                     )
+                    Route.PrivacyPolicy -> PrivacyPolicyScreen()
                     Route.Listings -> ListingsScreen(
                         viewModel = listingsViewModel,
                         showGuestLoginButton = !isAuthenticated,
@@ -353,6 +361,7 @@ fun AppNavHost(
                         onEditProfileClick = { navController.navigateTo(Route.EditProfile) },
                         onAvatarPicked = profileViewModel::updateAvatar,
                         onSessionEnd = onSessionEnd,
+                        onPrivacyPolicyClick = { navController.navigateTo(Route.PrivacyPolicy) },
                     )
                     Route.EditProfile -> EditProfileScreen(
                         viewModel = editProfileViewModel,

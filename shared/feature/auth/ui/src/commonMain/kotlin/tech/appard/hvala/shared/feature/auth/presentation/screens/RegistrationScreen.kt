@@ -50,6 +50,7 @@ fun RegistrationScreen(
     viewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     onRegistered: () -> Unit = {},
+    onTermsClick: () -> Unit = {},
 ) {
     val state by viewModel.registrationState.collectAsState()
 
@@ -62,6 +63,7 @@ fun RegistrationScreen(
         onPasswordChange = viewModel::onRegistrationPasswordChange,
         onConfirmPasswordChange = viewModel::onRegistrationConfirmPasswordChange,
         onTermsAcceptedChange = viewModel::onRegistrationTermsAcceptedChange,
+        onTermsClick = onTermsClick,
         onSignUp = { viewModel.signUp(onRegistered) },
     )
 }
@@ -75,6 +77,7 @@ private fun RegistrationContent(
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onTermsAcceptedChange: (Boolean) -> Unit,
+    onTermsClick: () -> Unit,
     onSignUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -182,6 +185,7 @@ private fun RegistrationContent(
         RegistrationTermsRow(
             checked = state.isTermsAccepted,
             onCheckedChange = onTermsAcceptedChange,
+            onTermsClick = onTermsClick,
             modifier = Modifier.padding(bottom = dimensions.verticalXLarge),
         )
     }
@@ -211,17 +215,12 @@ private fun RegistrationField(
 private fun RegistrationTermsRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    onTermsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val strings = appStrings().auth
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onCheckedChange(!checked) },
-            ),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(LocalDimensions.current.horizontalXSmall),
     ) {
@@ -235,8 +234,13 @@ private fun RegistrationTermsRow(
             ),
         )
         Text(
+            modifier = Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onTermsClick,
+            ),
             text = strings.termsPrefix,
-            style = BodyMedium.copy(color = GrayText),
+            style = BodyMedium.copy(color = SecondaryMain),
         )
     }
 }
@@ -255,6 +259,7 @@ private fun RegistrationScreenPreview() {
             onPasswordChange = {},
             onConfirmPasswordChange = {},
             onTermsAcceptedChange = {},
+            onTermsClick = {},
             onSignUp = {},
         )
     }

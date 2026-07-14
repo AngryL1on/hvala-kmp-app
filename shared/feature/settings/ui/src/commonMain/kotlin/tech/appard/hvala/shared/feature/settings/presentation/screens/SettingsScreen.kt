@@ -52,6 +52,7 @@ fun SettingsScreen(
     onEditProfileClick: () -> Unit = {},
     onAvatarPicked: (String) -> Unit = {},
     onSessionEnd: () -> Unit = {},
+    onPrivacyPolicyClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     val imagePicker = rememberImagePicker()
@@ -60,6 +61,7 @@ fun SettingsScreen(
         viewModel.effects.collect { effect ->
             when (effect) {
                 SettingsEffect.SessionEndRequested -> onSessionEnd()
+                SettingsEffect.PrivacyPolicyRequested -> onPrivacyPolicyClick()
             }
         }
     }

@@ -14,6 +14,7 @@ data class AppStrings(
     val reviews: ReviewStrings,
     val favorites: FavoritesStrings,
     val settings: SettingsStrings,
+    val privacyPolicy: PrivacyPolicyStrings,
 )
 
 fun AppLanguage.strings(): AppStrings = AppStrings(
@@ -26,6 +27,7 @@ fun AppLanguage.strings(): AppStrings = AppStrings(
     reviews = reviewStrings(),
     favorites = favoritesStrings(),
     settings = settingsStrings(),
+    privacyPolicy = privacyPolicyStrings(),
 )
 
 val LocalAppLanguage = staticCompositionLocalOf { AppLanguage.default }
